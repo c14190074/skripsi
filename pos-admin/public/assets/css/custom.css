@@ -1,0 +1,17 @@
+.errors[role=alert] ul li {
+	color: red;
+}
+
+.error-msg {
+	color: red;
+}
+
+.select2-container--default .select2-selection--single, 
+.select2-container--default.select2-container--focus .select2-selection--multiple, 
+.select2-container--default.select2-container--focus .select2-selection--multiple, .select2-container--default .select2-selection--multiple {
+	border-color: #DFE5EF;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+	padding-left: 10px;
+}
