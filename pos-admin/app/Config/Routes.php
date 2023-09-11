@@ -63,8 +63,12 @@ $routes->group("produk", function ($routes) {
     $routes->get('update/(:any)', 'Produk::update/$1');
     $routes->post('update/(:any)', 'Produk::update/$1');
     $routes->get('list', 'Produk::list');
+    $routes->get('listbystock', 'Produk::listByMinStok');
+    $routes->get('listbyed', 'Produk::listByEd');
     $routes->get('detail/(:any)', 'Produk::detail/$1');
     $routes->get('delete/(:any)', 'Produk::delete/$1');
+    $routes->get('diskon/(:any)/(:any)', 'Produk::diskon/$1/$2');
+    $routes->post('diskon/(:any)/(:any)', 'Produk::diskon/$1/$2');
 });
 /*
  * --------------------------------------------------------------------

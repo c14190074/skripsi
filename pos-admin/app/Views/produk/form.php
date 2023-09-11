@@ -2,7 +2,7 @@
   echo $this->include('default/header');
 ?>
 
-      <div class="container-fluid">
+     
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
@@ -59,7 +59,7 @@
 
                       <div class="mb-3">
                         <label for="nama_produk" class="form-label">Nama Produk</label>
-                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', $data->nama_produk) ?>" placeholder="Nama Produk">
+                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', $data->nama_produk) ?>" placeholder="Nama Produk" required>
                         <p class="error-msg"><?= \Config\Services::validation()->getError('nama_produk') ?></p>
                       </div>
 
@@ -80,24 +80,35 @@
 
                             ?>
                           </select>
-                          
                       </div>
 
                       <div class="mb-3">
                           <label for="satuan_terkecil" class="form-label">Satuan Terkecil</label>
-                          <select id="satuan_terkecil" name="satuan_terkecil" class="form-select">
+                          <select id="satuan_terkecil" name="satuan_terkecil" class="form-select" required>
                             <option value='gram'<?= $data->satuan_terkecil == 'gram' ? ' selected' : '' ?>>Gram</option>
                             <option value='pcs'<?= $data->satuan_terkecil == 'pcs' ? ' selected' : '' ?>>Pcs</option>
                           </select>
                           <p class="error-msg"><?= \Config\Services::validation()->getError('satuan_terkecil') ?></p>
                       </div>
 
-                      <div class="mb-0">
+                      <div class="mb-3">
                         <label for="netto" class="form-label">Jumlah / Netto per Carton (Dalam Satuan Terkecil)</label>
-                        <input type="text" class="form-control" id="netto" name="netto" value="<?= set_value('netto', $data->netto) ?>" placeholder="Jumlah">
+                        <input type="text" class="form-control" id="netto" name="netto" value="<?= set_value('netto', $data->netto) ?>" placeholder="Jumlah" required>
                         <p class="error-msg"><?= \Config\Services::validation()->getError('netto') ?></p>
                       </div>
 
+                      <div class="mb-3">
+                        <label for="stok_min" class="form-label">Stok Minimal (Dalam Satuan Terkecil)</label>
+                        <input type="text" class="form-control" id="stok_min" name="stok_min" value="<?= set_value('stok_min', $data->stok_min) ?>" placeholder="Stok Minimal">
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('stok_min') ?></p>
+                      </div>
+
+                      <?php if(!$is_new_data) { ?>
+                      <div class="mb-0 form-check">
+                        <input type="checkbox" class="form-check-input" id="update_stock" name="update_stock" value="1">
+                        <label class="form-check-label" for="update_stock">Apakah ada perubahan stok dan harga?</label>
+                      </div>
+                      <?php } ?>
                     </div>
 
                     <div class="card-body">
@@ -239,7 +250,7 @@
             </div>
           </div>
         </div>
-      </div>
+     
 
 <?php
   echo $this->include('default/footer');

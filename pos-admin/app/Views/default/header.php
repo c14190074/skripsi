@@ -8,7 +8,8 @@
   <link rel="shortcut icon" type="image/png" href="<?= base_url() ?>assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/styles.min.css" />
   <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-  <link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/ui-lightness/jquery-ui.css' rel='stylesheet'>
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap-datepicker.min.css" />
+  <!-- <link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/ui-lightness/jquery-ui.css' rel='stylesheet'> -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/custom.css" />
 </head>
@@ -61,12 +62,39 @@
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link" href="<?= base_url('produk/list') ?>" aria-expanded="false">
+              <a class="sidebar-link has-arrow" href="javascript:;" aria-expanded="false">
                 <span>
                   <i class="ti ti-layout-dashboard"></i>
                 </span>
                 <span class="hide-menu">Produk</span>
               </a>
+
+              <ul aria-expanded="false" class="collapse first-level">
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('produk/list') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Semua Produk</span>
+                    </a>
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('produk/listbystock') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Stok Produk</span>
+                    </a>
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('produk/listbyed') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Kadaluarsa Produk</span>
+                    </a>
+                  </li>
+              </ul>
             </li>
             
           </ul>

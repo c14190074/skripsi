@@ -18,7 +18,12 @@ class ProdukStokModel extends Model
         $stok_ecer = $stok - ($netto * $stok_carton);
 
         if($stok_ecer > 0) {
-            return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            if($stok_carton > 0) {
+                return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            } else  {
+                return number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            }
+            
         } else {
             return $stok_carton.' dos';
         }

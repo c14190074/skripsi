@@ -2,7 +2,7 @@
   echo $this->include('default/header');
 ?>
 
-      <div class="container-fluid">
+      
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
@@ -32,6 +32,7 @@
                   				<td>Nama Produk</td>
                   				<td>Kategori</td>
                   				<td>Supplier</td>
+                          <td>Stok Minimal</td>
                   				<td>Stok</td>
                           <td>Tanggal Dibuat</td>
                   				<td>Tanggal Diubah</td>
@@ -47,6 +48,7 @@
                   				<td><?php echo $produk->nama_produk; ?></td>
                   				<td><?php echo $produk->nama_kategori; ?></td>
                   				<td><?php echo $produk->nama_supplier; ?></td>
+                          <td><?php echo $produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil); ?></td>
                           <td>
                             <?php echo $produk_model->getStok($produk->produk_id); ?>
                               
@@ -77,7 +79,7 @@
             </div>
           </div>
         </div>
-      </div>
+     
    
 <?php
   echo $this->include('default/footer');

@@ -3,7 +3,7 @@
 }
 
 .error-msg {
-	color: red;
+	color: red !important;
 }
 
 .select2-container--default .select2-selection--single, 
@@ -14,4 +14,16 @@
 
 .select2-container--default .select2-search--inline .select2-search__field {
 	padding-left: 10px;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+	height: 22px;
+}
+
+.select2-container--classic .select2-selection--multiple .select2-selection__choice, .select2-container--default .select2-selection--multiple .select2-selection__choice, .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	color: #000;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+	background-color: transparent;
 }

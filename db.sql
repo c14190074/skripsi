@@ -127,3 +127,20 @@ CREATE TABLE IF NOT EXISTS `tbl_pembelian_detail` (
 	FOREIGN KEY(`pembelian_id`) REFERENCES `tbl_pembelian` (`pembelian_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
 	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `tbl_produk_diskon` (
+	`produk_diskon_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`produk_id` INT(11),
+	`tipe_diskon` VARCHAR(15),
+	`jumlah` INT(11),
+	`start_diskon` DATE,
+	`end_diskon` DATE,
+	`tgl_dibuat` DATETIME DEFAULT NULL,
+	`dibuat_oleh` INT(11) DEFAULT NULL,
+	`tgl_diupdate` DATETIME DEFAULT NULL,
+	`diupdate_oleh` INT(11) DEFAULT NULL,
+	`is_deleted` TINYINT(1) DEFAULT 0 COMMENT '0=No; 1=Yes',
+	PRIMARY KEY (`produk_diskon_id`),
+	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -9,7 +9,7 @@ class ProdukModel extends Model
     protected $table = 'tbl_produk';
     protected $primaryKey = 'produk_id';
     protected $foreignKey = ['supplier_id', 'kategori_id'];
-    protected $allowedFields = ['supplier_id', 'kategori_id', 'nama_produk', 'satuan_terkecil', 'netto', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
+    protected $allowedFields = ['supplier_id', 'kategori_id', 'nama_produk', 'satuan_terkecil', 'netto', 'stok_min', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
    
 
     public function getFormRules() {
@@ -59,7 +59,11 @@ class ProdukModel extends Model
         $stok_ecer = $total_stok - ($nett_per_carton * $stok_carton);
 
         if($stok_ecer > 0) {
-            return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            if($stok_carton > 0) {
+                return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            } else {
+                return number_format($stok_ecer, 0).' '.$satuan_terkecil;
+            }
         } else {
             return $stok_carton.' dos';
         }

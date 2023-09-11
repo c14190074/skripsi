@@ -1,6 +1,8 @@
 $(document).ready(function() {
 	$('.input-date').datepicker({
-		dateFormat: 'dd-M-yy'
+		format: 'dd-M-yy',
+		autoclose: true,
+        todayHighlight: true,
 	});
 
 	let table = new DataTable('.active-table');
@@ -8,6 +10,10 @@ $(document).ready(function() {
 	$('.acive-dropdown').select2();
 	$('#related_produk').select2({
 		placeholder: 'Pilih produk sebanding'
+	});
+
+	$('#produk_bundling').select2({
+		placeholder: 'Pilih produk bundling'
 	});
 	
 
@@ -41,7 +47,7 @@ $(document).ready(function() {
      	htmlElement += '</tr>';
      	
      	$(this).parent().parent().parent().append(htmlElement);
-     	$(this).parent().parent().parent().find('tr:last-child').find('.input-date').datepicker({dateFormat: 'dd-M-yy'});
+     	$(this).parent().parent().parent().find('tr:last-child').find('.input-date').datepicker({format: 'dd-M-yy', autoclose: true, todayHighlight: true});
 	});
 
 	$('#table-produk-stok').on('click', 'tbody .btn-delete-row', function() {

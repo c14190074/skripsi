@@ -2,7 +2,7 @@
   echo $this->include('default/header');
 ?>
 
-      <div class="container-fluid">
+      
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
@@ -47,7 +47,7 @@
             </div>
           </div>
         </div>
-      </div>
+      
 
 <?php
   echo $this->include('default/footer');

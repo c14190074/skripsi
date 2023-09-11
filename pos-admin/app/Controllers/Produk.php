@@ -49,6 +49,7 @@ class Produk extends BaseController
                     'nama_produk' => $_POST['nama_produk'],
                     'satuan_terkecil' => $_POST['satuan_terkecil'],
                     'netto' => $_POST['netto'],
+                    'stok_min' => $_POST['stok_min'],
                     'tgl_dibuat' => date('Y-m-d H:i:s'),
                     'dibuat_oleh' => session()->user_id,
                     'tgl_diupdate' => null,
@@ -167,7 +168,8 @@ class Produk extends BaseController
         
         return view('produk/list', array(
             'produk_data' => $query->getResult(),
-            'produk_model' => new ProdukModel()
+            'produk_model' => new ProdukModel(),
+            'produk_stok_model' => new ProdukStokModel()
         ));
     }
 
@@ -278,6 +280,7 @@ class Produk extends BaseController
                     'nama_produk' => $_POST['nama_produk'],
                     'satuan_terkecil' => $_POST['satuan_terkecil'],
                     'netto' => $_POST['netto'],
+                    'stok_min' => $_POST['stok_min'],
                     'tgl_diupdate' => date('Y-m-d H:i:s'),
                     'diupdate_oleh' => session()->user_id,
                 ];
@@ -285,57 +288,60 @@ class Produk extends BaseController
                 $hasil = $produk_model->update($id, $data);
 
                 if($hasil) {
-                    // input data ke tabel stok dan tgl kadaluarsa
-                    if(isset($_POST['tgl_kadaluarsa']) && isset($_POST['stok'])) {
-                        $builder = $db->table('tbl_produk_stok');
-                        $builder->set('is_deleted', 1);
-                        $builder->where('produk_id', $id);
-                        $builder->update();
+                    if(isset($_POST['update_stock']) && $_POST['update_stock'] == 1) {
+                        // input data ke tabel stok dan tgl kadaluarsa
+                        if(isset($_POST['tgl_kadaluarsa']) && isset($_POST['stok'])) {
+                            $builder = $db->table('tbl_produk_stok');
+                            $builder->set('is_deleted', 1);
+                            $builder->where('produk_id', $id);
+                            $builder->update();
 
-                        $index = 0;
-                        $produk_stok_model = new ProdukStokModel();
-                        foreach($_POST['tgl_kadaluarsa'] as $tgl) {
-                            $total_stok = $_POST['stok'][$index] * $_POST['netto'];
-                            $data = [
-                                'produk_id' => $id,
-                                'tgl_kadaluarsa' => date('Y-m-d', strtotime($tgl)),
-                                'stok' => $total_stok,
-                                'tgl_dibuat' => date('Y-m-d H:i:s'),
-                                'dibuat_oleh' => session()->user_id,
-                                'tgl_diupdate' => null,
-                                'diupdate_oleh' => 0
-                            ];
+                            $index = 0;
+                            $produk_stok_model = new ProdukStokModel();
+                            foreach($_POST['tgl_kadaluarsa'] as $tgl) {
+                                $total_stok = $_POST['stok'][$index] * $_POST['netto'];
+                                $data = [
+                                    'produk_id' => $id,
+                                    'tgl_kadaluarsa' => date('Y-m-d', strtotime($tgl)),
+                                    'stok' => $total_stok,
+                                    'tgl_dibuat' => date('Y-m-d H:i:s'),
+                                    'dibuat_oleh' => session()->user_id,
+                                    'tgl_diupdate' => null,
+                                    'diupdate_oleh' => 0
+                                ];
 
-                            $produk_stok_model->insert($data);
-                            $index++;
-                        }    
-                    }
+                                $produk_stok_model->insert($data);
+                                $index++;
+                            }    
+                        }
 
-                    // input data ke tabel harga
-                    if(isset($_POST['satuan_penjualan']) && isset($_POST['jumlah_penjualan']) && isset($_POST['harga_beli']) && isset($_POST['harga_jual'])) {
-                        $builder = $db->table('tbl_produk_harga');
-                        $builder->set('is_deleted', 1);
-                        $builder->where('produk_id', $id);
-                        $builder->update();
+                        // input data ke tabel harga
+                        if(isset($_POST['satuan_penjualan']) && isset($_POST['jumlah_penjualan']) && isset($_POST['harga_beli']) && isset($_POST['harga_jual'])) {
+                            $builder = $db->table('tbl_produk_harga');
+                            $builder->set('is_deleted', 1);
+                            $builder->where('produk_id', $id);
+                            $builder->update();
 
-                        $index = 0;
-                        $produk_harga_model = new ProdukHargaModel();
-                        foreach($_POST['satuan_penjualan'] as $satuan) {
-                            $data = [
-                                'produk_id' => $id,
-                                'satuan' => $satuan,
-                                'netto' => $_POST['jumlah_penjualan'][$index],
-                                'harga_beli' => $_POST['harga_beli'][$index],
-                                'harga_jual' => $_POST['harga_jual'][$index],
-                                'tgl_dibuat' => date('Y-m-d H:i:s'),
-                                'dibuat_oleh' => session()->user_id,
-                                'tgl_diupdate' => null,
-                                'diupdate_oleh' => 0
-                            ];
+                            $index = 0;
+                            $produk_harga_model = new ProdukHargaModel();
+                            foreach($_POST['satuan_penjualan'] as $satuan) {
+                                $data = [
+                                    'produk_id' => $id,
+                                    'satuan' => $satuan,
+                                    'netto' => $_POST['jumlah_penjualan'][$index],
+                                    'harga_beli' => $_POST['harga_beli'][$index],
+                                    'harga_jual' => $_POST['harga_jual'][$index],
+                                    'tgl_dibuat' => date('Y-m-d H:i:s'),
+                                    'dibuat_oleh' => session()->user_id,
+                                    'tgl_diupdate' => null,
+                                    'diupdate_oleh' => 0
+                                ];
 
-                            $produk_harga_model->insert($data);
-                            $index++;
-                        }    
+                                $produk_harga_model->insert($data);
+                                $index++;
+                            }    
+                        }
+
                     }
 
                     // input produk sebanding
@@ -399,6 +405,88 @@ class Produk extends BaseController
         }
 
         return redirect()->to(base_url('produk/list')); 
+    }
+
+    public function listByMinStok()
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_produk');
+        $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
+        $builder->where('tbl_produk.is_deleted', 0);
+        $builder->where('tbl_produk_stok.is_deleted', 0);
+        $builder->where('tbl_produk_stok.stok <= tbl_produk.stok_min');
+        $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
+        $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
+        $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+        // print_r($builder);
+        $query   = $builder->get();
+
+        return view('produk/list_by_stok', array(
+            'produk_data' => $query->getResult(),
+            'produk_model' => new ProdukModel(),
+            'produk_stok_model' => new ProdukStokModel()
+        ));
+    }
+
+    public function listByEd()
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $today = date("Y-m-d");
+        $date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
+        $first_date = date('Y-m-01', strtotime($date));
+        $last_date = date('Y-m-t', strtotime($date));
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_produk');
+        $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok_id, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
+        $builder->where('tbl_produk.is_deleted', 0);
+        $builder->where('tbl_produk_stok.is_deleted', 0);
+        $builder->where('tbl_produk_stok.tgl_kadaluarsa >=', $first_date);
+        $builder->where('tbl_produk_stok.tgl_kadaluarsa <=', $last_date);
+        $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
+        $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
+        $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+        $query   = $builder->get();
+
+       
+
+        return view('produk/list_by_ed', array(
+            'produk_data' => $query->getResult(),
+            'produk_model' => new ProdukModel(),
+            'produk_stok_model' => new ProdukStokModel()
+        ));
+    }
+
+    public function diskon($id, $stok_id)
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $id = pos_decrypt($id);
+        $stok_id = pos_decrypt($stok_id);
+
+        $produk_model = new ProdukModel();
+        $produk_data = $produk_model->find($id);
+
+        // get daftar produk
+        $daftar_produk = $produk_model->where('is_deleted', 0)
+                                    ->findAll();
+       
+
+        return view('produk/form_diskon', array(
+            'form_action' => base_url().'produk/diskon/'.pos_encrypt($id),
+            'produk_data' => (object) $produk_data,
+            'daftar_produk'   => $daftar_produk,
+        ));
     }
 
 }

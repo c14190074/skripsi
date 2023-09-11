@@ -2,7 +2,7 @@
   echo $this->include('default/header');
 ?>
 
-      <div class="container-fluid">
+      
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
@@ -60,6 +60,13 @@
                           <td>Total Stok</td>
                           <td>
                             <?= $produk_model->getStok($produk_data->produk_id) ?>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td>Stok Minimal</td>
+                          <td>
+                            <?= $produk_stok_model->convertStok($produk_data->stok_min, $produk_data->netto, $produk_data->satuan_terkecil) ?>
                           </td>
                         </tr>
 
@@ -161,7 +168,7 @@
             </div>
           </div>
         </div>
-      </div>
+    
 
 <?php
   echo $this->include('default/footer');

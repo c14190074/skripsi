@@ -1,7 +1,8 @@
-<?php 
+<?php
   echo $this->include('default/header');
 ?>
-     
+
+  
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
@@ -11,13 +12,13 @@
                         <?= session()->getFlashData('danger') ?>
                     </div>
                   <?php } ?>
-              
+                  
               <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">
-                    <h5 class="card-title fw-semibold">Daftar Kategori</h5>
+                    <h5 class="card-title fw-semibold">Daftar Stok Produk</h5>
                   </div>
                   <div>
-                    <a href="<?= base_url('kategori/create') ?>" class="btn btn-danger"><i class="ti ti-plus"></i></a>
+                    <a href="<?= base_url('produk/create') ?>" class="btn btn-danger"><i class="ti ti-plus"></i></a>
                   </div>
                 </div>
 
@@ -28,33 +29,29 @@
                   		<thead>
                   			<tr>
                           <td>No</td>
-                  				<td>Nama Kategori</td>
-                  				<td>Tanggal Dibuat</td>
-                  				<td>Tanggal Diubah</td>
+                  				<td>Nama Produk</td>
+                  				
+                  				<td>Supplier</td>
+                          <td>Stok Minimal</td>
+                  				<td>Stok</td>
+                          <td>Tanggal Kadaluarsa</td>
                           <td>Action</td>
                   			</tr>
                   		</thead>
                   		<tbody>
                   			<?php $ctr = 0; ?>
-                  			<?php foreach($data as $d) { ?>
+                  			<?php foreach($produk_data as $produk) { ?>
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
-                  				<td><?php echo $d['nama_kategori']; ?></td>
-
-                  				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
-                  				<td>
-                  					<?php 
-                  						if($d['tgl_diupdate']) {
-                  							echo date('d M Y H:i:s', strtotime($d['tgl_diupdate'])); 
-                  						} else {
-                  							echo '';
-                  						}
-                  					?>
-                  				</td>
+                  				<td><?php echo $produk->nama_produk; ?></td>
+                  				<td><?php echo $produk->nama_supplier; ?></td>
+                          <td><?php echo $produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil); ?></td>
+                          <td class="error-msg"><?php echo $produk_stok_model->convertStok($produk->stok, $produk->netto, $produk->satuan_terkecil);; ?></td>
+                          <td><?php echo date('d M Y', strtotime($produk->tgl_kadaluarsa)); ?></td>
                           <td>
-                            <a href="update/<?= pos_encrypt($d['kategori_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                            <i role="button" class="ti ti-trash btn-delete-table" data-modul="kategori" data-id="<?= pos_encrypt($d['kategori_id']) ?>" data-label="<?= $d['nama_kategori'] ?>"></i>
+                            <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle"></i></a>
+                            
                           </td>
                   			</tr>
                   			<?php } ?>
@@ -67,8 +64,8 @@
             </div>
           </div>
         </div>
-
-    
+      
+   
 <?php
   echo $this->include('default/footer');
 ?>
