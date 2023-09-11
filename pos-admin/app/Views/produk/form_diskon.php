@@ -27,20 +27,20 @@
                       <div class="mb-3">
                           <label for="tipe_diskon" class="form-label">Tipe Diskon</label>
                           <select id="tipe_diskon" name="tipe_diskon" class="form-select" required>
-                            <option value='bundling'>Bundling</option>
-                            <option value='persen'>Diskon Langsung</option>
-                            <option value='tebus-murah'>Tebus Murah</option>
+                            <option value='bundling'<?= $produk_diskon_data->tipe_diskon == 'bundling' ? ' selected' : '' ?>>Bundling</option>
+                            <option value='diskon langsung'<?= $produk_diskon_data->tipe_diskon == 'diskon langsung' ? ' selected' : '' ?>>Diskon Langsung</option>
+                            <option value='tebus murah'<?= $produk_diskon_data->tipe_diskon == 'tebus murah' ? ' selected' : '' ?>>Tebus Murah</option>
                           </select>
                       </div>
 
                       <div class="mb-3">
                         <label for="nominal" class="form-label">Nominal</label>
                         <div class="input-group">
-                          <input type="text" class="form-control" id="nominal" name="nominal" value="" placeholder="Nominal">
+                          <input type="text" class="form-control" id="nominal" name="nominal" value="<?= set_value('nama_produk', $produk_diskon_data->nominal) ?>" placeholder="Nominal">
                           <span class="input-group-text">
                             <select id="tipe_nominal" name="tipe_nominal" class="form-select" required>
-                              <option value='persen'>%</option>
-                              <option value='nominal'>Rp</option>
+                              <option value='persen'<?= $produk_diskon_data->tipe_nominal == 'persen' ? ' selected' : '' ?>>%</option>
+                              <option value='nominal'<?= $produk_diskon_data->tipe_nominal == 'nominal' ? ' selected' : '' ?>>Rp</option>
                             </select>
                           </span>
                         </div>
@@ -54,7 +54,7 @@
                             <?php
                               if($daftar_produk) {
                                 foreach($daftar_produk as $p) {
-                                  if(isset($related_produk_ids) && in_array($p['produk_id'], $related_produk_ids)) {
+                                  if(isset($produk_bundling_ids) && in_array($p['produk_id'], $produk_bundling_ids)) {
                                     echo "<option selected value='".$p['produk_id']."'>".$p['nama_produk']."</option>";
                                   } else {
                                     echo "<option value='".$p['produk_id']."'>".$p['nama_produk']."</option>";
@@ -70,7 +70,7 @@
                       <div class="mb-3">
                         <label for="start_diskon" class="form-label">Start Diskon</label>
                         <div class="input-group">
-                          <input type="text" class="form-control input-date" id="start_diskon" name="start_diskon" value="" placeholder="Start Diskon">
+                          <input type="text" class="form-control input-date" id="start_diskon" name="start_diskon" value="<?= $produk_diskon_data->start_diskon ? date('d-M-Y', strtotime($produk_diskon_data->start_diskon)) : '' ?>" placeholder="Start Diskon">
                           <span class="input-group-text">
                             <i class="ti ti-calendar fs-5"></i>
                           </span>
@@ -82,7 +82,7 @@
                       <div class="mb-3">
                         <label for="end_diskon" class="form-label">End Diskon</label>
                         <div class="input-group">
-                          <input type="text" class="form-control input-date" id="end_diskon" name="end_diskon" value="" placeholder="End Diskon">
+                          <input type="text" class="form-control input-date" id="end_diskon" name="end_diskon" value="<?= $produk_diskon_data->end_diskon ? date('d-M-Y', strtotime($produk_diskon_data->end_diskon)) : '' ?>" placeholder="End Diskon">
                           <span class="input-group-text">
                               <i class="ti ti-calendar fs-5"></i>
                           </span>

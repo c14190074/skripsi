@@ -209,13 +209,26 @@ class Produk extends BaseController
         $builder->join('tbl_produk', 'tbl_produk.produk_id = tbl_related_produk.produk_child_id');
         $related_produk_query   = $builder->get();
 
+        // get daftar diskon
+        $builder = $db->table('tbl_produk');
+        $builder->select('tbl_produk.produk_id, tbl_produk.nama_produk, tbl_produk_diskon.*');
+        $builder->where('tbl_produk_diskon.produk_id', pos_decrypt($id));
+        $builder->where('tbl_produk_diskon.is_deleted', 0);
+        $builder->where('tbl_produk_diskon.start_diskon >=', date("Y-m-d"));
+        $builder->orWhere('tbl_produk_diskon.start_diskon <=', date("Y-m-d"));
+        $builder->where('tbl_produk_diskon.end_diskon >=', date("Y-m-d"));
+        $builder->join('tbl_produk_diskon', 'tbl_produk.produk_id = tbl_produk_diskon.produk_id');
+        $produk_diskon_query   = $builder->get();
+
         return view('produk/detail', array(
             'produk_model' => new ProdukModel(),
             'produk_stok_model' => new ProdukStokModel(),
+            'produk_diskon_model' => new ProdukDiskonModel(),
             'produk_data' => $produk_query->getResult()[0],
             'produk_stok' => $produk_stok_query->getResult(),
             'produk_harga' => $produk_harga_query->getResult(),
             'related_produk' => $related_produk_query->getResult(),
+            'produk_diskon' => $produk_diskon_query->getResult(),
         ));
     }
 
@@ -467,15 +480,15 @@ class Produk extends BaseController
         ));
     }
 
-    public function diskon($id, $stok_id)
+    public function diskon($id)
     {
         if(!session()->logged_in) {
             return redirect()->to(base_url('user/login')); 
         }
 
+        // id = produk id
         $id = pos_decrypt($id);
-        $stok_id = pos_decrypt($stok_id);
-
+        
         $produk_model = new ProdukModel();
         $produk_data = $produk_model->find($id);
 
@@ -521,7 +534,7 @@ class Produk extends BaseController
                     }
 
                     session()->setFlashData('danger', 'Pengaturan diskon berhasil ditambahkan');
-                    return redirect()->to(base_url('produk/listbyed'));
+                    return redirect()->to(base_url('produk/detail/'.pos_encrypt($id)));
                 }
                 
 
@@ -530,10 +543,137 @@ class Produk extends BaseController
 
 
         return view('produk/form_diskon', array(
-            'form_action' => base_url().'produk/diskon/'.pos_encrypt($id).'/'.pos_encrypt($stok_id),
+            'form_action' => base_url().'produk/diskon/'.pos_encrypt($id),
             'produk_data' => (object) $produk_data,
+            'produk_diskon_data' => new ProdukDiskonModel(),
             'daftar_produk'   => $daftar_produk,
         ));
+    }
+
+
+    public function updatediskon($id)
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        // id = produk diskon id
+        $id = pos_decrypt($id);
+
+        $produk_diskon_model = new ProdukDiskonModel();
+        $produk_diskon_data = $produk_diskon_model->find($id);
+        
+
+        $produk_id = $produk_diskon_data['produk_id'];
+        $produk_model = new ProdukModel();
+        $produk_data = $produk_model->find($produk_id);
+
+        // get daftar produk
+        $daftar_produk = $produk_model->where('is_deleted', 0)
+                                    ->findAll();
+        
+
+        // get daftar bundling produk
+        $produk_bundling_model = new ProdukBundlingModel();
+        $produk_bundling_data = $produk_bundling_model->where('is_deleted', 0)
+                                                    ->where('produk_diskon_id', $id)
+                                                    ->findAll();
+
+        // ubah data related produk menjadi array
+        $produk_bundling_ids = [];
+        if($produk_bundling_data) {
+            foreach($produk_bundling_data as $d) {
+                array_push($produk_bundling_ids, $d['produk_id']);
+            }
+        }
+
+       
+        // get rule validation
+        $rules = $produk_diskon_model->getFormRules();
+
+        if ($this->request->is('post')) {
+            if ($this->validate($rules)) {
+                $data = [
+                    'produk_id' => $_POST['produk_id'],
+                    'tipe_diskon' => $_POST['tipe_diskon'],
+                    'nominal' => $_POST['nominal'],
+                    'tipe_nominal' => $_POST['tipe_nominal'],
+                    'start_diskon' => date('Y-m-d', strtotime($_POST['start_diskon'])),
+                    'end_diskon' => date('Y-m-d', strtotime($_POST['end_diskon'])),
+                    'tgl_diupdate' => date('Y-m-d H:i:s'),
+                    'diupdate_oleh' => session()->user_id,
+                    'is_deleted' => 0
+                ];
+
+                $hasil = $produk_diskon_model->update($id, $data);
+
+                if($hasil) {
+                    // input produk bundling
+                    if(isset($_POST['produk_bundling_ids'])) {
+                        $produk_bundling_model = new ProdukBundlingModel();
+                        $db      = \Config\Database::connect();
+                        $builder = $db->table('tbl_produk_bundling');
+                        $builder->set('is_deleted', 1);
+                        $builder->where('produk_diskon_id', $id);
+                        $builder->update();
+
+                        foreach($_POST['produk_bundling_ids'] as $produk_child_id) {
+                            $data = [
+                                'produk_diskon_id' => $id,
+                                'produk_id' => $produk_child_id,
+                                'is_deleted' => 0   
+                            ];
+
+                            $produk_bundling_model->insert($data);
+                        }
+                    }
+
+                    session()->setFlashData('danger', 'Pengaturan diskon berhasil diubah');
+                    return redirect()->to(base_url('produk/detail/'.pos_encrypt($produk_id)));
+                }
+                
+
+            }
+        }
+
+
+        return view('produk/form_diskon', array(
+            'form_action' => base_url().'produk/updatediskon/'.pos_encrypt($id),
+            'produk_data' => (object) $produk_data,
+            'produk_diskon_data' => (object) $produk_diskon_data,
+            'daftar_produk'   => $daftar_produk,
+            'produk_bundling_ids' => $produk_bundling_ids
+        ));
+    }
+
+
+    public function deleteDiskon($produk_diskon_id) {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $produk_diskon_id = pos_decrypt($produk_diskon_id);
+        $produk_diskon_model = new ProdukDiskonModel();
+        $produk_diskon_data = $produk_diskon_model->find($produk_diskon_id);
+
+        $data = [
+            'is_deleted' => 1,
+        ];
+
+        
+        if($produk_diskon_model->update($produk_diskon_id, $data)) {
+            $db      = \Config\Database::connect();
+            $builder = $db->table('tbl_produk_bundling');
+            $builder->set('is_deleted', 1);
+            $builder->where('produk_diskon_id', $produk_diskon_id);
+            $builder->update();
+
+            session()->setFlashData('danger', 'Data produk diskon berhasil dihapus!');      
+        } else {
+            session()->setFlashData('danger', 'Internal server error');
+        }
+
+        return redirect()->to(base_url('produk/detail/'.pos_encrypt($produk_diskon_data['produk_id']))); 
     }
 
 }

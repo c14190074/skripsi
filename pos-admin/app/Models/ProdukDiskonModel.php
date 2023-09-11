@@ -36,5 +36,20 @@ class ProdukDiskonModel extends Model
 
         return $rules;
     }
+
+    public function getBundlingProduk($produk_diskon_id) {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_produk_bundling');
+        $builder->where('tbl_produk_bundling.produk_diskon_id', $produk_diskon_id);
+        $builder->where('tbl_produk_bundling.is_deleted', 0);
+        $builder->join('tbl_produk', 'tbl_produk.produk_id = tbl_produk_bundling.produk_id');
+        $query   = $builder->get();
+        $result = [];
+        foreach($query->getResult() as $d) {
+            array_push($result, $d->nama_produk);
+        }
+
+        return implode(', ', $result);
+    }
    
 }

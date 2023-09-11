@@ -67,8 +67,11 @@ $routes->group("produk", function ($routes) {
     $routes->get('listbyed', 'Produk::listByEd');
     $routes->get('detail/(:any)', 'Produk::detail/$1');
     $routes->get('delete/(:any)', 'Produk::delete/$1');
-    $routes->get('diskon/(:any)/(:any)', 'Produk::diskon/$1/$2');
-    $routes->post('diskon/(:any)/(:any)', 'Produk::diskon/$1/$2');
+    $routes->get('diskon/(:any)', 'Produk::diskon/$1');
+    $routes->post('diskon/(:any)', 'Produk::diskon/$1');
+    $routes->get('updatediskon/(:any)', 'Produk::updatediskon/$1');
+    $routes->post('updatediskon/(:any)', 'Produk::updatediskon/$1');
+    $routes->get('deletediskon/(:any)', 'Produk::deleteDiskon/$1');
 });
 /*
  * --------------------------------------------------------------------

@@ -51,7 +51,7 @@
                           <td class="error-msg"><?php echo date('d M Y', strtotime($produk->tgl_kadaluarsa)); ?></td>
                           <td>
                             <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle"></i></a>
-                            <a href="diskon/<?= pos_encrypt($produk->produk_id) ?>/<?= pos_encrypt($produk->stok_id) ?>"><i role="button" class="ti ti-discount-2"></i></a>
+                            <a href="diskon/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-discount-2"></i></a>
                             
                           </td>
                   			</tr>
