@@ -5,8 +5,8 @@
 
      
         <div class="container-fluid">
-          <div class="card">
-            <div class="card-body">
+          <!-- <div class="card">
+            <div class="card-body"> -->
               <?php
                 // $encrypter = \Config\Services::encrypter();
                 // $plainText  = 'abcee2725df6b25dccdc474b7a119f54f80e3a91b39ac6fd18ed0da1YwFlf5D0H5jDxH/kja2lMak=';
@@ -79,8 +79,8 @@
 
                 </div>
               </div>
-            </div>
-          </div>
+           <!--  </div>
+          </div> -->
         </div>
    
 <?php

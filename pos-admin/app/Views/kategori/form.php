@@ -3,8 +3,8 @@
 ?>
 
       <div class="container-fluid">
-        <div class="card">
-          <div class="card-body">
+       <!--  <div class="card">
+          <div class="card-body"> -->
 
             <?php if(session()->getFlashData('danger')){ ?>
                   <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -27,8 +27,8 @@
 
               </div>
             </div>
-          </div>
-        </div>
+         <!--  </div>
+        </div> -->
       </div>
       
 <?php
