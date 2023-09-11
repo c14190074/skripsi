@@ -7,6 +7,8 @@ use App\Models\SupplierModel;
 use App\Models\ProdukStokModel;
 use App\Models\ProdukHargaModel;
 use App\Models\RelatedProdukModel;
+use App\Models\ProdukDiskonModel;
+use App\Models\ProdukBundlingModel;
 
 class Produk extends BaseController
 {
@@ -480,10 +482,55 @@ class Produk extends BaseController
         // get daftar produk
         $daftar_produk = $produk_model->where('is_deleted', 0)
                                     ->findAll();
-       
+        
+        $produk_diskon_model = new ProdukDiskonModel();
+        // get rule validation
+        $rules = $produk_diskon_model->getFormRules();
+
+        if ($this->request->is('post')) {
+            if ($this->validate($rules)) {
+                $data = [
+                    'produk_id' => $_POST['produk_id'],
+                    'tipe_diskon' => $_POST['tipe_diskon'],
+                    'nominal' => $_POST['nominal'],
+                    'tipe_nominal' => $_POST['tipe_nominal'],
+                    'start_diskon' => date('Y-m-d', strtotime($_POST['start_diskon'])),
+                    'end_diskon' => date('Y-m-d', strtotime($_POST['end_diskon'])),
+                    'tgl_dibuat' => date('Y-m-d H:i:s'),
+                    'dibuat_oleh' => session()->user_id,
+                    'tgl_diupdate' => null,
+                    'diupdate_oleh' => 0,
+                    'is_deleted' => 0
+                ];
+
+                $hasil = $produk_diskon_model->insert($data);
+
+                if($hasil) {
+                    // input produk bundling
+                    if(isset($_POST['produk_bundling_ids'])) {
+                        $produk_bundling_model = new ProdukBundlingModel();
+                        foreach($_POST['produk_bundling_ids'] as $produk_child_id) {
+                            $data = [
+                                'produk_diskon_id' => $produk_diskon_model->insertID,
+                                'produk_id' => $produk_child_id,
+                                'is_deleted' => 0   
+                            ];
+
+                            $produk_bundling_model->insert($data);
+                        }
+                    }
+
+                    session()->setFlashData('danger', 'Pengaturan diskon berhasil ditambahkan');
+                    return redirect()->to(base_url('produk/listbyed'));
+                }
+                
+
+            }
+        }
+
 
         return view('produk/form_diskon', array(
-            'form_action' => base_url().'produk/diskon/'.pos_encrypt($id),
+            'form_action' => base_url().'produk/diskon/'.pos_encrypt($id).'/'.pos_encrypt($stok_id),
             'produk_data' => (object) $produk_data,
             'daftar_produk'   => $daftar_produk,
         ));

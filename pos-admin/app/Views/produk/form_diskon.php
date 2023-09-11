@@ -18,6 +18,7 @@
                   <form method="POST" action="<?= $form_action ?>">
                     <div class="card-body">
                       <div class="mb-3">
+                        <input type="hidden" name="produk_id" value="<?= $produk_data->produk_id ?>">
                         <label for="nama_produk" class="form-label">Nama Produk</label>
                         <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', $produk_data->nama_produk) ?>" placeholder="Nama Produk" disabled>
                         
@@ -26,17 +27,24 @@
                       <div class="mb-3">
                           <label for="tipe_diskon" class="form-label">Tipe Diskon</label>
                           <select id="tipe_diskon" name="tipe_diskon" class="form-select" required>
-                            <option value='persen'>Persentase</option>
-                            <option value='nominal'>Nominal</option>
                             <option value='bundling'>Bundling</option>
+                            <option value='persen'>Diskon Langsung</option>
                             <option value='tebus-murah'>Tebus Murah</option>
                           </select>
                       </div>
 
                       <div class="mb-3">
-                        <label for="jumlah" class="form-label">Jumlah</label>
-                        <input type="text" class="form-control" id="jumlah" name="jumlah" value="" placeholder="Jumlah">
-                        <p class="error-msg"></p>
+                        <label for="nominal" class="form-label">Nominal</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="nominal" name="nominal" value="" placeholder="Nominal">
+                          <span class="input-group-text">
+                            <select id="tipe_nominal" name="tipe_nominal" class="form-select" required>
+                              <option value='persen'>%</option>
+                              <option value='nominal'>Rp</option>
+                            </select>
+                          </span>
+                        </div>
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('nominal') ?></p>
                       </div>
 
 
@@ -68,7 +76,7 @@
                           </span>
                           
                         </div>
-                        <p class="error-msg"></p>
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('start_diskon') ?></p>
                       </div>
 
                       <div class="mb-3">
@@ -79,7 +87,7 @@
                               <i class="ti ti-calendar fs-5"></i>
                           </span>
                         </div>
-                        <p class="error-msg"></p>
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('end_diskon') ?></p>
                       </div>
 
                       <button type="submit" class="btn btn-primary">Submit</button>

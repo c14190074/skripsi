@@ -144,3 +144,13 @@ CREATE TABLE IF NOT EXISTS `tbl_produk_diskon` (
 	PRIMARY KEY (`produk_diskon_id`),
 	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tbl_produk_bundling` (
+	`produk_bundling_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`produk_diskon_id` INT(11),
+	`produk_id` INT(11),
+	`is_deleted` TINYINT(1) DEFAULT 0 COMMENT '0=No; 1=Yes',
+	PRIMARY KEY (`produk_diskon_bundling_id`),
+	FOREIGN KEY(`produk_diskon_id`) REFERENCES `tbl_produk_diskon` (`produk_diskon_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
