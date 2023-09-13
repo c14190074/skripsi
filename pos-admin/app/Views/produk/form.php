@@ -112,7 +112,7 @@
                     </div>
 
                     <div class="card-body">
-                      <h4>Stok & Tanggal Kadaluarsa</h4>
+                      <h4 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium">Stok & Tanggal Kadaluarsa</h4>
                       <table class="table dynamic-table" id="table-produk-stok">
                         <thead>
                           <tr>
@@ -168,7 +168,7 @@
 
 
                     <div class="card-body">
-                      <h4>Penjualan</h4>
+                      <h4 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium">Penjualan</h4>
                       <table class="table dynamic-table" id="table-produk-penjualan">
                         <thead>
                           <tr>

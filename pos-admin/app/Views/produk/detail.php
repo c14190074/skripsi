@@ -20,14 +20,14 @@
                     <tr>
                       <td class="col-md-2">Nama Produk</td>
                       <td>
-                        <?= $produk_data->nama_produk ?>
+                        <?= ucwords(strtolower($produk_data->nama_produk)) ?>
                       </td>
                     </tr>
 
                     <tr>
                       <td>Kategori</td>
                       <td>
-                        <?= $produk_data->nama_kategori ?>
+                        <?= ucwords(strtolower($produk_data->nama_kategori)) ?>
                       </td>
                     </tr>
 
@@ -35,7 +35,7 @@
                     <tr>
                       <td>Supplier</td>
                       <td>
-                        <?= $produk_data->nama_supplier ?>
+                        <?= ucwords(strtolower($produk_data->nama_supplier)) ?>
                       </td>
                     </tr>
 
@@ -73,7 +73,7 @@
                         <?php
                           $tmp = [];
                           foreach ($related_produk as $p) {
-                            array_push($tmp, $p->nama_produk);
+                            array_push($tmp, ucwords(strtolower($p->nama_produk)));
                           }
 
                           echo implode(', ', $tmp);
@@ -87,7 +87,7 @@
 
                 <div class="row">
                   <div class="col-md-5">
-                    <h4>Stok & Tanggal Kadaluarsa</h4>
+                    <h4 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium">Stok & Tanggal Kadaluarsa</h4>
                     <table class="table dynamic-table" id="table-produk-stok">
                       <thead>
                         <tr>
@@ -121,7 +121,7 @@
 
 
                   <div class="col-md-7">
-                    <h4>Penjualan</h4>
+                    <h4 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium">Penjualan</h4>
                     <table class="table dynamic-table" id="table-produk-stok">
                       <thead>
                         <tr>
@@ -164,7 +164,7 @@
 
                 <div class="row">
                   <div class="col-md-12">
-                    <h4>Program Diskon</h4>
+                    <h4 class="btn d-flex btn-light-danger w-100 d-block text-danger font-medium">Program Diskon</h4>
                     <table class="table dynamic-table" id="table-produk-diskon">
                       <thead>
                         <tr>

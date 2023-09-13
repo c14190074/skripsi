@@ -69,9 +69,9 @@
                       			<?php $ctr++; ?>
                       			<tr>
                       				<td><?php echo $ctr; ?></td>
-                      				<td><?php echo $d['nama']; ?></td>
+                      				<td><?php echo ucwords(strtolower($d['nama'])); ?></td>
                       				<td><?php echo $d['no_telp']; ?></td>
-                      				<td><?php echo $d['jabatan']; ?></td>
+                      				<td><?php echo ucwords(strtolower($d['jabatan'])); ?></td>
                       				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
                       				<td>
                       					<?php 
