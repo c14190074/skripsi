@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SMART POS</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/smart-pos-favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
 </head>
 
@@ -20,8 +20,8 @@
           <div class="col-md-8 col-lg-6 col-xxl-3">
             <div class="card mb-0">
               <div class="card-body">
-                <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
-                  <img src="../assets/images/logos/dark-logo.svg" width="180" alt="">
+                <a href="javascript:;" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <img src="../assets/images/logos/smart-pos-logo.png" width="300" alt="">
                 </a>
                 <form method="POST" action="login">
                   <?php if(session()->getFlashData('danger')){ ?>

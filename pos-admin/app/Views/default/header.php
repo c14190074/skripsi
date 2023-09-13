@@ -46,7 +46,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SMART POS</title>
-  <link rel="shortcut icon" type="image/png" href="<?= base_url() ?>assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="<?= base_url() ?>assets/images/logos/smart-pos-favicon.png" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/styles.min.css" />
   <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap-datepicker.min.css" />
@@ -63,9 +63,9 @@
     <aside class="left-sidebar">
       <!-- Sidebar scroll-->
       <div>
-        <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
-            <img src="<?= base_url() ?>assets/images/logos/dark-logo.svg" width="180" alt="" />
+        <div class="brand-logo d-flex align-items-center justify-content-between pt-4">
+          <a href="javascript:;" class="text-nowrap logo-img">
+            <img src="<?= base_url() ?>assets/images/logos/smart-pos-logo.png" width="180" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <i class="ti ti-x fs-8"></i>
