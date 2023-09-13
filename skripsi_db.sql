@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 11, 2023 at 06:56 AM
+-- Generation Time: Sep 13, 2023 at 07:25 AM
 -- Server version: 10.4.20-MariaDB
 -- PHP Version: 8.0.9
 
@@ -157,14 +157,15 @@ INSERT INTO `tbl_produk` (`produk_id`, `supplier_id`, `kategori_id`, `nama_produ
 (29, 7, 1, 'Amanda Putih', 'gram', 15000, NULL, '2023-09-01 06:35:31', 1, NULL, 0, 0),
 (30, 7, 1, 'Top White', 'gram', 15000, NULL, '2023-09-01 06:37:22', 1, NULL, 0, 0),
 (31, 7, 4, 'Uno', 'gram', 12500, NULL, '2023-09-01 06:41:17', 1, NULL, 0, 1),
-(32, 1, 4, 'Jokari  Neon', 'gram', 12000, 36000, '2023-09-01 06:45:11', 1, '2023-09-10 03:53:38', 1, 0),
+(32, 1, 4, 'Jokari  Neon', 'gram', 12000, 36000, '2023-09-01 06:45:11', 1, '2023-09-13 02:45:59', 1, 0),
 (33, 1, 4, 'Holland', 'gram', 12500, 0, '2023-09-01 06:47:27', 1, '2023-09-10 06:00:05', 1, 0),
 (34, 1, 4, 'Hagel', 'gram', 12500, NULL, '2023-09-01 06:49:30', 1, NULL, 0, 0),
 (35, 5, 4, 'Garuda', 'gram', 12500, NULL, '2023-09-01 06:51:53', 1, NULL, 0, 0),
 (36, 5, 4, 'Bakery', 'gram', 12500, NULL, '2023-09-01 06:54:24', 1, NULL, 0, 0),
 (37, 5, 4, 'Coklat Kacang', 'gram', 12500, NULL, '2023-09-01 06:56:32', 1, NULL, 0, 0),
 (38, 9, 7, 'Bos Gold Bullion', 'gram', 15000, NULL, '2023-09-01 07:00:02', 1, NULL, 0, 0),
-(39, 13, 29, 'Anchor Wippy Cream', 'pcs', 12, 5, '2023-09-10 02:46:42', 1, NULL, 0, 0);
+(39, 13, 29, 'Anchor Wippy Cream', 'pcs', 12, 5, '2023-09-10 02:46:42', 1, NULL, 0, 0),
+(40, 8, 2, 'segitiga premium (1 kg)', 'pcs', 12, 36, '2023-09-13 02:54:09', 1, '2023-09-13 02:59:33', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -192,7 +193,9 @@ INSERT INTO `tbl_produk_bundling` (`produk_bundling_id`, `produk_diskon_id`, `pr
 (7, 4, 30, 1),
 (8, 4, 19, 1),
 (9, 4, 23, 1),
-(10, 4, 30, 1);
+(10, 4, 30, 1),
+(11, 1, 24, 0),
+(12, 1, 34, 0);
 
 -- --------------------------------------------------------
 
@@ -220,7 +223,7 @@ CREATE TABLE `tbl_produk_diskon` (
 --
 
 INSERT INTO `tbl_produk_diskon` (`produk_diskon_id`, `produk_id`, `tipe_diskon`, `nominal`, `tipe_nominal`, `start_diskon`, `end_diskon`, `tgl_dibuat`, `dibuat_oleh`, `tgl_diupdate`, `diupdate_oleh`, `is_deleted`) VALUES
-(1, 39, 'diskon langsung', 5, 'persen', '2023-09-07', '2023-09-11', '2023-09-11 03:14:13', 1, NULL, 0, 0),
+(1, 39, 'bundling', 10, 'persen', '2023-09-07', '2023-09-20', '2023-09-11 03:14:13', 1, '2023-09-13 03:18:40', 1, 0),
 (2, 39, 'bundling', 15, 'persen', '2023-09-20', '2023-09-23', '2023-09-11 03:16:38', 1, '2023-09-11 04:42:24', 1, 1),
 (3, 39, 'diskon langsung', 10, 'persen', '2023-09-24', '2023-09-26', '2023-09-11 04:36:53', 1, '2023-09-11 04:39:36', 1, 1),
 (4, 39, 'tebus murah', 10, 'persen', '2023-09-26', '2023-09-29', '2023-09-11 04:43:28', 1, '2023-09-11 04:43:46', 1, 1);
@@ -399,10 +402,19 @@ INSERT INTO `tbl_produk_harga` (`produk_harga_id`, `produk_id`, `satuan`, `netto
 (147, 38, 'gram', 100, '2886.00', '4000.00', '2023-09-01 07:00:02', 1, NULL, 0, 0),
 (148, 39, 'pcs', 1, '96507.00', '110000.00', '2023-09-10 02:46:42', 1, NULL, 0, 0),
 (149, 39, 'dos', 12, '1158084.00', '1220000.00', '2023-09-10 02:46:42', 1, NULL, 0, 0),
-(150, 32, 'dos', 12000, '269000.00', '280000.00', '2023-09-10 03:53:38', 1, NULL, 0, 0),
-(151, 32, 'gram', 1000, '22417.00', '25000.00', '2023-09-10 03:53:38', 1, NULL, 0, 0),
-(152, 32, 'gram', 500, '11209.00', '12500.00', '2023-09-10 03:53:38', 1, NULL, 0, 0),
-(153, 32, 'gram', 250, '5605.00', '7000.00', '2023-09-10 03:53:38', 1, NULL, 0, 0);
+(150, 32, 'dos', 12000, '269000.00', '280000.00', '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(151, 32, 'gram', 1000, '22417.00', '25000.00', '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(152, 32, 'gram', 500, '11209.00', '12500.00', '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(153, 32, 'gram', 250, '5605.00', '7000.00', '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(154, 32, 'dos', 12000, '269000.00', '280000.00', '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(155, 32, 'gram', 1000, '22417.00', '25000.00', '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(156, 32, 'gram', 500, '11209.00', '12500.00', '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(157, 32, 'gram', 250, '5605.00', '7000.00', '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(158, 40, 'pcs', 1, '12323.00', '13500.00', '2023-09-13 02:54:09', 1, NULL, 0, 1),
+(159, 40, 'pcs', 1, '12323.00', '13500.00', '2023-09-13 02:56:38', 1, NULL, 0, 1),
+(160, 40, 'dos', 12, '147875.00', '155000.00', '2023-09-13 02:56:38', 1, NULL, 0, 1),
+(161, 40, 'pcs', 1, '12323.00', '13500.00', '2023-09-13 02:57:47', 1, NULL, 0, 0),
+(162, 40, 'dos', 12, '147875.00', '155000.00', '2023-09-13 02:57:47', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -470,8 +482,13 @@ INSERT INTO `tbl_produk_stok` (`stok_id`, `produk_id`, `tgl_kadaluarsa`, `stok`,
 (45, 37, '2024-09-01', 250000, '2023-09-01 06:56:32', 1, NULL, 0, 0),
 (46, 38, '2024-09-01', 300000, '2023-09-01 07:00:02', 1, NULL, 0, 0),
 (47, 39, '2023-12-20', 4, '2023-09-10 02:46:42', 1, NULL, 0, 0),
-(48, 32, '2024-09-01', 24000, '2023-09-10 03:53:38', 1, NULL, 0, 0),
-(49, 32, '2024-12-30', 120000, '2023-09-10 03:53:38', 1, NULL, 0, 0);
+(48, 32, '2024-09-01', 24000, '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(49, 32, '2024-12-30', 120000, '2023-09-10 03:53:38', 1, NULL, 0, 1),
+(50, 32, '2024-09-01', 24000, '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(51, 32, '2024-12-30', 120000, '2023-09-13 02:45:59', 1, NULL, 0, 0),
+(52, 40, '2024-08-30', 120, '2023-09-13 02:54:09', 1, NULL, 0, 1),
+(53, 40, '2024-08-30', 120, '2023-09-13 02:56:38', 1, NULL, 0, 1),
+(54, 40, '2024-08-30', 120, '2023-09-13 02:57:47', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -551,6 +568,7 @@ CREATE TABLE `tbl_user` (
   `password` varchar(255) DEFAULT NULL,
   `nama` varchar(255) DEFAULT NULL,
   `jabatan` varchar(20) DEFAULT NULL,
+  `is_superadmin` int(1) DEFAULT 0,
   `tgl_dibuat` datetime DEFAULT NULL,
   `dibuat_oleh` int(11) DEFAULT NULL,
   `tgl_diupdate` datetime DEFAULT NULL,
@@ -562,13 +580,14 @@ CREATE TABLE `tbl_user` (
 -- Dumping data for table `tbl_user`
 --
 
-INSERT INTO `tbl_user` (`user_id`, `no_telp`, `password`, `nama`, `jabatan`, `tgl_dibuat`, `dibuat_oleh`, `tgl_diupdate`, `diupdate_oleh`, `is_deleted`) VALUES
-(1, '081234567891', 'PPZJ46MYyKQ=', 'Admin Toko', 'admin', '2023-08-17 05:08:20', 0, '2023-08-24 05:57:48', 1, 0),
-(2, '082123456789', 'PPZJ46MYyKSE', 'Kasir Umum', 'kasir', '2023-08-17 05:13:14', 1, NULL, 0, 0),
-(3, '081122334455', 'PPZJ46MYyKSE', 'Kasir 1', 'kasir', '2023-08-17 05:17:14', 1, NULL, 0, 1),
-(4, '081234567890', 'PPZJ46MYyKSE', 'Admin', 'admin', '2023-08-17 05:27:38', 1, NULL, 0, 1),
-(5, '081112223334', 'PPZJ46MYyKSE', 'Kasir 2', 'kasir', '2023-08-17 05:30:25', 1, NULL, 0, 1),
-(6, '081358118511', 'PPZJ46MYyKQ=', 'Kasir Bella', 'kasir', '2023-08-29 03:07:14', 1, '2023-08-29 03:39:56', 1, 1);
+INSERT INTO `tbl_user` (`user_id`, `no_telp`, `password`, `nama`, `jabatan`, `is_superadmin`, `tgl_dibuat`, `dibuat_oleh`, `tgl_diupdate`, `diupdate_oleh`, `is_deleted`) VALUES
+(1, '081234567891', 'PPZJ46MYyKQ=', 'Super Admin', 'admin', 1, '2023-08-17 05:08:20', 0, '2023-08-24 05:57:48', 1, 0),
+(2, '082123456789', 'PPZJ46MYyKSE', 'Kasir Umum', 'kasir', 0, '2023-08-17 05:13:14', 1, NULL, 0, 0),
+(3, '081122334455', 'PPZJ46MYyKSE', 'Kasir 1', 'kasir', 0, '2023-08-17 05:17:14', 1, NULL, 0, 1),
+(4, '081234567890', 'PPZJ46MYyKSE', 'Admin', 'admin', 0, '2023-08-17 05:27:38', 1, NULL, 0, 1),
+(5, '081112223334', 'PPZJ46MYyKSE', 'Kasir 2', 'kasir', 0, '2023-08-17 05:30:25', 1, NULL, 0, 1),
+(6, '081358118511', 'PPZJ46MYyKQ=', 'Kasir Bella', 'kasir', 0, '2023-08-29 03:07:14', 1, '2023-08-29 03:39:56', 1, 1),
+(7, '0987235474', 'PPZJ46MYyKQ=', 'Admin 1', 'admin', 0, '2023-09-13 03:40:16', 1, NULL, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -678,13 +697,13 @@ ALTER TABLE `tbl_pembelian_detail`
 -- AUTO_INCREMENT for table `tbl_produk`
 --
 ALTER TABLE `tbl_produk`
-  MODIFY `produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk_bundling`
 --
 ALTER TABLE `tbl_produk_bundling`
-  MODIFY `produk_bundling_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `produk_bundling_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk_diskon`
@@ -696,13 +715,13 @@ ALTER TABLE `tbl_produk_diskon`
 -- AUTO_INCREMENT for table `tbl_produk_harga`
 --
 ALTER TABLE `tbl_produk_harga`
-  MODIFY `produk_harga_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
+  MODIFY `produk_harga_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk_stok`
 --
 ALTER TABLE `tbl_produk_stok`
-  MODIFY `stok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `stok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `tbl_related_produk`
@@ -720,7 +739,7 @@ ALTER TABLE `tbl_supplier`
 -- AUTO_INCREMENT for table `tbl_user`
 --
 ALTER TABLE `tbl_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
