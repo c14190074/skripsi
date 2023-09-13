@@ -49,29 +49,45 @@
                   			</tr>
                   		</thead>
                   		<tbody>
-                  			<?php $ctr = 0; ?>
+                  			<?php 
+                          $ctr = 0;
+                          $tampilkan_data = false; 
+                        ?>
                   			<?php foreach($data as $d) { ?>
-                  			<?php $ctr++; ?>
-                  			<tr>
-                  				<td><?php echo $ctr; ?></td>
-                  				<td><?php echo $d['nama']; ?></td>
-                  				<td><?php echo $d['no_telp']; ?></td>
-                  				<td><?php echo $d['jabatan']; ?></td>
-                  				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
-                  				<td>
-                  					<?php 
-                  						if($d['tgl_diupdate']) {
-                  							echo date('d M Y H:i:s', strtotime($d['tgl_diupdate'])); 
-                  						} else {
-                  							echo '';
-                  						}
-                  					?>
-                  				</td>
-                          <td>
-                            <a href="update/<?= pos_encrypt($d['user_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                            <i role="button" class="ti ti-trash btn-delete-table" data-modul="user" data-id="<?= pos_encrypt($d['user_id']) ?>" data-label="<?= $d['nama'] ?>"></i>
-                          </td>
-                  			</tr>
+                          <?php
+                            if(session()->is_superadmin) {
+                              $tampilkan_data = true;
+                            } else {
+                              if($d['jabatan'] == 'kasir') {
+                                $tampilkan_data = true;
+                              } else {
+                                $tampilkan_data = false;
+                              }
+                            }
+                          ?>
+                          <?php if($tampilkan_data) { ?>
+                      			<?php $ctr++; ?>
+                      			<tr>
+                      				<td><?php echo $ctr; ?></td>
+                      				<td><?php echo $d['nama']; ?></td>
+                      				<td><?php echo $d['no_telp']; ?></td>
+                      				<td><?php echo $d['jabatan']; ?></td>
+                      				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
+                      				<td>
+                      					<?php 
+                      						if($d['tgl_diupdate']) {
+                      							echo date('d M Y H:i:s', strtotime($d['tgl_diupdate'])); 
+                      						} else {
+                      							echo '';
+                      						}
+                      					?>
+                      				</td>
+                              <td>
+                                <a href="update/<?= pos_encrypt($d['user_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
+                                <i role="button" class="ti ti-trash btn-delete-table" data-modul="user" data-id="<?= pos_encrypt($d['user_id']) ?>" data-label="<?= $d['nama'] ?>"></i>
+                              </td>
+                      			</tr>
+                          <?php } ?>
                   			<?php } ?>
                   		</tbody>
                   	</table>

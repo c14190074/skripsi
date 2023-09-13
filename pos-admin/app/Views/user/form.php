@@ -35,7 +35,9 @@
                     <div class="mb-3">
                         <label for="jabatan" class="form-label">Pilih Jabatan</label>
                         <select id="jabatan" name="jabatan" class="form-select">
-                          <option value='admin'<?= $data->jabatan == 'admin' ? ' selected' : '' ?>>Admin</option>
+                          <?php if(session()->is_superadmin) : ?>
+                            <option value='admin'<?= $data->jabatan == 'admin' ? ' selected' : '' ?>>Admin</option>
+                          <?php endif; ?>
                           <option value='kasir'<?= $data->jabatan == 'kasir' ? ' selected' : '' ?>>Kasir</option>
                         </select>
                       </div>

@@ -20,6 +20,7 @@ class User extends BaseController
             $login_berhasil = $user_model->where('is_deleted', 0)
                                 ->where('no_telp', $no_telp)
                                 // ->where('password', pos_encrypt($password))
+                                ->where('jabatan', 'admin')
                                 ->first();
 
             if($login_berhasil) {
@@ -28,6 +29,7 @@ class User extends BaseController
                     'no_telp' => $login_berhasil['no_telp'],
                     'nama' => $login_berhasil['nama'],
                     'jabatan' => $login_berhasil['jabatan'],
+                    'is_superadmin' => $login_berhasil['is_superadmin'],
                     'logged_in' => true,
                 ];
 
@@ -52,9 +54,17 @@ class User extends BaseController
         }
 
         $user_model = new UserModel();
-        $data = [
-            'is_deleted' => 1,
-        ];
+        $user_data = $user_model->find($id);
+
+        if(!session()->is_superadmin) {
+            if($user_data['jabatan'] == 'admin') {
+                session()->setFlashData('danger', 'Akses ditolak');
+                return redirect()->to(base_url('user/list'));
+            }
+        }
+
+
+        $data = ['is_deleted' => 1,];
 
         
         if($user_model->update(pos_decrypt($id), $data)) {
@@ -76,6 +86,13 @@ class User extends BaseController
         $user_model = new UserModel();
         $user_data = $user_model->find($id);
         $old_password = pos_decrypt($user_data['password']);
+
+        if(!session()->is_superadmin) {
+            if($user_data['jabatan'] == 'admin') {
+                session()->setFlashData('danger', 'Akses ditolak');
+                return redirect()->to(base_url('user/list'));
+            }
+        }
 
         $rules = $user_model->getFormRules(false);
 

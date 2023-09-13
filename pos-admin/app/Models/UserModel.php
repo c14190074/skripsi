@@ -8,7 +8,7 @@ class UserModel extends Model
 {
     protected $table = 'tbl_user';
     protected $primaryKey = 'user_id';
-    protected $allowedFields = ['no_telp', 'password', 'nama', 'jabatan', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
+    protected $allowedFields = ['no_telp', 'password', 'nama', 'jabatan', 'is_superadmin', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
    
 
    public function getFormRules($is_new_data = true) {
