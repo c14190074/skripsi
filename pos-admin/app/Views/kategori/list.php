@@ -53,8 +53,8 @@
                   					?>
                   				</td>
                           <td>
-                            <a href="update/<?= pos_encrypt($d['kategori_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                            <i role="button" class="ti ti-trash btn-delete-table" data-modul="kategori" data-id="<?= pos_encrypt($d['kategori_id']) ?>" data-label="<?= $d['nama_kategori'] ?>"></i>
+                            <a href="update/<?= pos_encrypt($d['kategori_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
+                            <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="kategori" data-id="<?= pos_encrypt($d['kategori_id']) ?>" data-label="<?= $d['nama_kategori'] ?>"></i>
                           </td>
                   			</tr>
                   			<?php } ?>

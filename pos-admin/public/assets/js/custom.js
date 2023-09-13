@@ -15,6 +15,10 @@ $(document).ready(function() {
 	$('#produk_bundling').select2({
 		placeholder: 'Pilih produk bundling'
 	});
+
+	$('.simplebar-content-wrapper').on('click', '.nav.nav-underline', function() {
+		return false;
+	});
 	
 
 	$('.active-table').on('click', 'tbody .btn-delete-table', function() {

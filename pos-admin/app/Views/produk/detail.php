@@ -206,8 +206,8 @@
                               <td><?= date('d M Y', strtotime($d->start_diskon)) ?></td>
                               <td><?= date('d M Y', strtotime($d->end_diskon)) ?></td>
                               <td>
-                                <a href="<?= base_url().'produk/updatediskon/'.pos_encrypt($d->produk_diskon_id) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                                <a href="<?= base_url().'produk/deletediskon/'.pos_encrypt($d->produk_diskon_id) ?>" onclick="return confirm('Apakah anda yakin untuk menghapus program diskon ini?')"><i role="button" class="ti ti-trash"></i></a>
+                                <a href="<?= base_url().'produk/updatediskon/'.pos_encrypt($d->produk_diskon_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
+                                <a href="<?= base_url().'produk/deletediskon/'.pos_encrypt($d->produk_diskon_id) ?>" onclick="return confirm('Apakah anda yakin untuk menghapus program diskon ini?')"><i role="button" class="ti ti-trash fa-2y"></i></a>
                               </td>
                             </tr>
 

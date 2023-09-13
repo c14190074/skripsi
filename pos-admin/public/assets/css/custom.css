@@ -27,3 +27,7 @@
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
 	background-color: transparent;
 }
+
+.fa-2y {
+	font-size: 1.25em;
+}

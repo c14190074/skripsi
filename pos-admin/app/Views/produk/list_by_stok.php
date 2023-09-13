@@ -50,7 +50,7 @@
                           <td class="error-msg"><?php echo $produk_stok_model->convertStok($produk->stok, $produk->netto, $produk->satuan_terkecil);; ?></td>
                           <td><?php echo date('d M Y', strtotime($produk->tgl_kadaluarsa)); ?></td>
                           <td>
-                            <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle"></i></a>
+                            <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle fa-2y"></i></a>
                             
                           </td>
                   			</tr>

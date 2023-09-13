@@ -1,3 +1,44 @@
+<?php
+    use App\Models\ProdukStokModel;
+
+    $today = date("Y-m-d");
+    $date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
+    $first_date = date('Y-m-01', strtotime($date));
+    $last_date = date('Y-m-t', strtotime($date));
+
+    $total_notif = 0;
+    $produk_stok_model = new ProdukStokModel();
+
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tbl_produk');
+    $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
+    $builder->where('tbl_produk.is_deleted', 0);
+    $builder->where('tbl_produk_stok.is_deleted', 0);
+    $builder->where('tbl_produk_stok.stok <= tbl_produk.stok_min');
+    $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
+    $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
+    $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+    $query_stok   = $builder->get();
+
+    if($query_stok->getResult()) {
+         $total_notif += count($query_stok->getResult());
+    }
+   
+
+    $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok_id, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
+    $builder->where('tbl_produk.is_deleted', 0);
+    $builder->where('tbl_produk_stok.is_deleted', 0);
+    $builder->where('tbl_produk_stok.tgl_kadaluarsa >=', $first_date);
+    $builder->where('tbl_produk_stok.tgl_kadaluarsa <=', $last_date);
+    $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
+    $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
+    $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+    $query_ed   = $builder->get();
+   
+    if($query_ed->getResult()) {
+         $total_notif += count($query_ed->getResult());
+    }
+?>
 <!doctype html>
 <html lang="en">
 
@@ -115,31 +156,106 @@
                 <i class="ti ti-menu-2"></i>
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link nav-icon-hover" href="javascript:void(0)">
-                <i class="ti ti-bell-ringing"></i>
-                <div class="notification bg-primary rounded-circle"></div>
-              </a>
-            </li>
           </ul>
           <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+              <li class="nav-item dropdown">
+                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="ti ti-bell-ringing"></i>
+                  <?php if($total_notif > 0) : ?>
+                    <div class="notification bg-primary rounded-circle"></div>
+                  <?php endif; ?>
+                </a>
+                <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                  <div class="d-flex align-items-center justify-content-between py-3 px-7" style="padding-left: 16px !important;">
+                    <h5 class="mb-0 fs-5 fw-semibold">Notifikasi</h5>
+                    <span class="badge bg-primary rounded-4 px-3 py-1 lh-sm"><?= $total_notif ?></span>
+                  </div>
+                  <div class="message-body" data-simplebar>
+                    
+
+                    <ul class="nav nav-underline" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link d-flex active" data-bs-toggle="tab" href="#home2" role="tab" >
+                          <span class="d-none d-md-block ms-2">Stok</span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link d-flex" data-bs-toggle="tab" href="#profile2" role="tab">
+                          <span class="d-none d-md-block ms-2">Kadaluarsa</span>
+                        </a>
+                      </li>
+                     
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="home2" role="tabpanel">
+                        <div class="p-3">
+                          <?php
+                            if($query_stok) {
+                              foreach($query_stok->getResult() as $produk) {
+                                echo "<a href='javascript:void(0)'' class='py-6 d-flex align-items-center dropdown-item'>".$produk->nama_produk." (".$produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil).")</a>";
+                              }
+                            }
+
+                          ?>
+                         
+                        </div>
+
+                        <div class="py-6 px-7 mb-1">
+                          <a href="<?= base_url().'produk/listbystock/' ?>" role="button" class="btn btn-outline-primary w-100">Lihat Semua</a>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane" id="profile2" role="tabpanel">
+                        <div class="p-3">
+                          <?php
+                            if($query_ed) {
+                              foreach($query_ed->getResult() as $produk) {
+                                echo "<a href='javascript:void(0)'' class='py-6 d-flex align-items-center dropdown-item'>".$produk->nama_produk." (".$produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil).")</a>";
+                              }
+                            }
+
+                          ?>
+                        </div>
+
+                        <div class="py-6 px-7 mb-1">
+                          <a href="<?= base_url().'produk/listbyed/' ?>" role="button" class="btn btn-outline-primary w-100">Lihat Semua</a>
+                        </div>
+                      </div> <!-- end of tab pane profile -->
+
+                    </div> <!-- end of tab content -->
+                  </div> <!-- end of message-body -->
+                 
+              </li>
+
+
              <li class="nav-item dropdown">
                 <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                   aria-expanded="false">
                   <img src="<?= base_url() ?>assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                  <div class="py-3 px-7 pb-0">
+                        <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
+                      </div>
+                  <div class="d-flex align-items-center py-9 mx-7 border-bottom">
+                    <img src="<?= base_url() ?>assets/images/profile/user-1.jpg" class="rounded-circle" width="80" height="80"
+                      alt="" />
+                    <div class="ms-3">
+                      <h5 class="mb-1 fs-3"><?= ucwords(strtolower(session()->nama)) ?></h5>
+                      <span class="mb-1 d-block text-dark"><?= ucwords(strtolower(session()->jabatan)) ?></span>
+                      <p class="mb-0 d-flex text-dark align-items-center gap-2">
+                        <i class="ti ti-phone fs-4"></i><?= ucwords(strtolower(session()->no_telp)) ?>
+                      </p>
+                    </div>
+                  </div>
                   <div class="message-body">
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="ti ti-user fs-6"></i>
-                      <p class="mb-0 fs-3">My Profile</p>
-                    </a>
-                    
                     <a href="<?= base_url('user/logout') ?>" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
                   </div>
                 </div>
               </li>
+
             </ul>
           </div>
         </nav>

@@ -61,8 +61,8 @@
                   					?>
                   				</td>
                           <td>
-                            <a href="update/<?= pos_encrypt($d['supplier_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                            <i role="button" class="ti ti-trash btn-delete-table" data-modul="supplier" data-id="<?= pos_encrypt($d['supplier_id']) ?>" data-label="<?= $d['nama_supplier'] ?>"></i>
+                            <a href="update/<?= pos_encrypt($d['supplier_id']) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
+                            <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="supplier" data-id="<?= pos_encrypt($d['supplier_id']) ?>" data-label="<?= $d['nama_supplier'] ?>"></i>
                           </td>
                   			</tr>
                   			<?php } ?>

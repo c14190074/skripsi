@@ -438,7 +438,7 @@ class Produk extends BaseController
         $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
         $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
         $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
-        // print_r($builder);
+       
         $query   = $builder->get();
 
         return view('produk/list_by_stok', array(

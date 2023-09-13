@@ -64,9 +64,10 @@
                   					?>
                   				</td>
                           <td>
-                            <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle"></i></a>
-                            <a href="update/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-edit btn-edit-table"></i></a>
-                            <i role="button" class="ti ti-trash btn-delete-table" data-modul="produk" data-id="<?= pos_encrypt($produk->produk_id) ?>" data-label="<?= $produk->nama_produk ?>"></i>
+                            <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle fa-2y"></i></a>
+                            <a href="update/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
+                            <a href="diskon/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-discount-2 fa-2y"></i></a> 
+                            <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="produk" data-id="<?= pos_encrypt($produk->produk_id) ?>" data-label="<?= $produk->nama_produk ?>"></i>
                           </td>
                   			</tr>
                   			<?php } ?>
