@@ -1,8 +1,9 @@
 class ProdukHargaModel {
   int? status;
   List<DataHarga>? data;
+  List<DataDiskon>? dataDiskon;
 
-  ProdukHargaModel({this.status, this.data});
+  ProdukHargaModel({this.status, this.data, this.dataDiskon});
 
   ProdukHargaModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -12,6 +13,12 @@ class ProdukHargaModel {
         data!.add(new DataHarga.fromJson(v));
       });
     }
+    if (json['data_diskon'] != null) {
+      dataDiskon = <DataDiskon>[];
+      json['data_diskon'].forEach((v) {
+        dataDiskon!.add(new DataDiskon.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -19,6 +26,9 @@ class ProdukHargaModel {
     data['status'] = this.status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    if (this.dataDiskon != null) {
+      data['data_diskon'] = this.dataDiskon!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -33,7 +43,7 @@ class DataHarga {
   String? hargaJual;
   String? tglDibuat;
   String? dibuatOleh;
-  String? tglDiupdate;
+  Null? tglDiupdate;
   String? diupdateOleh;
   String? isDeleted;
   String? namaProduk;
@@ -85,6 +95,22 @@ class DataHarga {
     data['is_deleted'] = this.isDeleted;
     data['nama_produk'] = this.namaProduk;
     data['satuan_terkecil'] = this.satuanTerkecil;
+    return data;
+  }
+}
+
+class DataDiskon {
+  String? listDiskon;
+
+  DataDiskon({this.listDiskon});
+
+  DataDiskon.fromJson(Map<String, dynamic> json) {
+    listDiskon = json['list_diskon'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['list_diskon'] = this.listDiskon;
     return data;
   }
 }

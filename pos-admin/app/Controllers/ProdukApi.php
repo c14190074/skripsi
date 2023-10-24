@@ -36,10 +36,6 @@ class ProdukApi extends ResourceController
 
     public function getProdukHarga($produk_id) {
         $response = array();
-        // $model = new ProdukHargaModel();
-        // $data = $model->where('is_deleted', 0)
-        //                 ->where('produk_id', $produk_id)->findAll();
-
 
         $db      = \Config\Database::connect();
         $builder = $db->table('tbl_produk_harga');
@@ -50,6 +46,64 @@ class ProdukApi extends ResourceController
         $query   = $builder->get();
 
 
+        $produk_model = new ProdukModel();
+        $produk = $produk_model->find($produk_id);
+
+        $produk_diskon_model = new ProdukDiskonModel();
+        $produk_diskon = $produk_diskon_model->where('is_deleted', 0)
+                                            ->where('produk_id', $produk_id)->findAll();
+
+        $data_diskon = [];
+        if($produk_diskon) {
+            foreach($produk_diskon as $d) {
+                $status_diskon = 1;
+                $tgl_skrg = date('Y-m-d H:i:s');
+                $start_diskon = date('Y-m-d H:i:s', strtotime($d['start_diskon']));
+                $end_diskon = date('Y-m-d H:i:s', strtotime($d['end_diskon']));
+
+                if($tgl_skrg > $end_diskon) {
+                    $status_diskon = 0;
+                }
+
+                if($tgl_skrg < $start_diskon) {
+                    $status_diskon = 0;
+                }
+
+                if($status_diskon) {
+                    $produk_diskon_model = new ProdukDiskonModel();
+                    $key = '';
+                    $total_diskon = 0;
+                    if($d['tipe_nominal'] == 'persen') {
+                        $total_diskon = $d['nominal'].'%';
+                    }
+
+                    if($d['tipe_nominal'] == 'nominal') {
+                        $total_diskon = number_format($d['nominal']);
+                    }
+
+                    if($d['tipe_diskon'] == 'bundling') {
+                        $produkBundled = $produk_diskon_model->getBundlingProduk($d['produk_diskon_id']);
+                        $ket = 'Bundling disc '.$total_diskon.' dengan penambahan '.$produkBundled;
+                    }
+
+                    if($d['tipe_diskon'] == 'tebus murah') {
+                        $produkBundled = $produk_diskon_model->getBundlingProduk($d['produk_diskon_id']);
+                        $ket = 'Tebus murah '.$produk['nama_produk']. ' (Disc '.$total_diskon.') dengan penambahan '.$produkBundled;
+                    }
+
+                    if($d['tipe_diskon'] == 'diskon langsung') {
+                        $ket = 'Disc '.$total_diskon;
+                    }
+
+                    $data_diskon[] = array(
+                        'list_diskon' => $ket
+                    );
+
+                }
+
+            }
+        }
+
         $response = array(
             'status' => 404,
             'data' => []
@@ -59,6 +113,7 @@ class ProdukApi extends ResourceController
             $response = array(
                 'status' => 200,
                 'data' => $query->getResult(),
+                'data_diskon' => $data_diskon,
             );
         }
 
