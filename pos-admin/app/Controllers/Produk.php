@@ -211,14 +211,15 @@ class Produk extends BaseController
 
         // get daftar diskon
         $builder = $db->table('tbl_produk');
-        $builder->select('tbl_produk.produk_id, tbl_produk.nama_produk, tbl_produk_diskon.*');
-        $builder->where('tbl_produk_diskon.produk_id', pos_decrypt($id));
+        $builder->select('tbl_produk.nama_produk, tbl_produk_diskon.*');
+        $builder->where('tbl_produk.produk_id', pos_decrypt($id));
         $builder->where('tbl_produk_diskon.is_deleted', 0);
-        $builder->where('tbl_produk_diskon.start_diskon >=', date("Y-m-d"));
-        $builder->orWhere('tbl_produk_diskon.start_diskon <=', date("Y-m-d"));
-        $builder->where('tbl_produk_diskon.end_diskon >=', date("Y-m-d"));
+        // $builder->where('tbl_produk_diskon.start_diskon >=', date("Y-m-d"));
+        // $builder->orWhere('tbl_produk_diskon.start_diskon <=', date("Y-m-d"));
+        // $builder->where('tbl_produk_diskon.end_diskon >=', date("Y-m-d"));
         $builder->join('tbl_produk_diskon', 'tbl_produk.produk_id = tbl_produk_diskon.produk_id');
         $produk_diskon_query   = $builder->get();
+
 
         return view('produk/detail', array(
             'produk_model' => new ProdukModel(),
@@ -674,6 +675,25 @@ class Produk extends BaseController
         }
 
         return redirect()->to(base_url('produk/detail/'.pos_encrypt($produk_diskon_data['produk_id']))); 
+    }
+
+    public function listDiskon() {
+        // get daftar diskon
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_produk');
+        $builder->select('tbl_produk.produk_id, tbl_produk.nama_produk, tbl_produk_diskon.*');
+        $builder->where('tbl_produk_diskon.is_deleted', 0);
+        $builder->join('tbl_produk_diskon', 'tbl_produk.produk_id = tbl_produk_diskon.produk_id');
+        $produk_diskon_query   = $builder->get();
+
+        return view('produk/list_by_diskon', array(
+            'produk_diskon_model' => new ProdukDiskonModel(),
+            'produk_diskon' => $produk_diskon_query->getResult(),
+        ));
     }
 
 }

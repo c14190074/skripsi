@@ -1,0 +1,128 @@
+<?php
+  echo $this->include('default/header');
+?>
+
+      
+        <div class="container-fluid">
+
+          <?php if(session()->getFlashData('danger')){ ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?= session()->getFlashData('danger') ?>
+            </div>
+          <?php } ?>
+              
+          <h5 class="card-title fw-semibold mb-4">Informasi Penjualan</h5>
+          <div class="card">
+              <div class="card-body">
+                
+                <table class="table" id="table-informasi-produk">
+                  <tbody>
+                    <tr>
+                      <td class="col-md-2">Total Belanja</td>
+                      <td>
+                        <?= number_format($penjualan_data[0]->total_bayar, 0) ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Metode Pembayaran</td>
+                      <td>
+                        <?= ucwords(strtolower($penjualan_data[0]->metode_pembayaran)) ?>
+                      </td>
+                    </tr>
+
+
+                    <tr>
+                      <td>Status Pembayaran</td>
+                      <td>
+                        <?= ucwords(strtolower($penjualan_data[0]->status_pembayaran)) ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Midtrans ID</td>
+                      <td>
+                        <?= $penjualan_data[0]->midtrans_id ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Midtrans Status</td>
+                      <td>
+                        <?= $penjualan_data[0]->midtrans_status ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Tanggal Transaksi</td>
+                      <td>
+                        <?= date('d M Y H:i:s', strtotime($penjualan_data[0]->tgl_dibuat)); ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Kasir</td>
+                      <td>
+                        <?= ucwords(strtolower($penjualan_data[0]->nama)) ?>
+                      </td>
+                    </tr>
+
+                    
+                  </tbody>
+                </table>
+
+                <br />
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium">Informasi Item Penjualan</h4>
+                    <table class="table dynamic-table" id="table-produk-stok">
+                      <thead>
+                        <tr>
+                          <th>Nama Produk</th>
+                          <th>Satuan Penjualan</th>
+                          <th>Jumlah / Satuan Penjualan</th>
+                          <th>QTY</th>
+                          <th>Harga Jual</th>
+                          <th>Subtotal</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <?php if($penjualan_detail) { ?>
+
+                          <?php foreach($penjualan_detail as $d) { ?>
+
+                            <tr>
+                              <td><?= ucwords(strtolower($d->nama_produk)) ?></td>
+                              <td><?= $d->satuan ?></td>
+                              <td><?= number_format($d->netto, 0).' '.$d->satuan_terkecil ?></td>
+                              <td><?= $d->qty ?></td>
+                              <td><?= number_format($d->harga_jual, 0) ?></td>
+                              <td><?= number_format($d->qty * $d->harga_jual , 0) ?></td>
+                            </tr>
+
+                          <?php } ?>
+
+                        <?php } else { ?>
+                          <tr>
+                            <td colspan=6>Tidak ada data</td>
+                          </tr>
+                        <?php } ?>
+                        
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+
+              </div>
+          </div> <!-- end of card -->
+        </div> <!-- end of container -->
+    
+
+<?php
+  echo $this->include('default/footer');
+?>

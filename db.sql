@@ -154,3 +154,34 @@ CREATE TABLE IF NOT EXISTS `tbl_produk_bundling` (
 	FOREIGN KEY(`produk_diskon_id`) REFERENCES `tbl_produk_diskon` (`produk_diskon_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `tbl_penjualan` (
+	`penjualan_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`total_bayar` INT(11),
+	`metode_pembayaran` VARCHAR(50),
+	`status_pembayaran` VARCHAR(50),
+	`midtrans_id` VARCHAR(255),
+	`midtrans_status` VARCHAR(255),
+	`tgl_dibuat` DATETIME DEFAULT NULL,
+	`dibuat_oleh` INT(11) DEFAULT NULL,
+	`tgl_diupdate` DATETIME DEFAULT NULL,
+	`diupdate_oleh` INT(11) DEFAULT NULL,
+	`is_deleted` TINYINT(1) DEFAULT 0 COMMENT '0=No; 1=Yes',
+	PRIMARY KEY (`penjualan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tbl_penjualan_detail` (
+	`penjualan_detail_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`penjualan_id` INT(11),
+	`produk_id` INT(11),
+	`produk_harga_id` INT(11),
+	`harga_beli` INT(11),
+	`harga_jual` INT(11),
+	`qty` INT(11),
+	`is_deleted` TINYINT(1) DEFAULT 0 COMMENT '0=No; 1=Yes',
+	PRIMARY KEY (`penjualan_detail_id`),
+	FOREIGN KEY(`penjualan_id`) REFERENCES `tbl_penjualan` (`penjualan_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+	FOREIGN KEY(`produk_harga_id`) REFERENCES `tbl_produk_harga` (`produk_harga_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

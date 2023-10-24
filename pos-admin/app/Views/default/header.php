@@ -135,7 +135,23 @@
                       <span class="hide-menu">Kadaluarsa Produk</span>
                     </a>
                   </li>
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('produk/listdiskon') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Produk Diskon</span>
+                    </a>
+                  </li>
               </ul>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="<?= base_url('penjualan/list') ?>" aria-expanded="false">
+                <span>
+                  <i class="ti ti-article"></i>
+                </span>
+                <span class="hide-menu">Penjualan</span>
+              </a>
             </li>
             
           </ul>

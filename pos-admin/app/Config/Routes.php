@@ -65,6 +65,7 @@ $routes->group("produk", function ($routes) {
     $routes->get('list', 'Produk::list');
     $routes->get('listbystock', 'Produk::listByMinStok');
     $routes->get('listbyed', 'Produk::listByEd');
+    $routes->get('listdiskon', 'Produk::listDiskon');
     $routes->get('detail/(:any)', 'Produk::detail/$1');
     $routes->get('delete/(:any)', 'Produk::delete/$1');
     $routes->get('diskon/(:any)', 'Produk::diskon/$1');
@@ -72,6 +73,32 @@ $routes->group("produk", function ($routes) {
     $routes->get('updatediskon/(:any)', 'Produk::updatediskon/$1');
     $routes->post('updatediskon/(:any)', 'Produk::updatediskon/$1');
     $routes->get('deletediskon/(:any)', 'Produk::deleteDiskon/$1');
+});
+$routes->group("penjualan", function ($routes) {
+    $routes->get('list', 'Penjualan::list');
+    $routes->get('detail/(:any)', 'Penjualan::detail/$1');
+});
+
+// routes untuk API
+$routes->group("api/produk", function ($routes) {
+    $routes->get('getall', 'ProdukApi::getAllProduk');
+    $routes->get('getprice/(:any)', 'ProdukApi::getProdukHarga/$1');
+    $routes->get('getdiskon', 'ProdukApi::getProdukDiskon');
+
+    // $routes->post('logout', 'User::logout');
+    // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');
+});
+
+$routes->group("api/user", function ($routes) {
+    $routes->post('login', 'UserApi::login');
+});
+
+$routes->group("api/penjualan", function ($routes) {
+    $routes->post('simpanpenjualan', 'PenjualanApi::simpanPenjualan');
+    $routes->get('getall/(:any)', 'PenjualanApi::getAllPenjualan/$1');
+
+    // $routes->post('logout', 'User::logout');
+    // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');
 });
 /*
  * --------------------------------------------------------------------
