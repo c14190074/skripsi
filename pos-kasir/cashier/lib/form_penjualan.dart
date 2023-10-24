@@ -674,7 +674,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                     );
                   } else {
                     const SnackBarMsg = SnackBar(
-                      content: Text('Silahkan pilih data terlebih dahulu!'),
+                      content: Text('Silahkan pilih produk terlebih dahulu!'),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(SnackBarMsg);
                   }

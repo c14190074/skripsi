@@ -83,37 +83,53 @@ class ProdukApi extends ResourceController
         if($query) {
             $tmp_data = [];
             foreach($query->getResult() as $d) {
-                $total_diskon = 0;
-                if($d->tipe_nominal == 'persen') {
-                    $total_diskon = $d->nominal.'%';
+                $status_diskon = 1;
+                $tgl_skrg = date('Y-m-d H:i:s');
+                $start_diskon = date('Y-m-d H:i:s', strtotime($d->start_diskon));
+                $end_diskon = date('Y-m-d H:i:s', strtotime($d->end_diskon));
+
+                if($tgl_skrg > $end_diskon) {
+                    $status_diskon = 0;
                 }
 
-                if($d->tipe_nominal == 'nominal') {
-                    $total_diskon = number_format($d->nominal);
+                if($tgl_skrg < $start_diskon) {
+                    $status_diskon = 0;
                 }
 
-                $produkBundled = '-';
-                if($d->tipe_diskon == 'bundling' || $d->tipe_diskon == 'tebus murah') {
-                    $produk_diskon_model = new ProdukDiskonModel();
-                    $produkBundled = $produk_diskon_model->getBundlingProduk($d->produk_diskon_id);
-                }
+                if($status_diskon) {
+                    $total_diskon = 0;
+                    if($d->tipe_nominal == 'persen') {
+                        $total_diskon = $d->nominal.'%';
+                    }
 
-                $tmp_data[] = array (
-                    "produk_id" => $d->produk_id,
-                    "nama_produk" => $d->nama_produk,
-                    "produk_diskon_id" => $d->produk_diskon_id,
-                    "tipe_diskon" => ucwords(strtolower($d->tipe_diskon)),
-                    "nominal" => $total_diskon,
-                    "tipe_nominal" => $d->tipe_nominal,
-                    "start_diskon" => date('d M Y', strtotime($d->start_diskon)),
-                    "end_diskon" => date('d M Y', strtotime($d->end_diskon)),
-                    'produk_bundled' => $produkBundled,
-                    "tgl_dibuat" => date('d M Y H:i:s', strtotime($d->tgl_dibuat)),
-                    "dibuat_oleh" => $d->dibuat_oleh,
-                    "tgl_diupdate" => $d->tgl_diupdate,
-                    "diupdate_oleh" => $d->diupdate_oleh,
-                    "is_deleted" => $d->is_deleted
-                );
+                    if($d->tipe_nominal == 'nominal') {
+                        $total_diskon = number_format($d->nominal);
+                    }
+
+                    $produkBundled = '-';
+                    if($d->tipe_diskon == 'bundling' || $d->tipe_diskon == 'tebus murah') {
+                        $produk_diskon_model = new ProdukDiskonModel();
+                        $produkBundled = $produk_diskon_model->getBundlingProduk($d->produk_diskon_id);
+                    }
+
+                    $tmp_data[] = array (
+                        "produk_id" => $d->produk_id,
+                        "nama_produk" => $d->nama_produk,
+                        "produk_diskon_id" => $d->produk_diskon_id,
+                        "tipe_diskon" => ucwords(strtolower($d->tipe_diskon)),
+                        "nominal" => $total_diskon,
+                        "tipe_nominal" => $d->tipe_nominal,
+                        "start_diskon" => date('d M Y', strtotime($d->start_diskon)),
+                        "end_diskon" => date('d M Y', strtotime($d->end_diskon)),
+                        'produk_bundled' => $produkBundled,
+                        "tgl_dibuat" => date('d M Y H:i:s', strtotime($d->tgl_dibuat)),
+                        "dibuat_oleh" => $d->dibuat_oleh,
+                        "tgl_diupdate" => $d->tgl_diupdate,
+                        "diupdate_oleh" => $d->diupdate_oleh,
+                        "is_deleted" => $d->is_deleted
+                    );
+
+                }
             }
 
             $response = array(
