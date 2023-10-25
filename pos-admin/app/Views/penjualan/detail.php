@@ -84,6 +84,7 @@
                           <th>Jumlah / Satuan Penjualan</th>
                           <th>QTY</th>
                           <th>Harga Jual</th>
+                          <th>Diskon</th>
                           <th>Subtotal</th>
                         </tr>
                       </thead>
@@ -99,7 +100,32 @@
                               <td><?= number_format($d->netto, 0).' '.$d->satuan_terkecil ?></td>
                               <td><?= $d->qty ?></td>
                               <td><?= number_format($d->harga_jual, 0) ?></td>
-                              <td><?= number_format($d->qty * $d->harga_jual , 0) ?></td>
+                              <td>
+                                <?php
+                                  if($d->diskon != '' || $d->diskon > 0) {
+                                    if($d->tipe_diskon == 'persen') {
+                                      echo $d->diskon.'%';
+                                    } else {
+                                      echo number_format($d->diskon, 0);
+                                    }
+                                  }
+                                ?>
+
+                              </td>
+                              <td>
+                                <?php
+                                  $subtotal = $d->qty * $d->harga_jual;
+                                  if($d->diskon != '' || $d->diskon > 0) {
+                                    if($d->tipe_diskon == 'persen') {
+                                      $jumlahDiskon = $subtotal * $d->diskon / 100;
+                                      $subtotal -= $jumlahDiskon;
+
+                                    } else {
+                                      $subtotal -= $d->diskon;
+                                    }
+                                  }
+                                ?>
+                                <?= number_format($subtotal , 0) ?></td>
                             </tr>
 
                           <?php } ?>

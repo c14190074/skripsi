@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:cashier/widget/formatter.dart';
 
 class ItemPenjualan {
   String? produkHargaId;
@@ -10,6 +11,8 @@ class ItemPenjualan {
   String? satuan;
   String? qty;
   String? isNew;
+  String? diskon;
+  String? tipe_diskon;
 
   ItemPenjualan(
       {this.produkHargaId,
@@ -20,7 +23,9 @@ class ItemPenjualan {
       this.hargaJual,
       this.satuan,
       this.qty,
-      this.isNew});
+      this.isNew,
+      this.diskon,
+      this.tipe_diskon});
 
   ItemPenjualan.fromJson(Map<String, dynamic> json) {
     produkHargaId = json['produk_harga_id'];
@@ -32,6 +37,8 @@ class ItemPenjualan {
     satuan = json['satuan'];
     qty = json['qty'];
     isNew = json['isNew'];
+    diskon = json['diskon'];
+    tipe_diskon = json['tipe_diskon'];
   }
 
   Map<String, dynamic> toJson() {
@@ -45,7 +52,61 @@ class ItemPenjualan {
     data['satuan'] = this.satuan;
     data['qty'] = this.qty;
     data['isNew'] = this.isNew;
+    data['diskon'] = this.diskon;
+    data['tipe_diskon'] = this.tipe_diskon;
 
     return data;
+  }
+
+  int hitungSubtotal() {
+    int hasil = 0;
+    hasil =
+        int.parse(this.qty.toString()) * int.parse(this.hargaJual.toString());
+
+    if (int.parse(this.diskon.toString()) > 0) {
+      if (this.tipe_diskon.toString() == 'persen') {
+        int jumlahDiskon =
+            (hasil * int.parse(this.diskon.toString()) / 100).round();
+        hasil = hasil - jumlahDiskon;
+      } else {
+        hasil = hasil - int.parse(this.diskon.toString());
+      }
+    }
+    return hasil;
+  }
+
+  String getLabelDiskon() {
+    String hasil = '';
+    if (int.parse(this.diskon.toString()) > 0) {
+      hasil = ' Disc. ' +
+          CurrencyFormat.convertToIdr(int.parse(this.diskon.toString()), 0);
+      if (this.tipe_diskon.toString() == 'persen') {
+        hasil = ' Disc. ' + this.diskon.toString() + '%';
+      }
+    }
+    return hasil;
+  }
+
+  String getQtyLabel() {
+    String hasil = '';
+
+    hasil = this.qty.toString() +
+        'x ' +
+        CurrencyFormat.convertToIdr(int.parse(this.hargaJual.toString()), 0) +
+        ' (' +
+        this.satuan.toString() +
+        ')';
+
+    if (this.satuan.toString() == this.satuanTerkecil.toString()) {
+      hasil = this.qty.toString() +
+          'x ' +
+          CurrencyFormat.convertToIdr(int.parse(this.hargaJual.toString()), 0);
+    }
+    return hasil;
+  }
+
+  void resetDiskon() {
+    this.diskon = '0';
+    this.tipe_diskon = 'nominal';
   }
 }

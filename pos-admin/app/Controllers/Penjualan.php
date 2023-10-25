@@ -21,6 +21,7 @@ class Penjualan extends BaseController
         $builder->select('tbl_penjualan.*, tbl_user.nama');
         $builder->where('tbl_penjualan.is_deleted', 0);
         $builder->join('tbl_user', 'tbl_penjualan.dibuat_oleh = tbl_user.user_id');
+        $builder->orderBy('tgl_dibuat', 'DESC');
         $penjualan_data   = $builder->get();
 
         return view('penjualan/list', array(

@@ -45,12 +45,47 @@ class _FormPenjualanState extends State<FormPenjualan> {
     });
   }
 
-  void calculateTotalBelanja() {
-    int hasil = 0;
+  void resetDiskon() {
     for (var i = 0; i < list_belanja.length; i++) {
-      hasil += int.parse(list_belanja[i].qty.toString()) *
-          int.parse(list_belanja[i].hargaJual.toString());
+      list_belanja[i].resetDiskon();
     }
+  }
+
+  void hitungTotalBelanja() async {
+    resetDiskon();
+    Map dataToSave = {
+      "dataBelanja": json.encode(list_belanja.toList()),
+    };
+
+    var jsonResponse = null;
+    var api_url = globals.baseURL + 'penjualan/hitungdiskon';
+    var response = await http.post(Uri.parse(api_url), body: dataToSave);
+    jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+
+    int hasil = 0;
+    if (jsonResponse['status'] == 200 && jsonResponse['data'].length > 0) {
+      for (var i = 0; i < list_belanja.length; i++) {
+        for (var j = 0; j < jsonResponse['data'].length; j++) {
+          if (list_belanja[i].produkId.toString() ==
+              jsonResponse['data'][j]['produk_id']) {
+            list_belanja[i].diskon = jsonResponse['data'][j]['nominal'];
+            list_belanja[i].tipe_diskon =
+                jsonResponse['data'][j]['tipe_nominal'];
+          }
+        }
+
+        int subtotal = list_belanja[i].hitungSubtotal();
+        hasil += subtotal;
+      }
+    } else {
+      hasil = 0;
+      for (var i = 0; i < list_belanja.length; i++) {
+        hasil += int.parse(list_belanja[i].qty.toString()) *
+            int.parse(list_belanja[i].hargaJual.toString());
+      }
+    }
+
     setState(() {
       total_belanja = 0;
       total_belanja = hasil;
@@ -129,6 +164,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                           daftar_harga[index].satuan;
                                       produk_info.qty = "0";
                                       produk_info.isNew = "1";
+                                      produk_info.diskon = "0";
+                                      produk_info.tipe_diskon = 'nominal';
 
                                       if (produk_harga_id ==
                                           produk_info.produkHargaId) {
@@ -374,6 +411,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                             element.produkHargaId ==
                             list_qty_produk[i].produkHargaId);
                         if (indexTarget > -1) {
+                          // untuk update qty
                           int newQty = int.parse(
                                   list_belanja[indexTarget].qty.toString()) +
                               int.parse(list_qty_produk[i].qty.toString());
@@ -384,6 +422,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                           }
                           list_belanja[indexTarget].qty = newQty.toString();
                         } else {
+                          // untuk add produ
                           list_belanja.add(list_qty_produk[i]);
                         }
                       }
@@ -391,7 +430,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
 
                     list_qty_produk.clear();
                     _qty_controllers.clear();
-                    calculateTotalBelanja();
+                    hitungTotalBelanja();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -484,16 +523,15 @@ class _FormPenjualanState extends State<FormPenjualan> {
                       String _produkHargaId =
                           list_belanja[index].produkHargaId.toString();
                       String _qty = list_belanja[index].qty.toString();
-                      String _satuan = list_belanja[index].satuan.toString();
                       String _satuan_terkecil =
                           list_belanja[index].satuanTerkecil.toString();
-                      String _harga_jual = CurrencyFormat.convertToIdr(
-                          int.parse(list_belanja[index].hargaJual.toString()),
-                          0);
+
                       String _netto = CurrencyFormat.convertToIdr(
                           int.parse(list_belanja[index].netto.toString()), 0);
-                      int subtotal = int.parse(_qty) *
-                          int.parse(list_belanja[index].hargaJual.toString());
+                      int subtotal = list_belanja[index].hitungSubtotal();
+                      String diskon_label =
+                          list_belanja[index].getLabelDiskon();
+                      String qty_label = list_belanja[index].getQtyLabel();
 
                       // slidable item
                       return Slidable(
@@ -518,7 +556,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                 setState(() {
                                   list_belanja.removeWhere((element) =>
                                       element.produkHargaId == _produkHargaId);
-                                  calculateTotalBelanja();
+                                  hitungTotalBelanja();
                                 });
                               },
                               backgroundColor: Colors.red,
@@ -579,14 +617,17 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                     SizedBox(
                                       height: 5,
                                     ),
-                                    Text(_satuan == _satuan_terkecil
-                                        ? _qty + 'x ' + _harga_jual
-                                        : _qty +
-                                            'x ' +
-                                            _harga_jual +
-                                            ' (' +
-                                            _satuan +
-                                            ')')
+                                    Row(
+                                      children: [
+                                        Text(qty_label),
+                                        Text(
+                                          diskon_label,
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    )
                                   ],
                                 ),
                                 Text(
@@ -701,6 +742,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                           ),
                           TextButton(
                             onPressed: () async {
+                              Navigator.pop(context, 'Ya');
+
                               Map dataToSave = {
                                 "user_id": user_id,
                                 "dataBelanja":
@@ -718,12 +761,12 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                 const SnackBarMsg = SnackBar(
                                   content: Text('Sukses!'),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBarMsg);
+                                // ScaffoldMessenger.of(context)
+                                //     .showSnackBar(SnackBarMsg);
 
                                 setState(() {
                                   list_belanja.clear();
-                                  calculateTotalBelanja();
+                                  hitungTotalBelanja();
                                 });
                               } else {
                                 String pesanError = jsonResponse['msg'];
@@ -753,53 +796,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
                 ),
               ),
             )
-            // Container(
-            //     width: double.infinity,
-            //     child: ElevatedButton(
-            //         onPressed: () async {
-            // SharedPreferences prefs =
-            //     await SharedPreferences.getInstance();
-            // String user_id = await prefs.getString('user_id') ?? '0';
-            // if (list_belanja.length > 0) {
-            //   Map dataToSave = {
-            //     "user_id": user_id,
-            //     "dataBelanja": json.encode(list_belanja.toList()),
-            //   };
-
-            //   var jsonResponse = null;
-            //   var api_url =
-            //       globals.baseURL + 'penjualan/simpanpenjualan';
-            //   var response = await http.post(Uri.parse(api_url),
-            //       body: dataToSave);
-            //   jsonResponse = json.decode(response.body);
-            //   print(jsonResponse);
-            //   if (jsonResponse['status'] == 200) {
-            //     const SnackBarMsg = SnackBar(
-            //       content: Text('Sukses!'),
-            //     );
-            //     ScaffoldMessenger.of(context)
-            //         .showSnackBar(SnackBarMsg);
-
-            //     setState(() {
-            //       list_belanja.clear();
-            //       calculateTotalBelanja();
-            //     });
-            //   } else {
-            //     String pesanError = jsonResponse['msg'];
-            //     final SnackBarMsg = SnackBar(
-            //       content: Text(pesanError),
-            //     );
-            //     ScaffoldMessenger.of(context)
-            //         .showSnackBar(SnackBarMsg);
-            //   }
-            // } else {
-            //   const SnackBarMsg = SnackBar(
-            //     content: Text('Silahkan pilih data terlebih dahulu!'),
-            //   );
-            //   ScaffoldMessenger.of(context).showSnackBar(SnackBarMsg);
-            // }
-            //         },
-            //         child: Text('Bayar')))
           ],
         ),
       ),

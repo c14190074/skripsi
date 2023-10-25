@@ -96,6 +96,7 @@ $routes->group("api/user", function ($routes) {
 $routes->group("api/penjualan", function ($routes) {
     $routes->post('simpanpenjualan', 'PenjualanApi::simpanPenjualan');
     $routes->get('getall/(:any)', 'PenjualanApi::getAllPenjualan/$1');
+    $routes->post('hitungdiskon', 'PenjualanApi::hitungDiskon');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');
