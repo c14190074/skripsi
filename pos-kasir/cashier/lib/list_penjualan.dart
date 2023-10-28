@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cashier/detail_penjualan.dart';
 import 'package:intl/intl.dart';
 import 'package:cashier/navbar.dart';
 import 'package:cashier/widget/formatter.dart';
@@ -6,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import './widget/globals.dart' as globals;
-import './model/penjualan_model.dart' show HeaderPenjualan, PenjualanModel;
-import './widget/globals.dart' as globals;
+import './model/penjualan_view_model.dart'
+    show PenjualanHeader, PenjualanDetail, PenjualanViewModel;
 
 class ListPenjualan extends StatefulWidget {
   const ListPenjualan({Key? key}) : super(key: key);
@@ -17,15 +18,13 @@ class ListPenjualan extends StatefulWidget {
 }
 
 class _ListPenjualanState extends State<ListPenjualan> {
-  PenjualanModel? penjualanModel;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
-  Future<List<HeaderPenjualan>> _getAllDataPenjualan() async {
+  Future<List<PenjualanHeader>> _getAllDataPenjualan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user_id = await prefs.getString('user_id') ?? '0';
     var response = await http
@@ -37,7 +36,7 @@ class _ListPenjualanState extends State<ListPenjualan> {
         json.decode(response.body)['data'].cast<Map<String, dynamic>>();
 
     return result
-        .map<HeaderPenjualan>((json) => HeaderPenjualan.fromJson(json))
+        .map<PenjualanHeader>((json) => PenjualanHeader.fromJson(json))
         .toList();
   }
 
@@ -54,12 +53,12 @@ class _ListPenjualanState extends State<ListPenjualan> {
             color: Colors.grey.shade200,
             padding: EdgeInsets.only(top: 20, right: 16, bottom: 16, left: 16),
             child: SingleChildScrollView(
-              child: FutureBuilder<List<HeaderPenjualan>>(
+              child: FutureBuilder<List<PenjualanHeader>>(
                   future: _getAllDataPenjualan(),
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.hasData) {
                       // data harga berhasil didapat
-                      List<HeaderPenjualan>? daftar_penjualan = snapshot.data!;
+                      List<PenjualanHeader>? daftar_penjualan = snapshot.data!;
                       if (daftar_penjualan.length > 0) {
                         return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -77,70 +76,84 @@ class _ListPenjualanState extends State<ListPenjualan> {
                                   //     border: Border(
                                   //         bottom:
                                   //             BorderSide(color: Colors.grey))),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            CurrencyFormat.convertToIdr(
-                                                int.parse(
-                                                    daftar_penjualan[index]
-                                                        .totalBayar
-                                                        .toString()),
-                                                0),
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(
-                                            height: 7,
-                                          ),
-                                          Text('Kasir: ' + globals.namaKasir),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                daftar_penjualan[index]
-                                                    .tglDibuat
-                                                    .toString(),
-                                                style: TextStyle(
-                                                    color:
-                                                        Colors.grey.shade600),
-                                              ),
-                                              Container(
-                                                  margin: EdgeInsets.only(
-                                                      left: 10, right: 10),
-                                                  padding: EdgeInsets.only(
-                                                      left: 10,
-                                                      right: 10,
-                                                      top: 3,
-                                                      bottom: 3),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    color: Color.fromARGB(
-                                                        255, 58, 221, 64),
-                                                  ),
-                                                  child: Text(
-                                                    daftar_penjualan[index]
-                                                        .statusPembayaran
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )),
-                                              // Text('Bella')
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Icon(Icons.settings)
-                                    ],
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailPenjualan(
+                                                      penjualan_id:
+                                                          daftar_penjualan[
+                                                                  index]
+                                                              .penjualanId
+                                                              .toString())));
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              CurrencyFormat.convertToIdr(
+                                                  int.parse(
+                                                      daftar_penjualan[index]
+                                                          .totalBayar
+                                                          .toString()),
+                                                  0),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            SizedBox(
+                                              height: 7,
+                                            ),
+                                            Text('Kasir: ' + globals.namaKasir),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  daftar_penjualan[index]
+                                                      .tglDibuat
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      color:
+                                                          Colors.grey.shade600),
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 10, right: 10),
+                                                    padding: EdgeInsets.only(
+                                                        left: 10,
+                                                        right: 10,
+                                                        top: 3,
+                                                        bottom: 3),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: Color.fromARGB(
+                                                          255, 58, 221, 64),
+                                                    ),
+                                                    child: Text(
+                                                      daftar_penjualan[index]
+                                                          .statusPembayaran
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    )),
+                                                // Text('Bella')
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Icon(Icons.settings)
+                                      ],
+                                    ),
                                   ));
                             });
                       } else {
