@@ -43,6 +43,16 @@
                       <input type="text" class="form-control" id="email" name="email" value="<?= set_value('email', $data->email) ?>" placeholder="Email">
                       <p class="error-msg"><?= \Config\Services::validation()->getError('email') ?></p>
                     </div>
+                    <div class="mb-3">
+                        <label for="tempo_pembayaran" class="form-label">Tempo Pembayaran</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="tempo_pembayaran" name="tempo_pembayaran" value="<?= set_value('tempo_pembayaran', $data->tempo_pembayaran) ?>" placeholder="14">
+                          <span class="input-group-text">
+                            <label>Hari</label>
+                          </span>
+                        </div>
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('tempo_pembayaran') ?></p>
+                      </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                   </form>
 

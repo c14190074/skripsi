@@ -17,9 +17,6 @@
                   <div class="mb-3 mb-sm-0">
                     <h5 class="card-title fw-semibold">Daftar Tanggal Kadaluarsa Produk</h5>
                   </div>
-                  <div>
-                    <a href="<?= base_url('produk/create') ?>" class="btn btn-danger"><i class="ti ti-plus"></i></a>
-                  </div>
                 </div>
 
               <div class="card">

@@ -49,6 +49,15 @@ $routes->group("supplier", function ($routes) {
     $routes->get('update/(:any)', 'Supplier::update/$1');
     $routes->post('update/(:any)', 'Supplier::update/$1');
 });
+$routes->group("pembelian", function ($routes) {
+    $routes->get('list', 'Pembelian::list');
+    $routes->get('create', 'Pembelian::add');
+    $routes->post('create', 'Pembelian::add');
+    $routes->get('detail/(:any)', 'Pembelian::detail/$1');
+    $routes->get('getproduk/(:any)', 'Pembelian::getProduk/$1');
+    $routes->get('getprodukinfopenjualan/(:any)', 'Pembelian::getProdukInfoPenjualan/$1');
+    
+});
 $routes->group("kategori", function ($routes) {
     $routes->get('create', 'Kategori::add');
     $routes->post('create', 'Kategori::add');

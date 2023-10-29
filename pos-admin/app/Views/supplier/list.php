@@ -34,6 +34,7 @@
                   				<td>Alamat</td>
                   				<td>No Telp</td>
                           <td>Email</td>
+                          <td>Tempo Pembayaran</td>
                   				<td>Tanggal Dibuat</td>
                   				<td>Tanggal Diubah</td>
                           <td>Action</td>
@@ -50,6 +51,9 @@
                   				<td><?php echo $d['alamat']; ?></td>
                           <td><?php echo $d['no_telp']; ?></td>
                           <td><?php echo $d['email']; ?></td>
+                          <td>
+                            <?= $d['tempo_pembayaran'].' Hari' ?>
+                          </td>
                   				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
                   				<td>
                   					<?php 

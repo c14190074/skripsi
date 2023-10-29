@@ -8,7 +8,7 @@ class SupplierModel extends Model
 {
     protected $table = 'tbl_supplier';
     protected $primaryKey = 'supplier_id';
-    protected $allowedFields = ['nama_supplier', 'nama_sales', 'alamat', 'no_telp', 'email', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
+    protected $allowedFields = ['nama_supplier', 'nama_sales', 'alamat', 'no_telp', 'email', 'tempo_pembayaran', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
 
     public function getFormRules() {
         $rules = [

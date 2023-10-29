@@ -67,7 +67,75 @@ class ProdukModel extends Model
         } else {
             return $stok_carton.' dos';
         }
+    }
 
-        
+    public function getRataRataPenjualan($produk_id) {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_penjualan_detail');
+        $builder->select('tbl_penjualan_detail.*, tbl_penjualan.tgl_dibuat, tbl_produk_harga.netto as netto_penjualan, tbl_produk.satuan_terkecil, tbl_produk.netto');
+        $builder->where('tbl_penjualan_detail.is_deleted', 0);
+        $builder->where('tbl_penjualan_detail.produk_id', $produk_id);
+        $builder->join('tbl_penjualan', 'tbl_penjualan.penjualan_id = tbl_penjualan_detail.penjualan_id');
+        $builder->join('tbl_produk_harga', 'tbl_produk_harga.produk_harga_id = tbl_penjualan_detail.produk_harga_id');
+        $builder->join('tbl_produk', 'tbl_produk.produk_id = tbl_penjualan_detail.produk_id');
+        $builder->orderBy('tbl_penjualan.tgl_dibuat', 'ASC');
+
+        $query   = $builder->get();
+        $result = $query->getResult();
+
+        $total_penjualan = 0;
+        $satuan_terkecil = '';
+        $netto_produk = 0;
+        $start_penjualan = '';
+        $end_penjualan = '';
+        $lama_waktu = 0;
+        $penjualan_per_hari = 0;
+
+
+        if($result) {
+            foreach ($result as $row) {
+                $total_penjualan += ($row->qty * $row->netto_penjualan);
+                $satuan_terkecil = $row->satuan_terkecil;
+                $netto_produk = $row->netto;
+            }
+
+
+            $l = count($result) - 1;
+            $start_penjualan = date('d M Y', strtotime($result[0]->tgl_dibuat));
+            $end_penjualan = date('d M Y', strtotime($result[$l]->tgl_dibuat));
+            $lama_waktu = date_diff(date_create($start_penjualan),date_create($end_penjualan))->days;
+            $penjualan_per_hari = $total_penjualan / $lama_waktu;
+            
+        }
+       
+
+        return array(
+            'start_penjualan' => $start_penjualan,
+            'end_penjualan' => $end_penjualan,
+            'lama_waktu' => $lama_waktu,
+            'total_penjualan' => $this->convertStok($total_penjualan, $netto_produk, $satuan_terkecil),
+            'penjualan_per_hari' =>  $this->convertStok($penjualan_per_hari, $netto_produk, $satuan_terkecil),
+        );
+    }
+
+    private function convertStok($total_stok, $netto_produk, $satuan_terkecil) {
+        $stok_label = 0;
+        if($total_stok > 0) {
+            $total_carton = floor($total_stok / $netto_produk);
+            $total_ecer = $total_stok - ($netto_produk * $total_carton);
+            
+
+            if($total_ecer > 0) {
+                if($total_carton > 0) {
+                    $stok_label = $total_carton.' dos '.number_format($total_ecer, 0).' '.$satuan_terkecil;
+                } else {
+                    $stok_label = number_format($total_ecer, 0).' '.$satuan_terkecil;
+                }
+            } else {
+                $stok_label = $total_carton.' dos';
+            }
+        }
+
+        return $stok_label;
     }
 }
