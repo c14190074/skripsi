@@ -2,7 +2,84 @@
   echo $this->include('default/header');
 ?>
 
-      
+        <div class="modal fade" id="modal-tgl-datang" tabindex="-1" aria-labelledby="modalTglDatang">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                  <h4 class="modal-title" id="modalTglDatang">
+                    Input Tanggal Kedatangan
+                  </h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <form method="POST" action="<?= base_url() . 'pembelian/updatetgldatang'?>" id="form-tgl-datang">
+                    <div class="mb-3">
+                      <label for="tgl-datang" class="control-label" >Tanggal Datang:</label>
+                      <input type="hidden" value="<?= $pembelian_header[0]->pembelian_id ?>" name="pembelian_id" />
+                      <input type="text" class="form-control input-date" id="tgl-datang" name="tgl_datang" />
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-light-danger text-danger font-medium" data-bs-dismiss="modal">
+                    Tutup
+                  </button>
+                  <button type="button" class="btn btn-success" id="btn_pembelian_datang">
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.modal -->
+
+        <div class="modal fade" id="modal-pembayaran" tabindex="-1" aria-labelledby="modalPembayaran">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                  <h4 class="modal-title" id="modalPembayaran">
+                    Update Pembayaran
+                  </h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <form method="POST" action="<?= base_url() . 'pembelian/updatepembayaran'?>" id="form-update-pembayaran" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <label for="tgl-datang" class="control-label" >Metode Pembayaran:</label>
+                      <input type="hidden" value="<?= $pembelian_header[0]->pembelian_id ?>" name="pembelian_id" />
+
+                      <select class="form-control" name="metode_pembayaran">
+                        <option value="transfer">Transfer</option>
+                        <option value="cash">Cash</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="tgl-pembayaran" class="control-label" >Tanggal Pembayaran:</label>
+                      <input type="text" class="form-control input-date" id="tgl-pembayaran" name="tgl_pembayaran" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="bukti-pembayaran" class="control-label">Bukti Pembayaran:</label>
+                      <input class="form-control" type="file" id="formFile" name="bukti_pembayaran" />
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-light-danger text-danger font-medium" data-bs-dismiss="modal">
+                    Tutup
+                  </button>
+                  <button type="button" class="btn btn-success" id="btn_update_pembayaran">
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.modal -->
+
         <div class="container-fluid">
 
           <?php if(session()->getFlashData('danger')){ ?>
@@ -17,8 +94,17 @@
             </div>
             
             <div>
-              <a href="javascript:;" class="btn btn-primary" id="btn_pembelian_datang"><i class="ti ti-calendar"></i> Datang</a>
-              <a href="javascript:;" class="btn btn-danger" id="btn_pembelian_bayar"><i class="ti ti-cash"></i> Bayar</a>
+              <?php if($pembelian_header[0]->tgl_datang == '0000-00-00') { ?>
+                <button type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-primary text-primary" data-bs-toggle="modal" data-bs-target="#modal-tgl-datang" data-bs-whatever="@mdo">
+                  <i class="ti ti-calendar"></i> Datang
+                </button>
+              <?php } ?>
+              
+              <?php if(1 == 1) { ?>
+                <button type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-danger text-primary" data-bs-toggle="modal" data-bs-target="#modal-pembayaran" data-bs-whatever="@mdo">
+                  <i class="ti ti-cash"></i> Pembayaran
+                </button>
+              <?php } ?>
             </div>
           </div>
 
@@ -69,7 +155,27 @@
                       </td>
                     </tr>
 
-                    
+                    <tr>
+                      <td>Metode Pembayaran</td>
+                      <td>
+                        <?php echo $pembelian_header[0]->metode_pembayaran == '' ? '-' : ucwords($pembelian_header[0]->metode_pembayaran); ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Tanggal Pembayaran</td>
+                      <td>
+                        <?php
+                          if($pembelian_header[0]->tgl_bayar == '0000-00-00 00:00:00') {
+                            echo "-";
+                          } else {
+                            echo date('d M Y', strtotime($pembelian_header[0]->tgl_bayar)); 
+                            
+                          }
+                          
+                        ?>
+                      </td>
+                    </tr>
 
                     <tr>
                       <td>Tanggal Datang</td>
@@ -97,6 +203,45 @@
                       <td>Admin</td>
                       <td>
                         <?= ucwords(strtolower($pembelian_header[0]->nama)) ?>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Bukti Pembayaran</td>
+                      <td>
+                        <?php if($pembelian_header[0]->metode_pembayaran == 'transfer' && $pembelian_header[0]->bukti_pembayaran != '') : ?>
+                          <img style="width: 100px;" src="<?= base_url().'uploads/'.$pembelian_header[0]->bukti_pembayaran ?>" data-bs-toggle="modal" data-bs-target="#al-success-alert" />
+
+
+                          <div class="modal fade" id="al-success-alert" tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true" >
+                            <div class="modal-dialog modal-sm">
+                              <div class="modal-content modal-filled bg-light-success text-success">
+                                <div class="modal-body p-4">
+                                  <div class="text-center text-success">
+                                    <i class="ti ti-circle-check fs-7"></i>
+                                    <h4 class="mt-2">Bukti Pembayaran</h4>
+                                    <p class="mt-3 text-success-50">
+                                       <img style="width: 100%;" src="<?= base_url().'uploads/'.$pembelian_header[0]->bukti_pembayaran ?>" />
+                                    </p>
+                                    <button type="button" class="btn btn-light my-2" data-bs-dismiss="modal">
+                                      Tutup
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                        </div>
+
+                        <?php else : ?>
+                          <?php if($pembelian_header[0]->status_pembayaran == 1 && $pembelian_header[0]->metode_pembayaran == 'cash') : ?>
+                              <?= 'Cash' ?>
+                           <?php else : ?>
+                              <?= '-' ?>
+                          <?php endif; ?>
+                          
+                        <?php endif; ?>
+                        
                       </td>
                     </tr>
 

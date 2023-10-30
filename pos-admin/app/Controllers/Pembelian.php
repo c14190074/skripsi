@@ -13,6 +13,7 @@ use App\Models\ProdukDiskonModel;
 use App\Models\ProdukBundlingModel;
 use App\Models\PembelianModel;
 use App\Models\PembelianDetailModel;
+use CodeIgniter\Files\File;
 
 class Pembelian extends BaseController
 {
@@ -200,5 +201,82 @@ class Pembelian extends BaseController
         }
 
         return $this->respond($response);
+    }
+
+    public function updateTglDatang() {
+        if ($this->request->is('post')) {
+            $pembelian_id = $_POST['pembelian_id'];
+            $tgl_datang = $_POST['tgl_datang'];
+
+            $pembelian_model = new PembelianModel();
+            $hasil = $pembelian_model->update($pembelian_id, ['tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
+
+            if($hasil) {
+                session()->setFlashData('danger', 'Tanggal pembelian berhasil diupdate');
+                
+            } else {
+                session()->setFlashData('danger', 'Update tanggal pembelian gagal.');
+            }
+
+            return redirect()->to(base_url('pembelian/detail/'.pos_encrypt($pembelian_id)));
+        }
+    }
+
+    public function updatePembayaran() {
+        if ($this->request->is('post')) {
+            $pembelian_id = $_POST['pembelian_id'];
+            $validationRule = [
+                'bukti_pembayaran' => [
+                    'label' => 'Image File',
+                    'rules' => [
+                        'uploaded[bukti_pembayaran]',
+                        'is_image[bukti_pembayaran]',
+                        'mime_in[bukti_pembayaran,image/jpg,image/jpeg,image/gif,image/png,image/webp]',
+                        'max_size[bukti_pembayaran,100]',
+                        'max_dims[bukti_pembayaran,1024,768]',
+                    ],
+                ],
+            ];
+
+            $pembelian_id = $_POST['pembelian_id'];
+            $tgl_pembayaran = $_POST['tgl_pembayaran'];
+            $metode_pembayaran = $_POST['metode_pembayaran'];
+            $url_bukti_bayar = '';
+
+            
+            if (!empty($_FILES['bukti_pembayaran']['name'])) {
+                $img = $this->request->getFile('bukti_pembayaran');
+
+                if($this->validate($validationRule)) {
+                    $newName = $img->getRandomName();
+                    if($img->move(FCPATH . 'uploads', $newName)) {
+                        $url_bukti_bayar = $newName;
+                    }
+                } else {
+                    session()->setFlashData('danger', $this->validator->getErrors()['bukti_pembayaran']);
+                }
+            }
+
+
+            
+            $data = array(
+                'metode_pembayaran' => $metode_pembayaran,
+                'tgl_bayar' => date('Y-m-d', strtotime($tgl_pembayaran)),
+                'status_pembayaran' => 1,
+                'bukti_pembayaran' => $url_bukti_bayar 
+            );
+
+            $pembelian_model = new PembelianModel();
+            $hasil = $pembelian_model->update($pembelian_id, $data);
+
+            if($hasil) {
+                session()->setFlashData('danger', 'Status pembayaran berhasil diupdate.');
+                
+            } else {
+                session()->setFlashData('danger', 'Update pembayaran gagal.');
+            }
+
+            return redirect()->to(base_url('pembelian/detail/'.pos_encrypt($pembelian_id)));
+        }
     }
 }

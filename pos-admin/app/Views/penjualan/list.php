@@ -43,8 +43,8 @@
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
                   				<td style="text-align: right;"><?php echo number_format($d->total_bayar, 0); ?></td>
-                          <td><?php echo $d->metode_pembayaran; ?></td>
-                          <td><?php echo $d->status_pembayaran; ?></td>
+                          <td><?php echo ucwords($d->metode_pembayaran); ?></td>
+                          <td><?php echo ucwords($d->status_pembayaran); ?></td>
                           <td><?php echo $d->midtrans_id; ?></td>
                           <td><?php echo $d->midtrans_status; ?></td>
                   				<td><?php echo date('d M Y H:i:s', strtotime($d->tgl_dibuat)); ?></td>

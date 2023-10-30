@@ -56,6 +56,8 @@ $routes->group("pembelian", function ($routes) {
     $routes->get('detail/(:any)', 'Pembelian::detail/$1');
     $routes->get('getproduk/(:any)', 'Pembelian::getProduk/$1');
     $routes->get('getprodukinfopenjualan/(:any)', 'Pembelian::getProdukInfoPenjualan/$1');
+    $routes->post('updatetgldatang', 'Pembelian::updateTglDatang');
+    $routes->post('updatepembayaran', 'Pembelian::updatePembayaran');
     
 });
 $routes->group("kategori", function ($routes) {

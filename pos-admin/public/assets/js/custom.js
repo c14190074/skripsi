@@ -206,20 +206,34 @@ $(document).ready(function() {
 
 	$('#btn_pembelian_datang').on('click', function() {
 		Swal.fire({
-		  title: 'Are you sure?',
-		  text: "You won't be able to revert this!",
+		  title: 'Konfirmasi',
+		  text: "Apakah anda yakin barang sudah datang dan sesuai?",
 		  icon: 'warning',
 		  showCancelButton: true,
 		  confirmButtonColor: '#3085d6',
 		  cancelButtonColor: '#d33',
-		  confirmButtonText: 'Yes, delete it!'
+		  confirmButtonText: 'Ya',
+		  cancelButtonText: 'Batal'
 		}).then((result) => {
 		  if (result.isConfirmed) {
-		    Swal.fire(
-		      'Deleted!',
-		      'Your file has been deleted.',
-		      'success'
-		    )
+		    $('#form-tgl-datang').submit();
+		  }
+		})
+	});
+
+	$('#btn_update_pembayaran').on('click', function() {
+		Swal.fire({
+		  title: 'Konfirmasi',
+		  text: "Apakah informasi pembayaran sudah sesuai?",
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Ya',
+		  cancelButtonText: 'Batal'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		    $('#form-update-pembayaran').submit();
 		  }
 		})
 	});
