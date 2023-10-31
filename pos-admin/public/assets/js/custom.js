@@ -31,7 +31,9 @@ $(document).ready(function() {
 
 	let table = new DataTable('.active-table');
 
-	$('.acive-dropdown').select2();
+	$('.acive-dropdown').select2({
+		placeholder: 'Silahkan pilih'
+	});
 	$('#related_produk').select2({
 		placeholder: 'Pilih produk sebanding'
 	});

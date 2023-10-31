@@ -145,14 +145,37 @@
                   </li>
               </ul>
             </li>
+            
+
             <li class="sidebar-item">
-              <a class="sidebar-link" href="<?= base_url('penjualan/list') ?>" aria-expanded="false">
+              <a class="sidebar-link has-arrow" href="javascript:;" aria-expanded="false">
                 <span>
-                  <i class="ti ti-article"></i>
+                  <i class="ti ti-cash"></i>
                 </span>
                 <span class="hide-menu">Penjualan</span>
               </a>
+
+              <ul aria-expanded="false" class="collapse first-level">
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('penjualan/list') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Daftar Penjualan</span>
+                    </a>
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('penjualan/analisa') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Analisa Penjualan</span>
+                    </a>
+                  </li>
+                  
+              </ul>
             </li>
+
             <li class="sidebar-item">
               <a class="sidebar-link" href="<?= base_url('pembelian/list') ?>" aria-expanded="false">
                 <span>
