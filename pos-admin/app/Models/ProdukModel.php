@@ -104,6 +104,9 @@ class ProdukModel extends Model
             $start_penjualan = date('d M Y', strtotime($result[0]->tgl_dibuat));
             $end_penjualan = date('d M Y', strtotime($result[$l]->tgl_dibuat));
             $lama_waktu = date_diff(date_create($start_penjualan),date_create($end_penjualan))->days;
+            if($lama_waktu < 1) {
+                $lama_waktu = 1;
+            }
             $penjualan_per_hari = $total_penjualan / $lama_waktu;
             
         }

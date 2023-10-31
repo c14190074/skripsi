@@ -10,6 +10,7 @@ use App\Models\ProdukDiskonModel;
 use App\Models\ProdukBundlingModel;
 use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
+use Phpml\Association\Apriori;
 
 
 class PenjualanApi extends ResourceController
@@ -339,6 +340,199 @@ class PenjualanApi extends ResourceController
             $response = array(
                 'status' => 200,
                 'penjualan_detail' => $penjualan_detail->getResult(),
+            );
+        }
+        
+        return $this->respond($response);
+    }
+
+
+    public function getProdukRekomendasi() {
+        $data = $this->request->getVar('dataBelanja');
+        $data = json_decode($data);
+        $list_belanja = [];
+
+        $response = array(
+            'status' => 404,
+            'data_rekomendasi' => []
+        );
+
+        if(count($data) > 0) {
+            for ($i=0; $i < count($data); $i++) { 
+                if(!in_array(strtolower($data[$i]->nama_produk), $list_belanja)) {
+                    array_push($list_belanja, strtolower($data[$i]->nama_produk));
+                }
+            }
+
+
+            $db      = \Config\Database::connect();
+
+            $builder = $db->table('tbl_penjualan_detail');
+            $builder->select('tbl_penjualan_detail.*, tbl_produk.nama_produk');
+            $builder->where('tbl_penjualan_detail.is_deleted', 0);
+
+            $builder->join('tbl_produk', 'tbl_penjualan_detail.produk_id = tbl_produk.produk_id');
+            $builder->orderBy('tbl_penjualan_detail.penjualan_id', 'asc');
+            $penjualan_detail   = $builder->get();
+
+            if($penjualan_detail) {
+                $data = [];
+                $rekomendasi = [];
+                $data_produk = [];
+                $current_penjualan_id = 0;
+                $result = $penjualan_detail->getResult();
+                
+                if($result) {
+                    $current_penjualan_id = $result[0]->penjualan_id;
+
+                    $tmp_data = [];
+                    foreach($result as $d) {
+                        if($current_penjualan_id == $d->penjualan_id) {
+                            if(!in_array(strtolower($d->nama_produk), $tmp_data)) {
+                                array_push($tmp_data, strtolower($d->nama_produk));
+                                $data_produk[strtolower($d->nama_produk)] = $d->produk_id;
+                            }
+                            
+                        } else {
+                            array_push($data, $tmp_data);
+                            $tmp_data = [];
+                            $current_penjualan_id = $d->penjualan_id;
+
+                            if(!in_array(strtolower($d->nama_produk), $tmp_data)) {
+                                array_push($tmp_data, strtolower($d->nama_produk));
+                                $data_produk[strtolower($d->nama_produk)] = $d->produk_id;
+                            }
+                        } 
+                        
+                    }
+
+                    if(count($tmp_data) > 0) {
+                        array_push($data, $tmp_data);
+                    }
+                }
+
+                if(count($data) > 0) {
+                    $labels  = [];
+                    $associator = new Apriori($support = 0.5, $confidence = 0.5);
+                    $associator->train($data, $labels);
+                    $rekomendasi = $associator->predict($list_belanja);
+                    // $rekomendasi = $associator->predict(['amanda kuning', 'gogo coklat']);
+                    // $rekomendasi = $associator->getRules();
+
+                    $unique_rekomendasi = [];
+                    $tmp_rekomendasi = [];
+                    foreach ($rekomendasi as $rek) {
+                        foreach($rek as $r) {
+                            if(!in_array($r, $tmp_rekomendasi)) {
+                                array_push($tmp_rekomendasi, $r);
+
+                                $r_info = [
+                                    'produk_id' => $data_produk[$r],
+                                    'nama_produk' => ucwords($r)
+                                ];
+                                array_push($unique_rekomendasi, $r_info);
+                            }
+
+                        }
+                    }
+
+                    $rekomendasi = $unique_rekomendasi;
+                }
+
+
+                $response = array(
+                    'status' => 200,
+                    'data_rekomendasi' => $rekomendasi,
+                    // 'data_produk' => $data_produk
+                );
+            }
+
+        }
+        
+        return $this->respond($response);
+    }
+
+
+    public function testProdukRekomendasi() {
+        $db      = \Config\Database::connect();
+
+        $builder = $db->table('tbl_penjualan_detail');
+        $builder->select('tbl_penjualan_detail.*, tbl_produk.nama_produk');
+        $builder->where('tbl_penjualan_detail.is_deleted', 0);
+
+        $builder->join('tbl_produk', 'tbl_penjualan_detail.produk_id = tbl_produk.produk_id');
+        $builder->orderBy('tbl_penjualan_detail.penjualan_id', 'asc');
+        $penjualan_detail   = $builder->get();
+
+        if($penjualan_detail) {
+            $data = [];
+            $rekomendasi = [];
+            $data_produk = [];
+            $current_penjualan_id = 0;
+            $result = $penjualan_detail->getResult();
+            
+            if($result) {
+                $current_penjualan_id = $result[0]->penjualan_id;
+
+                $tmp_data = [];
+                foreach($result as $d) {
+                    if($current_penjualan_id == $d->penjualan_id) {
+                        if(!in_array(strtolower($d->nama_produk), $tmp_data)) {
+                            array_push($tmp_data, strtolower($d->nama_produk));
+                            $data_produk[strtolower($d->nama_produk)] = $d->produk_id;
+                        }
+                        
+                    } else {
+                        array_push($data, $tmp_data);
+                        $tmp_data = [];
+                        $current_penjualan_id = $d->penjualan_id;
+
+                        if(!in_array(strtolower($d->nama_produk), $tmp_data)) {
+                            array_push($tmp_data, strtolower($d->nama_produk));
+                            $data_produk[strtolower($d->nama_produk)] = $d->produk_id;
+                        }
+                    } 
+                    
+                }
+
+                if(count($tmp_data) > 0) {
+                    array_push($data, $tmp_data);
+                }
+            }
+
+            if(count($data) > 0) {
+                $labels  = [];
+                $associator = new Apriori($support = 0.5, $confidence = 0.5);
+                $associator->train($data, $labels);
+                // $rekomendasi = $associator->predict($list_belanja);
+                $rekomendasi = $associator->predict(['amanda kuning', 'gogo coklat']);
+                // $rekomendasi = $associator->getRules();
+
+                $unique_rekomendasi = [];
+                $tmp_rekomendasi = [];
+                foreach ($rekomendasi as $rek) {
+                    foreach($rek as $r) {
+                        if(!in_array($r, $tmp_rekomendasi)) {
+                            array_push($tmp_rekomendasi, $r);
+
+                            $r_info = [
+                                'produk_id' => $data_produk[$r],
+                                'nama_produk' => $r
+                            ];
+                            array_push($unique_rekomendasi, $r_info);
+                        }
+
+                    }
+                }
+
+                $rekomendasi = $unique_rekomendasi;
+            }
+
+
+            $response = array(
+                'status' => 200,
+                'data_rekomendasi' => $rekomendasi,
+                // 'data_produk' => $data_produk
             );
         }
         

@@ -11,6 +11,8 @@ import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:http/http.dart' as http;
 import './widget/globals.dart' as globals;
 import './model/produk_model.dart' show Data, ProdukModel;
+import './model/produk_rekomendasi_model.dart'
+    show DataRekomendasi, ProdukRekomendasiModel;
 import './model/produk_harga_model.dart'
     show DataHarga, DataDiskon, ProdukHargaModel;
 import './model/penjualan_detail.dart' show ItemPenjualan;
@@ -28,6 +30,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
   List<ItemPenjualan> list_belanja = <ItemPenjualan>[];
   List<TextEditingController> _qty_controllers = [];
   List<ItemPenjualan> list_qty_produk = <ItemPenjualan>[];
+  List<DataRekomendasi> list_rekomendasi = <DataRekomendasi>[];
+
   int total_belanja = 0;
 
   @override
@@ -90,6 +94,33 @@ class _FormPenjualanState extends State<FormPenjualan> {
       total_belanja = 0;
       total_belanja = hasil;
     });
+  }
+
+  void getRekomendasi() async {
+    list_rekomendasi.clear();
+    Map dataToSave = {
+      "dataBelanja": json.encode(list_belanja.toList()),
+    };
+
+    var jsonResponse = null;
+    var api_url = globals.baseURL + 'penjualan/getsuggestion';
+    var response = await http.post(Uri.parse(api_url), body: dataToSave);
+    jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+    if (jsonResponse['status'] == 200) {
+      for (var i = 0; i < jsonResponse['data_rekomendasi'].length; i++) {
+        print(jsonResponse['data_rekomendasi'][i]['nama_produk']);
+        final itemRekomendasi = new DataRekomendasi();
+        itemRekomendasi.produkId =
+            jsonResponse['data_rekomendasi'][i]['produk_id'];
+        itemRekomendasi.namaProduk =
+            jsonResponse['data_rekomendasi'][i]['nama_produk'];
+
+        setState(() {
+          list_rekomendasi.add(itemRekomendasi);
+        });
+      }
+    }
   }
 
   Future<List<DataHarga>> _getProdukHarga(String produk_id) async {
@@ -431,6 +462,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                     list_qty_produk.clear();
                     _qty_controllers.clear();
                     hitungTotalBelanja();
+                    getRekomendasi();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -557,6 +589,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                   list_belanja.removeWhere((element) =>
                                       element.produkHargaId == _produkHargaId);
                                   hitungTotalBelanja();
+                                  getRekomendasi();
                                 });
                               },
                               backgroundColor: Colors.red,
@@ -673,47 +706,33 @@ class _FormPenjualanState extends State<FormPenjualan> {
                   ),
                   Container(
                     height: 30,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        Container(
-                          width: 130,
-                          color: Colors.purple[600],
-                          child: const Center(
-                              child: Text(
-                            'Item 1',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          )),
-                        ),
-                        Container(
-                          width: 130,
-                          color: Colors.purple[500],
-                          child: const Center(
-                              child: Text(
-                            'Item 2',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          )),
-                        ),
-                        Container(
-                          width: 130,
-                          color: Colors.purple[400],
-                          child: const Center(
-                              child: Text(
-                            'Item 3',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          )),
-                        ),
-                        Container(
-                          width: 130,
-                          color: Colors.purple[300],
-                          child: const Center(
-                              child: Text(
-                            'Item 4',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          )),
-                        ),
-                      ],
-                    ),
+                    child: ListView.builder(
+                        // physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        // shrinkWrap: true,
+                        itemCount: list_rekomendasi.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          int bg_item_rek = 700 - (index * 100);
+                          return InkWell(
+                            onTap: () {
+                              _showMyDialog(
+                                  list_rekomendasi[index].namaProduk.toString(),
+                                  list_rekomendasi[index].produkId.toString(),
+                                  "0",
+                                  "0");
+                            },
+                            child: Container(
+                              width: 130,
+                              color: Colors.purple[bg_item_rek],
+                              child: Center(
+                                  child: Text(
+                                list_rekomendasi[index].namaProduk.toString(),
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              )),
+                            ),
+                          );
+                        }),
                   ),
                 ],
               ),
