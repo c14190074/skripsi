@@ -185,3 +185,13 @@ CREATE TABLE IF NOT EXISTS `tbl_penjualan_detail` (
 	FOREIGN KEY(`produk_id`) REFERENCES `tbl_produk` (`produk_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
 	FOREIGN KEY(`produk_harga_id`) REFERENCES `tbl_produk_harga` (`produk_harga_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `tbl_setting` (
+	`setting_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`setting_name` VARCHAR(255),
+	`setting value` VARCHAR(255),
+	`tgl_diupdate` DATETIME DEFAULT NULL,
+	`diupdate_oleh` INT(11) DEFAULT NULL,
+	PRIMARY KEY (`setting_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

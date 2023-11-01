@@ -108,6 +108,11 @@ $routes->group("api/user", function ($routes) {
     $routes->post('login', 'UserApi::login');
 });
 
+$routes->group("setting", function ($routes) {
+    $routes->get('update', 'Setting::update');
+    $routes->post('update', 'Setting::update');
+});
+
 $routes->group("api/penjualan", function ($routes) {
     $routes->post('simpanpenjualan', 'PenjualanApi::simpanPenjualan');
     $routes->get('getall/(:any)', 'PenjualanApi::getAllPenjualan/$1');

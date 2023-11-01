@@ -193,6 +193,15 @@
                 <span class="hide-menu">Pembelian</span>
               </a>
             </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="<?= base_url('setting/update') ?>" aria-expanded="false">
+                <span>
+                  <i class="ti ti-settings-automation"></i>
+                </span>
+                <span class="hide-menu">Pengaturan</span>
+              </a>
+            </li>
             
           </ul>
         </nav>
