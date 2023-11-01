@@ -87,9 +87,11 @@ $routes->group("produk", function ($routes) {
 });
 $routes->group("penjualan", function ($routes) {
     $routes->get('list', 'Penjualan::list');
+    $routes->get('report', 'Penjualan::report');
     $routes->get('detail/(:any)', 'Penjualan::detail/$1');
     $routes->get('analisa', 'Penjualan::analisa');
     $routes->post('analisa', 'Penjualan::analisa');
+    $routes->get('getreport/(:any)', 'Penjualan::getReport/$1');
 });
 
 // routes untuk API

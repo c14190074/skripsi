@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controllers;
+use CodeIgniter\RESTful\ResourceController;
+use CodeIgniter\API\ResponseTrait;
 use App\Models\KategoriModel;
 use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
@@ -10,8 +12,126 @@ use Phpml\Association\Apriori;
 
 class Penjualan extends BaseController
 {
+    use ResponseTrait;
     protected $helpers = ['form'];
     
+    public function report()
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        return view('penjualan/report', array(
+            'penjualan_data' => []
+        ));
+    }
+
+
+    public function getReport($tahun_laporan) {
+        $omset_penjualan = [];
+        $jumlah_penjualan = [];
+        $periode_penjualan = [];
+        $profit_penjualan = [];
+        $omset_tertinggi = 0;
+        // $bulan_penjualan = [];
+
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_penjualan');
+        $builder->select('Month(tgl_dibuat) as periode_bulan, Year(tgl_dibuat) as periode_tahun');
+        $builder->selectSum('total_bayar');
+        $builder->selectCount('penjualan_id');
+        $builder->where('tbl_penjualan.is_deleted', 0);
+        $builder->where('Year(tbl_penjualan.tgl_dibuat)', $tahun_laporan);
+        $builder->orderBy('tgl_dibuat', 'asc');
+        $builder->groupBy('Month(tgl_dibuat)');
+        $penjualan_data   = $builder->get();
+
+
+        $builder = $db->table('tbl_penjualan_detail d');
+        $builder->selectSum('((d.harga_jual * d.qty) - (d.harga_beli * d.qty))', 'profit');
+        $builder->select('Month(tgl_dibuat) as periode_bulan, Year(tgl_dibuat) as periode_tahun');
+        $builder->where('Year(p.tgl_dibuat)', $tahun_laporan);
+        $builder->where('p.is_deleted', 0);
+        $builder->where('d.is_deleted', 0);
+        $builder->join('tbl_penjualan p', 'd.penjualan_id = p.penjualan_id');
+        $builder->orderBy('p.tgl_dibuat', 'asc');
+        $builder->groupBy('Month(p.tgl_dibuat)');
+        $profit_data = $builder->get();
+
+        $current_month = date('m');
+        $profit_bulan_ini = 0;
+        $profit_bulan_lalu = 0;
+
+        if($penjualan_data) {
+            foreach($penjualan_data->getResult() as $row) {
+                $tmp_data = $row->periode_bulan.'/'.$row->periode_tahun;
+
+                array_push($omset_penjualan, $row->total_bayar/1000);
+                array_push($jumlah_penjualan, $row->penjualan_id);
+                array_push($periode_penjualan, $tmp_data);
+                // array_push($bulan_penjualan, $row->periode_bulan);
+            }
+        }
+
+        if($profit_data) {
+            foreach($profit_data->getResult() as $row) {
+                array_push($profit_penjualan, $row->profit);
+
+                if((int)$current_month == $row->periode_bulan) {
+                    $profit_bulan_ini =$row->profit;
+                }
+
+                if((int)($current_month - 1) == $row->periode_bulan) {
+                    $profit_bulan_lalu =$row->profit;
+                }                
+            }
+        }
+
+        $status_profit = 1;
+        $persentase_profit = 0;
+        $selisih_profit = 0;
+
+        if($profit_bulan_lalu > 0 && $profit_bulan_ini > 0) {
+            if($profit_bulan_ini < $profit_bulan_lalu) {
+                $status_profit = 0;
+                $selisih_profit = $profit_bulan_lalu - $profit_bulan_ini;
+                $persentase_profit = $selisih_profit / $profit_bulan_lalu * 100;
+            }
+
+            if($profit_bulan_ini > $profit_bulan_lalu) {
+                $status_profit = 1;
+                $selisih_profit = $profit_bulan_ini - $profit_bulan_lalu;
+                $persentase_profit = $selisih_profit / $profit_bulan_ini * 100;
+            }
+            
+        }
+
+        if(count($omset_penjualan) > 0) {
+            $omset_tertinggi = max($omset_penjualan);
+        }
+        
+
+        $response = array(
+            'status' => 200,
+            'data' => [
+                'omset_penjualan' => $omset_penjualan,
+                'jumlah_penjualan' => $jumlah_penjualan,
+                'periode_penjualan' => $periode_penjualan,
+                'omset_tertinggi' => $omset_tertinggi,
+                'profit' => $profit_penjualan,
+                'profit_bulan_ini' => number_format($profit_bulan_ini, 0),
+                'status_profit' => $status_profit,
+                'persentase_profit' => number_format($persentase_profit, 0),
+                'tahun_laporan' => $tahun_laporan
+            ]
+        );
+
+
+    
+
+        return $this->respond($response);
+    }
 
     public function list()
     {

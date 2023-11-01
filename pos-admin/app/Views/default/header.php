@@ -172,6 +172,15 @@
                       <span class="hide-menu">Analisa Penjualan</span>
                     </a>
                   </li>
+
+                  <li class="sidebar-item">
+                    <a href="<?= base_url('penjualan/report') ?>" class="sidebar-link">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Laporan</span>
+                    </a>
+                  </li>
                   
               </ul>
             </li>
