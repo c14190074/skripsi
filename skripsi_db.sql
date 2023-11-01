@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2023 at 09:50 AM
+-- Generation Time: Nov 01, 2023 at 12:47 PM
 -- Server version: 10.4.20-MariaDB
 -- PHP Version: 8.0.9
 
@@ -105,7 +105,10 @@ CREATE TABLE `tbl_pembelian` (
 
 INSERT INTO `tbl_pembelian` (`pembelian_id`, `supplier_id`, `total_invoice`, `tgl_datang`, `tgl_jatuh_tempo`, `status_pembayaran`, `metode_pembayaran`, `tgl_bayar`, `bukti_pembayaran`, `status`, `tgl_dibuat`, `dibuat_oleh`, `tgl_diupdate`, `diupdate_oleh`, `is_deleted`) VALUES
 (1, 10, 9205000, '0000-00-00', '2023-10-29', '0', NULL, '2023-10-28 00:00:00', '', 0, '2023-10-29 06:02:37', 1, NULL, 0, 0),
-(2, 9, 5270000, '2023-10-30', '2023-10-29', '1', 'transfer', '2023-10-29 00:00:00', '1698653338_e5b189c98d99b25f184b.jpg', 1, '2023-10-29 06:05:04', 1, NULL, 0, 0);
+(2, 9, 5270000, '2023-10-30', '2023-10-29', '1', 'transfer', '2023-10-29 00:00:00', '1698653338_e5b189c98d99b25f184b.jpg', 1, '2023-10-29 06:05:04', 1, NULL, 0, 0),
+(3, 10, 2650000, '2023-11-03', '2023-11-01', '1', 'cash', '2023-11-04 00:00:00', '', 1, '2023-11-01 08:19:43', 1, NULL, 0, 0),
+(4, 15, 6500000, '2023-11-05', '2023-11-06', '0', NULL, '0000-00-00 00:00:00', '', 1, '2023-11-01 08:22:55', 1, NULL, 0, 0),
+(5, 1, 1455000, '2023-11-16', '2023-12-01', '1', 'transfer', '2023-11-13 00:00:00', '1698827478_94214200fe845e287d0f.jpg', 1, '2023-11-01 08:24:42', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -130,7 +133,11 @@ INSERT INTO `tbl_pembelian_detail` (`pembelian_detail_id`, `pembelian_id`, `prod
 (2, 1, 15, 10, '263000.00'),
 (3, 1, 17, 5, '263000.00'),
 (4, 2, 28, 10, '311000.00'),
-(5, 2, 38, 5, '432000.00');
+(5, 2, 38, 5, '432000.00'),
+(6, 3, 14, 10, '265000.00'),
+(7, 4, 46, 10, '405000.00'),
+(8, 4, 45, 5, '490000.00'),
+(9, 5, 32, 5, '291000.00');
 
 -- --------------------------------------------------------
 
@@ -157,12 +164,25 @@ CREATE TABLE `tbl_penjualan` (
 --
 
 INSERT INTO `tbl_penjualan` (`penjualan_id`, `total_bayar`, `metode_pembayaran`, `status_pembayaran`, `midtrans_id`, `midtrans_status`, `tgl_dibuat`, `dibuat_oleh`, `tgl_diupdate`, `diupdate_oleh`, `is_deleted`) VALUES
-(1, 124000, 'cash', 'lunas', '0', '', '2023-10-31 04:30:28', 2, NULL, 0, 0),
-(2, 244000, 'cash', 'lunas', '0', '', '2023-10-31 04:32:20', 2, NULL, 0, 0),
-(3, 195000, 'cash', 'lunas', '0', '', '2023-10-31 04:33:44', 2, NULL, 0, 0),
-(4, 81500, 'cash', 'lunas', '0', '', '2023-10-31 04:35:04', 2, NULL, 0, 0),
-(5, 62000, 'cash', 'lunas', '0', '', '2023-10-31 04:35:46', 2, NULL, 0, 0),
-(6, 211000, 'cash', 'lunas', '0', '', '2023-10-31 04:36:42', 2, NULL, 0, 0);
+(1, 124000, 'cash', 'lunas', '0', '', '2023-05-10 04:30:28', 2, NULL, 0, 0),
+(2, 244000, 'cash', 'lunas', '0', '', '2023-05-18 04:32:20', 2, NULL, 0, 0),
+(3, 195000, 'cash', 'lunas', '0', '', '2023-05-17 10:57:26', 2, NULL, 0, 0),
+(4, 81500, 'cash', 'lunas', '0', '', '2023-06-14 04:35:04', 2, NULL, 0, 0),
+(5, 62000, 'cash', 'lunas', '0', '', '2023-06-14 04:35:46', 2, NULL, 0, 0),
+(6, 211000, 'cash', 'lunas', '0', '', '2023-07-19 04:36:42', 2, NULL, 0, 0),
+(7, 86000, 'cash', 'lunas', '0', '', '2023-07-19 04:28:51', 2, NULL, 0, 0),
+(8, 52500, 'cash', 'lunas', '0', '', '2023-08-18 04:31:24', 2, NULL, 0, 0),
+(9, 64000, 'cash', 'lunas', '0', '', '2023-08-24 04:35:30', 2, NULL, 0, 0),
+(10, 52500, 'cash', 'lunas', '0', '', '2023-08-12 04:36:49', 2, NULL, 0, 0),
+(11, 69000, 'cash', 'lunas', '0', '', '2023-09-02 04:37:36', 2, NULL, 0, 0),
+(12, 57500, 'cash', 'lunas', '0', '', '2023-09-09 04:38:07', 2, NULL, 0, 0),
+(13, 49000, 'cash', 'lunas', '0', '', '2023-10-24 04:39:00', 2, NULL, 0, 0),
+(14, 83500, 'cash', 'lunas', '0', '', '2023-10-24 04:39:51', 2, NULL, 0, 0),
+(15, 111000, 'cash', 'lunas', '0', '', '2023-11-01 04:41:20', 2, NULL, 0, 0),
+(16, 93500, 'cash', 'lunas', '0', '', '2023-11-01 04:45:39', 2, NULL, 0, 0),
+(17, 101000, 'cash', 'lunas', '0', '', '2023-11-01 04:46:43', 2, NULL, 0, 0),
+(18, 100500, 'cash', 'lunas', '0', '', '2023-11-01 04:47:34', 2, NULL, 0, 0),
+(19, 81600, 'cash', 'lunas', '0', '', '2023-11-01 08:49:50', 2, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -222,7 +242,65 @@ INSERT INTO `tbl_penjualan_detail` (`penjualan_detail_id`, `penjualan_id`, `prod
 (32, 6, 47, 192, 9120, 10500, 8, 'nominal', 0, 0),
 (33, 6, 24, 88, 16261, 18500, 2, 'nominal', 0, 0),
 (34, 6, 38, 146, 7215, 9500, 1, 'nominal', 0, 0),
-(35, 6, 23, 85, 16167, 18000, 1, 'nominal', 0, 0);
+(35, 6, 23, 85, 16167, 18000, 1, 'nominal', 0, 0),
+(36, 7, 47, 192, 9120, 10500, 2, 'nominal', 0, 0),
+(37, 7, 35, 133, 17493, 19500, 1, 'nominal', 0, 0),
+(38, 7, 45, 179, 10209, 11500, 1, 'nominal', 0, 0),
+(39, 7, 46, 182, 13500, 16000, 1, 'nominal', 0, 0),
+(40, 7, 23, 85, 16167, 18000, 1, 'nominal', 0, 0),
+(41, 8, 47, 192, 9120, 10500, 1, 'nominal', 0, 0),
+(42, 8, 24, 88, 16261, 18500, 1, 'nominal', 0, 0),
+(43, 8, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(44, 9, 47, 192, 9120, 10500, 1, 'nominal', 0, 0),
+(45, 9, 46, 182, 13500, 16000, 1, 'nominal', 0, 0),
+(46, 9, 35, 133, 17493, 19500, 1, 'nominal', 0, 0),
+(47, 9, 23, 85, 16167, 18000, 1, 'nominal', 0, 0),
+(48, 10, 47, 192, 9120, 10500, 1, 'nominal', 0, 0),
+(49, 10, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(50, 10, 24, 88, 16261, 18500, 1, 'nominal', 0, 0),
+(51, 11, 46, 182, 13500, 16000, 1, 'nominal', 0, 0),
+(52, 11, 32, 155, 22417, 25000, 1, 'nominal', 0, 0),
+(53, 11, 48, 189, 8880, 10000, 1, 'nominal', 0, 0),
+(54, 11, 23, 85, 16167, 18000, 1, 'nominal', 0, 0),
+(55, 12, 46, 182, 13500, 16000, 1, 'nominal', 0, 0),
+(56, 12, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(57, 12, 48, 189, 8880, 10000, 1, 'nominal', 0, 0),
+(58, 12, 41, 167, 6557, 8000, 1, 'nominal', 0, 0),
+(59, 13, 47, 192, 9120, 10500, 1, 'nominal', 0, 0),
+(60, 13, 14, 81, 10600, 12000, 1, 'nominal', 0, 0),
+(61, 13, 15, 41, 10600, 12000, 1, 'nominal', 0, 0),
+(62, 13, 24, 89, 8131, 9500, 1, 'nominal', 0, 0),
+(63, 13, 23, 86, 4042, 5000, 1, 'nominal', 0, 0),
+(64, 14, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(65, 14, 47, 192, 9120, 10500, 1, 'nominal', 0, 0),
+(66, 14, 24, 89, 8131, 9500, 1, 'nominal', 0, 0),
+(67, 14, 41, 166, 16391, 19000, 1, 'nominal', 0, 0),
+(68, 14, 38, 146, 7215, 9500, 1, 'nominal', 0, 0),
+(69, 14, 45, 179, 10209, 11500, 1, 'nominal', 0, 0),
+(70, 15, 35, 132, 34986, 39000, 1, 'nominal', 0, 0),
+(71, 15, 48, 189, 8880, 10000, 1, 'nominal', 0, 0),
+(72, 15, 45, 179, 10209, 11500, 1, 'nominal', 0, 0),
+(73, 15, 46, 183, 27000, 31500, 1, 'nominal', 0, 0),
+(74, 15, 41, 166, 16391, 19000, 1, 'nominal', 0, 0),
+(75, 16, 47, 192, 9120, 10500, 2, 'nominal', 0, 0),
+(76, 16, 43, 174, 17000, 20500, 1, 'nominal', 0, 0),
+(77, 16, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(78, 16, 24, 89, 8131, 9500, 1, 'nominal', 0, 0),
+(79, 16, 41, 166, 16391, 19000, 1, 'nominal', 0, 0),
+(80, 17, 47, 192, 9120, 10500, 2, 'nominal', 0, 0),
+(81, 17, 35, 133, 17493, 19500, 1, 'nominal', 0, 0),
+(82, 17, 46, 183, 27000, 31500, 1, 'nominal', 0, 0),
+(83, 17, 38, 146, 7215, 9500, 1, 'nominal', 0, 0),
+(84, 17, 45, 179, 10209, 11500, 1, 'nominal', 0, 0),
+(85, 17, 41, 167, 6557, 8000, 1, 'nominal', 0, 0),
+(86, 18, 48, 189, 8880, 10000, 2, 'nominal', 0, 0),
+(87, 18, 46, 183, 27000, 31500, 1, 'nominal', 0, 0),
+(88, 18, 35, 133, 17493, 19500, 1, 'nominal', 0, 0),
+(89, 18, 45, 179, 10209, 11500, 1, 'nominal', 0, 0),
+(90, 18, 23, 85, 16167, 18000, 1, 'nominal', 0, 0),
+(91, 19, 24, 88, 16261, 18500, 1, 'nominal', 0, 0),
+(92, 19, 14, 80, 21200, 23500, 1, 'nominal', 0, 0),
+(93, 19, 34, 128, 38400, 44000, 1, 'persen', 10, 0);
 
 -- --------------------------------------------------------
 
@@ -290,7 +368,9 @@ INSERT INTO `tbl_produk` (`produk_id`, `supplier_id`, `kategori_id`, `nama_produ
 (45, 15, 9, 'prochiz gold (160 gr)', 'pcs', 48, 480, '2023-10-31 03:01:13', 1, NULL, 0, 0),
 (46, 15, 1, 'blueband', 'gram', 15000, 450000, '2023-10-31 03:08:43', 1, NULL, 0, 0),
 (47, 14, 2, 'cakra kembar', 'gram', 25000, 75000, '2023-10-31 03:12:16', 1, '2023-10-31 04:17:50', 1, 0),
-(48, 14, 2, 'segitiga biru', 'gram', 25000, 75000, '2023-10-31 03:14:52', 1, NULL, 0, 0);
+(48, 14, 2, 'segitiga biru', 'gram', 25000, 75000, '2023-10-31 03:14:52', 1, NULL, 0, 0),
+(49, 16, 4, 'nuri', 'gram', 12000, 240000, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(50, 17, 1, 'fortune margarine', 'gram', 15000, 150000, '2023-11-01 02:36:58', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -564,7 +644,15 @@ INSERT INTO `tbl_produk_harga` (`produk_harga_id`, `produk_id`, `satuan`, `netto
 (190, 48, 'sak', 25000, 222000, 225000, '2023-10-31 03:14:52', 1, NULL, 0, 0),
 (191, 47, 'gram', 500, 4560, 5500, '2023-10-31 04:17:50', 1, NULL, 0, 0),
 (192, 47, 'gram', 1000, 9120, 10500, '2023-10-31 04:17:50', 1, NULL, 0, 0),
-(193, 47, 'sak', 25000, 228000, 232000, '2023-10-31 04:17:50', 1, NULL, 0, 0);
+(193, 47, 'sak', 25000, 228000, 232000, '2023-10-31 04:17:50', 1, NULL, 0, 0),
+(194, 49, 'gram', 250, 5000, 6000, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(195, 49, 'gram', 500, 10000, 11500, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(196, 49, 'gram', 1000, 20000, 22500, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(197, 49, 'dos', 12000, 240000, 247000, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(198, 50, 'gram', 250, 3917, 5000, '2023-11-01 02:36:58', 1, NULL, 0, 0),
+(199, 50, 'gram', 500, 7834, 9000, '2023-11-01 02:36:58', 1, NULL, 0, 0),
+(200, 50, 'gram', 1000, 15667, 18000, '2023-11-01 02:36:58', 1, NULL, 0, 0),
+(201, 50, 'dos', 15000, 235000, 245000, '2023-11-01 02:36:58', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -647,7 +735,9 @@ INSERT INTO `tbl_produk_stok` (`stok_id`, `produk_id`, `tgl_kadaluarsa`, `stok`,
 (60, 46, '2024-05-29', 750000, '2023-10-31 03:08:43', 1, NULL, 0, 0),
 (61, 47, '2024-04-17', 625000000, '2023-10-31 03:12:16', 1, NULL, 0, 1),
 (62, 48, '2024-05-29', 250000, '2023-10-31 03:14:52', 1, NULL, 0, 0),
-(63, 47, '2024-04-17', 625000, '2023-10-31 04:17:50', 1, NULL, 0, 0);
+(63, 47, '2024-04-17', 625000, '2023-10-31 04:17:50', 1, NULL, 0, 0),
+(64, 49, '2024-11-22', 600000, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(65, 50, '2024-08-14', 450000, '2023-11-01 02:36:58', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -674,7 +764,31 @@ INSERT INTO `tbl_related_produk` (`related_produk_id`, `produk_parent_id`, `prod
 (1, 13, 11, NULL, NULL, NULL, NULL, 1),
 (2, 13, 12, NULL, NULL, NULL, NULL, 1),
 (3, 13, 11, '2023-08-29 05:50:57', 1, NULL, 0, 0),
-(4, 33, 34, '2023-09-10 06:00:05', 1, NULL, 0, 0);
+(4, 33, 34, '2023-09-10 06:00:05', 1, NULL, 0, 0),
+(5, 49, 14, '2023-11-01 02:11:25', 1, NULL, 0, 0),
+(6, 50, 24, '2023-11-01 02:36:58', 1, NULL, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_setting`
+--
+
+CREATE TABLE `tbl_setting` (
+  `setting_id` int(11) NOT NULL,
+  `setting_name` varchar(255) DEFAULT NULL,
+  `setting_value` varchar(255) DEFAULT NULL,
+  `tgl_diupdate` datetime DEFAULT NULL,
+  `diupdate_oleh` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `tbl_setting`
+--
+
+INSERT INTO `tbl_setting` (`setting_id`, `setting_name`, `setting_value`, `tgl_diupdate`, `diupdate_oleh`) VALUES
+(1, 'support', '0.2', '2023-11-01 08:40:08', 1),
+(2, 'confidence', '0.5', '2023-11-01 08:40:08', 1);
 
 -- --------------------------------------------------------
 
@@ -716,7 +830,9 @@ INSERT INTO `tbl_supplier` (`supplier_id`, `nama_supplier`, `nama_sales`, `alama
 (12, 'UD. Sari', 'Acun', 'Surabaya', '000000000000', 'acun@gmail.com', 0, '2023-09-01 07:04:56', 1, NULL, 0, 0),
 (13, 'Mulia Raya', 'Angga', 'Surabaya', '0989789678', 'muliaraya@email.com', 0, '2023-09-10 02:41:26', 1, NULL, 0, 0),
 (14, 'slamet jaya', 'budi', 'tuban', '000000000000', 'budi@gmail.com', 0, '2023-10-31 02:25:44', 1, NULL, 0, 0),
-(15, 'cv. tiga berlian', 'lastri', 'jombang', '0000000', 'tigaberlian@gmail.com', 5, '2023-10-31 03:00:07', 1, NULL, 0, 0);
+(15, 'cv. tiga berlian', 'lastri', 'jombang', '0000000', 'tigaberlian@gmail.com', 5, '2023-10-31 03:00:07', 1, NULL, 0, 0),
+(16, 'cv. twins', 'herman', 'gresik', '000000', 'twins@gmail.com', 14, '2023-11-01 02:09:51', 1, NULL, 0, 0),
+(17, 'PT. Narwastu', 'Rio', 'surabaya', '000000000', 'narwastu@example.com', 30, '2023-11-01 02:35:16', 1, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -837,6 +953,12 @@ ALTER TABLE `tbl_related_produk`
   ADD KEY `produk_child_id` (`produk_child_id`);
 
 --
+-- Indexes for table `tbl_setting`
+--
+ALTER TABLE `tbl_setting`
+  ADD PRIMARY KEY (`setting_id`);
+
+--
 -- Indexes for table `tbl_supplier`
 --
 ALTER TABLE `tbl_supplier`
@@ -862,31 +984,31 @@ ALTER TABLE `tbl_kategori`
 -- AUTO_INCREMENT for table `tbl_pembelian`
 --
 ALTER TABLE `tbl_pembelian`
-  MODIFY `pembelian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `pembelian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tbl_pembelian_detail`
 --
 ALTER TABLE `tbl_pembelian_detail`
-  MODIFY `pembelian_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `pembelian_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `tbl_penjualan`
 --
 ALTER TABLE `tbl_penjualan`
-  MODIFY `penjualan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `penjualan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `tbl_penjualan_detail`
 --
 ALTER TABLE `tbl_penjualan_detail`
-  MODIFY `penjualan_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `penjualan_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk`
 --
 ALTER TABLE `tbl_produk`
-  MODIFY `produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk_bundling`
@@ -904,25 +1026,31 @@ ALTER TABLE `tbl_produk_diskon`
 -- AUTO_INCREMENT for table `tbl_produk_harga`
 --
 ALTER TABLE `tbl_produk_harga`
-  MODIFY `produk_harga_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=194;
+  MODIFY `produk_harga_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
 
 --
 -- AUTO_INCREMENT for table `tbl_produk_stok`
 --
 ALTER TABLE `tbl_produk_stok`
-  MODIFY `stok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `stok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `tbl_related_produk`
 --
 ALTER TABLE `tbl_related_produk`
-  MODIFY `related_produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `related_produk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `tbl_setting`
+--
+ALTER TABLE `tbl_setting`
+  MODIFY `setting_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tbl_supplier`
 --
 ALTER TABLE `tbl_supplier`
-  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `tbl_user`
