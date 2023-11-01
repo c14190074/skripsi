@@ -358,6 +358,22 @@ class PenjualanApi extends ResourceController
             'data_rekomendasi' => []
         );
 
+        $support = 0.5;
+        $confidence = 0.5;
+
+        $setting_model = new SettingModel();
+        $setting_data = $setting_model->findAll();
+
+        foreach($setting_data as $setting) {
+            if($setting['setting_name'] == 'support') {
+                $support = $setting['setting_value'];
+            }
+
+            if($setting['setting_name'] == 'confidence') {
+                $confidence = $setting['setting_value'];
+            }
+        }
+
         if(count($data) > 0) {
             for ($i=0; $i < count($data); $i++) { 
                 if(!in_array(strtolower($data[$i]->nama_produk), $list_belanja)) {
@@ -414,7 +430,7 @@ class PenjualanApi extends ResourceController
 
                 if(count($data) > 0) {
                     $labels  = [];
-                    $associator = new Apriori($support = 0.5, $confidence = 0.5);
+                    $associator = new Apriori($support, $confidence);
                     $associator->train($data, $labels);
                     $rekomendasi = $associator->predict($list_belanja);
                     // $rekomendasi = $associator->predict(['amanda kuning', 'gogo coklat']);
@@ -465,7 +481,7 @@ class PenjualanApi extends ResourceController
         $builder->orderBy('tbl_penjualan_detail.penjualan_id', 'asc');
         $penjualan_detail   = $builder->get();
 
-        $support = 0.5;
+        $support = 0.2;
         $confidence = 0.5;
 
         $setting_model = new SettingModel();
