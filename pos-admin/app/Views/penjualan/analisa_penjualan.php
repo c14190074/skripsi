@@ -18,14 +18,14 @@
               <div class="mb-3">
                 <label for="nama_kategori" class="form-label">Support</label>
                 <input type="text" class="form-control" id="support" name="support" value="<?= $support ?>" placeholder="Contoh: 0.5">
-                <p><i>Persentase jumlah kemunculan produk dalam transaksi (dalam decimal)</i></p>
+                <p><i>Persentase jumlah kemunculan produk dalam transaksi (dalam decimal | max. 1)</i></p>
                 
               </div>
 
               <div class="mb-3">
                 <label for="nama_kategori" class="form-label">Confidence</label>
                 <input type="text" class="form-control" id="confidence" name="confidence" value="<?= $confidence ?>" placeholder="Contoh: 0.5">
-                <p><i>Persentase seberapa kuat hubungan antar produk (dalam decimal)</i></p>
+                <p><i>Persentase seberapa kuat hubungan antar produk (dalam decimal | max. 1)</i></p>
               </div>
 
 
@@ -36,16 +36,16 @@
                     <option value="<?= $produk['produk_id'] ?>"><?= ucwords(strtolower($produk['nama_produk'])) ?></option>
                   <?php endforeach; ?>
                 </select>
-                <p><i>Plih produk yang akan dianalisa atau tinggalkan kosong untuk melihat hubungan antar produk secara keseluruhan</i></p>
+                <p><i>Pilih produk yang akan dianalisa atau tinggalkan kosong untuk melihat hubungan antar produk secara keseluruhan</i></p>
               </div>
 
               <button type="submit" class="btn btn-primary">Analisa</button>
             </form>
             
-            <br />
+            
             <hr />
-
-            <h5 class="card-title fw-semibold mb-4">Prediksi Penjualan</h5>
+            <br />
+            <h5 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium mb-3">Prediksi Penjualan</h5>
 
             <?php if(count($target_prediksi) > 0 || count($prediksi) > 0) : ?>
 
@@ -55,7 +55,7 @@
                   </div>
                   
                   <div class="mb-3">
-                    <label for="hasil_prediksi" class="form-label">Hasil Prediksi: </label>
+                    <label for="hasil_prediksi" class="form-label text-danger">Hasil Prediksi: </label>
                     <br />
                     <?php 
                         if(count($prediksi) > 0) :
@@ -68,6 +68,17 @@
 
                         else:
                           echo "<p>Tidak ditemukan</p>";
+
+                          echo "<label for='alternatif_prediksi' class='form-label text-primary'><i>Alternatif dengan produk sebanding: </i></label>";
+                          if(count($produk_sebanding) > 0) {
+                            foreach($produk_sebanding as $key => $value) {
+                              if(count($value) > 0) {
+                                echo "<p class='mb-1'>".$key.": ".implode(',', $value)."</p>";
+                              } 
+                              
+                            }
+                          }
+
                         endif; 
                     ?>
                   </div>
@@ -82,10 +93,10 @@
 
 
             <?php endif; ?>
-            <br />
            
             <hr />
-            <h5 class="card-title fw-semibold mb-2">Asosiasi Produk</h5>
+            <br />
+            <h5 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium mb-3">Asosiasi Produk</h5>
             <p class="md-4"><i>Asosiasi produk berdasarkan analisa data penjualan</i></p>
              <?php if(count($rules) > 0) : ?>
 

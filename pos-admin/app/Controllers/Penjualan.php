@@ -5,6 +5,7 @@ use App\Models\KategoriModel;
 use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
 use App\Models\ProdukModel;
+use App\Models\RelatedProdukModel;
 use Phpml\Association\Apriori;
 
 class Penjualan extends BaseController
@@ -74,6 +75,7 @@ class Penjualan extends BaseController
         $rules = [];
         $prediksi = [];
         $target_prediksi = [];
+        $produk_sebanding = [];
         $support = '';
         $confidence = '';
 
@@ -141,9 +143,36 @@ class Penjualan extends BaseController
 
                         if(count($target_prediksi) > 0) {
                             $prediksi = $associator->predict($target_prediksi);
+
+                            if(count($prediksi) < 1) {
+                                $related_produk_model = new RelatedProdukModel();
+                                foreach ($produk_ids as $produk_id) {
+                                    $produk_parent = $produk_model->find($produk_id); 
+
+                                    $builder = $db->table('tbl_related_produk');
+                                    $builder->select('tbl_related_produk.*, tbl_produk.nama_produk');
+                                    $builder->where('tbl_related_produk.is_deleted', 0);
+                                    $builder->where('tbl_related_produk.produk_parent_id', $produk_id);
+                                    $builder->join('tbl_produk', 'tbl_related_produk.produk_child_id = tbl_produk.produk_id');
+                                    $related_produk_data   = $builder->get();                                           
+
+                                    $tmp_data = [];
+                                    if($related_produk_data) {
+                                        foreach($related_produk_data->getResult() as $d) {
+                                            array_push($tmp_data, $d->nama_produk);
+                                        }
+
+                                        $produk_sebanding[ucwords(strtolower($produk_parent['nama_produk']))] = $tmp_data;
+                                    }                                         
+                                }
+                                
+                                
+                            }
                         }
                     }
                 }
+
+                
             } else {
                 session()->setFlashData('danger', 'Nilai support dan confidence wajib diisi.');
             }
@@ -158,6 +187,7 @@ class Penjualan extends BaseController
             'confidence' => $confidence,
             'prediksi' => $prediksi,
             'target_prediksi' => $target_prediksi,
+            'produk_sebanding' => $produk_sebanding
         ));
     }
 }
