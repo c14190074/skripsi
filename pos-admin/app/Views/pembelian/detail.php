@@ -100,7 +100,7 @@
                 </button>
               <?php } ?>
               
-              <?php if($pembelian_header[0]->status == 0) { ?>
+              <?php if($pembelian_header[0]->status_pembayaran == 0) { ?>
                 <button type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-danger text-primary" data-bs-toggle="modal" data-bs-target="#modal-pembayaran" data-bs-whatever="@mdo">
                   <i class="ti ti-cash"></i> Pembayaran
                 </button>

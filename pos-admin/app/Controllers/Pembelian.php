@@ -110,7 +110,7 @@ class Pembelian extends BaseController
 
 
                     session()->setFlashData('danger', 'Data pembelian berhasil ditambahkan');
-                    return redirect()->to(base_url('pembelian/create'));
+                    return redirect()->to(base_url('pembelian/list'));
                 }
              
             }
@@ -209,7 +209,7 @@ class Pembelian extends BaseController
             $tgl_datang = $_POST['tgl_datang'];
 
             $pembelian_model = new PembelianModel();
-            $hasil = $pembelian_model->update($pembelian_id, ['tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
+            $hasil = $pembelian_model->update($pembelian_id, ['status' => 1, 'tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
 
             if($hasil) {
                 session()->setFlashData('danger', 'Tanggal pembelian berhasil diupdate');
