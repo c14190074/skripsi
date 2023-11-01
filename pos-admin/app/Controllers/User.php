@@ -34,7 +34,7 @@ class User extends BaseController
                 ];
 
                 session()->set($data_login);
-                return redirect()->to(base_url('user/list')); 
+                return redirect()->to(base_url('penjualan/report')); 
             } else {
                 session()->setFlashData('danger', 'No telp dan password tidak cocok!');
             }

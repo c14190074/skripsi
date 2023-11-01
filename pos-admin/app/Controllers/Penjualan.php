@@ -8,6 +8,8 @@ use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
 use App\Models\ProdukModel;
 use App\Models\RelatedProdukModel;
+use App\Models\SupplierModel;
+use App\Models\UserModel;
 use Phpml\Association\Apriori;
 
 class Penjualan extends BaseController
@@ -21,8 +23,30 @@ class Penjualan extends BaseController
             return redirect()->to(base_url('user/login')); 
         }
 
+        $produk_model = new ProdukModel();
+        $produk_count = $produk_model->where('is_deleted', 0)
+                                        ->findAll();
+
+        $supplier_model = new SupplierModel();
+        $supplier_count = $supplier_model->where('is_deleted', 0)
+                                        ->findAll();
+
+        $user_model = new UserModel();
+        $admin_count = $user_model->where('is_deleted', 0)
+                                    ->where('jabatan', 'admin')
+                                    ->findAll();
+
+        
+        $kasir_count = $user_model->where('is_deleted', 0)
+                                    ->where('jabatan', 'kasir')
+                                    ->findAll();
+
         return view('penjualan/report', array(
-            'penjualan_data' => []
+            'produk_count' => count($produk_count),
+            'supplier_count' => count($supplier_count),
+            'admin_count' => count($admin_count),
+            'kasir_count' => count($kasir_count),
+
         ));
     }
 
