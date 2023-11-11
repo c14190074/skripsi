@@ -50,7 +50,6 @@ class UserApi extends ResourceController
         }
 
         return $this->respond($response);
-
     }
 
 }

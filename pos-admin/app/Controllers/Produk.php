@@ -14,6 +14,59 @@ class Produk extends BaseController
 {
     protected $helpers = ['form'];
     
+    public function test() {
+        // $db      = \Config\Database::connect();
+        // $builder = $db->table('tbl_produk');
+        // $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
+        // $builder->where('tbl_produk.is_deleted', 0);
+        // $builder->where('tbl_produk_stok.is_deleted', 0);
+        // $builder->where('tbl_produk_stok.stok <= tbl_produk.stok_min');
+        // $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
+        // $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
+        // $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+        // $query_stok   = $builder->get();
+
+
+
+        // $db      = \Config\Database::connect();
+        // $builder = $db->table('tbl_produk p');
+
+        // $builder->select('p.*, s.stok');
+        // $builder->selectSum('s.stok');
+        
+        // $subQuery = $db->table('tbl_produk_stok ps');
+        // $subQuery->selectSum('ps.stok', false);
+        // $subQuery->where('ps.produk_id = p.produk_id');
+        // $subQuery->where('ps.is_deleted', '0');
+        // $subQuery->groupBy('ps.produk_id');
+
+        // $builder->where('p.is_deleted', 0);
+        // $builder->where('s.is_deleted', 0);
+        // $builder->where('p.stok_min >=', $subQuery);
+        // $builder->join('tbl_produk_stok s', 's.produk_id = p.produk_id');
+        // $builder->groupBy('p.produk_id');
+
+        // // echo $builder->getCompiledSelect();
+
+        // $produk   = $builder->get();
+
+        // foreach($produk->getResult() as $p) {
+        //     echo $p->nama_produk.' - '.$p->stok.' - '.$p->stok_min.' <br />';
+        // }
+
+        $produk_stok_model = new ProdukStokModel();
+        $produk_stok = $produk_stok_model->where('is_deleted', 0)
+                                        ->where('produk_id', 32)
+                                        ->orderBy('tgl_kadaluarsa', 'asc')
+                                        ->findAll();
+
+        if($produk_stok) {
+            foreach($produk_stok as $p) {
+                echo $p['stok_id'].' - '.$p['produk_id'].' - '.$p['tgl_kadaluarsa'].' - '.$p['stok'].'<br />';
+            }
+        }
+    }
+
     public function add()
     {
         if(!session()->logged_in) {
@@ -193,6 +246,7 @@ class Produk extends BaseController
         // get daftar produk stok
         $builder = $db->table('tbl_produk_stok');
         $builder->where('produk_id', pos_decrypt($id));
+        $builder->where('stok >', 0);
         $builder->where('is_deleted', 0);
         $produk_stok_query   = $builder->get();
 
@@ -431,14 +485,24 @@ class Produk extends BaseController
 
 
         $db      = \Config\Database::connect();
-        $builder = $db->table('tbl_produk');
-        $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
-        $builder->where('tbl_produk.is_deleted', 0);
-        $builder->where('tbl_produk_stok.is_deleted', 0);
-        $builder->where('tbl_produk_stok.stok <= tbl_produk.stok_min');
-        $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
-        $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
-        $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+        $builder = $db->table('tbl_produk p');
+        $builder->select('p.*, s.stok');
+        $builder->selectSum('s.stok');
+        
+        $subQuery = $db->table('tbl_produk_stok ps');
+        $builder->select('p.*, k.kategori_id, k.nama_kategori, sup.supplier_id, sup.nama_supplier, s.stok, s.tgl_kadaluarsa');
+        $subQuery->selectSum('ps.stok', false);
+        $subQuery->where('ps.produk_id = p.produk_id');
+        $subQuery->where('ps.is_deleted', '0');
+        $subQuery->groupBy('ps.produk_id');
+
+        $builder->where('p.is_deleted', 0);
+        $builder->where('s.is_deleted', 0);
+        $builder->where('p.stok_min >=', $subQuery);
+        $builder->join('tbl_produk_stok s', 's.produk_id = p.produk_id');
+        $builder->join('tbl_supplier sup', 'p.supplier_id = sup.supplier_id');
+        $builder->join('tbl_kategori k', 'p.kategori_id = k.kategori_id');
+        $builder->groupBy('p.produk_id');
        
         $query   = $builder->get();
 

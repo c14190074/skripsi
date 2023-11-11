@@ -10,6 +10,7 @@ use App\Models\ProdukModel;
 use App\Models\RelatedProdukModel;
 use App\Models\SupplierModel;
 use App\Models\UserModel;
+use App\Models\SettingModel;
 use Phpml\Association\Apriori;
 
 class Penjualan extends BaseController
@@ -223,6 +224,14 @@ class Penjualan extends BaseController
         $support = '';
         $confidence = '';
 
+
+        $setting_model = new SettingModel();
+        $setting_support = $setting_model->where('setting_name', 'support')->first();
+        $setting_confidence = $setting_model->where('setting_name', 'confidence')->first();
+
+        $support = $setting_support['setting_value'];
+        $confidence = $setting_confidence['setting_value'];
+
         if ($this->request->is('post')) {
             $support = $_POST['support'];
             $confidence = $_POST['confidence'];
@@ -260,10 +269,8 @@ class Penjualan extends BaseController
 
                                 if(!in_array(ucwords(strtolower($d->nama_produk)), $tmp_data)) {
                                     array_push($tmp_data, ucwords(strtolower($d->nama_produk)));
-                                    
                                 }
-                            } 
-                            
+                            }                         
                         }
 
                         if(count($tmp_data) > 0) {
@@ -309,19 +316,15 @@ class Penjualan extends BaseController
                                         $produk_sebanding[ucwords(strtolower($produk_parent['nama_produk']))] = $tmp_data;
                                     }                                         
                                 }
-                                
-                                
                             }
                         }
                     }
                 }
-
                 
+  
             } else {
                 session()->setFlashData('danger', 'Nilai support dan confidence wajib diisi.');
             }
-            
-
          }
 
         return view('penjualan/analisa_penjualan', array(
@@ -331,7 +334,8 @@ class Penjualan extends BaseController
             'confidence' => $confidence,
             'prediksi' => $prediksi,
             'target_prediksi' => $target_prediksi,
-            'produk_sebanding' => $produk_sebanding
+            'produk_sebanding' => $produk_sebanding,
+            'rules_by_kategori' => []
         ));
     }
 }

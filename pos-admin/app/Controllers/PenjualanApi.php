@@ -6,6 +6,7 @@ use CodeIgniter\API\ResponseTrait;
 use App\Models\UserModel;
 use App\Models\ProdukModel;
 use App\Models\ProdukHargaModel;
+use App\Models\ProdukStokModel;
 use App\Models\ProdukDiskonModel;
 use App\Models\ProdukBundlingModel;
 use App\Models\PenjualanModel;
@@ -21,6 +22,8 @@ class PenjualanApi extends ResourceController
    	public function simpanPenjualan(){
         $user_id = $this->request->getVar('user_id');
         $data = $this->request->getVar('dataBelanja');
+        $metode_pembayaran = $this->request->getVar('metode_pembayaran');
+        $no_telp_pelanggan = $this->request->getVar('no_telp_pelanggan');
         $data = json_decode($data);
         $jumlahDataTersimpan = 0;
         $total_belanja = 0;
@@ -35,7 +38,7 @@ class PenjualanApi extends ResourceController
             $penjualan_model = new PenjualanModel();
             $dataToSave = [
                 'total_bayar' => 0,
-                'metode_pembayaran' => 'cash',
+                'metode_pembayaran' => $metode_pembayaran,
                 'status_pembayaran' => 'lunas',
                 'midtrans_id' => 0,
                 'midtrans_status' => '',
@@ -83,6 +86,33 @@ class PenjualanApi extends ResourceController
 
                     $penjualan_detail_model = new PenjualanDetailModel();
                     if($penjualan_detail_model->insert($dataToSave)) {
+                        $qty_terjual = $produk_harga_data['netto'] * $qty;
+
+                        $produk_stok_model = new ProdukStokModel();
+                        $produk_stok = $produk_stok_model->where('is_deleted', 0)
+                                                        ->where('produk_id', 32)
+                                                        ->orderBy('tgl_kadaluarsa', 'asc')
+                                                        ->findAll();
+
+                        $stop_pengurangan_stok = false;
+                        if($produk_stok) {
+                            foreach($produk_stok as $p) {
+                                if(!$stop_pengurangan_stok) {
+                                    $stok_skrg = $p['stok'] - $qty_terjual;
+                                    if($stok_skrg < 0) {
+                                        $produk_stok_model->update($p['stok_id'], ['stok' => 0]);
+                                        $qty_terjual = $qty_terjual - $p['stok'];
+                                    } else {
+                                        $produk_stok_model->update($p['stok_id'], ['stok' => $stok_skrg]);
+                                        $stop_pengurangan_stok = true;
+                                    }
+
+                                }
+                                
+                            }
+                        }
+
+
                         $jumlahDataTersimpan++;
                         $subtotal = $qty * $harga_jual;
                         if($diskon > 0) {
@@ -102,9 +132,40 @@ class PenjualanApi extends ResourceController
                 if(count($data) == $jumlahDataTersimpan) {
                     $penjualan_model->update($penjualan_id, ['total_bayar' => $total_belanja]);
 
-                    $response = array(
-                        'status' => 200
-                    );
+                    if($metode_pembayaran == 'tunai') {
+                        $response = array(
+                            'status' => 200
+                        );
+                    } else {
+                        // Set your Merchant Server Key
+                        \Midtrans\Config::$serverKey = 'SB-Mid-server-3_qu33TmZWNNOLJ-Isb5Fafi';
+                        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+                        \Midtrans\Config::$isProduction = false;
+                        // Set sanitization on (default)
+                        \Midtrans\Config::$isSanitized = true;
+                        // Set 3DS transaction for credit card to true
+                        \Midtrans\Config::$is3ds = true;
+
+                        $midtrans_id = time().'#'.$penjualan_id;
+
+                        $params = array(
+                            'transaction_details' => array(
+                                'order_id' => $midtrans_id,
+                                'gross_amount' => $total_belanja,
+                            ),
+                            'customer_details' => array(
+                                'first_name' => 'Pelanggan umum',
+                                'phone' => $no_telp_pelanggan
+                            ),
+                        );
+
+                        $snapToken = \Midtrans\Snap::getSnapToken($params);
+                        $penjualan_model->update($penjualan_id, ['midtrans_id' => $midtrans_id]);
+                        $response = array(
+                            'status' => 200,
+                            'midtrans_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
+                        );
+                    }
 
                 }
 

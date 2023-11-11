@@ -78,6 +78,11 @@
                           <td><?php echo ucwords(strtolower($d->nama)) ?></td>
                   				<td>
                            <a href="detail/<?= pos_encrypt($d->pembelian_id) ?>"><i role="button" class="ti ti-info-circle fa-2y"></i></a>
+
+                           <?php if($d->status == 0 && $d->status_pembayaran == 0) : ?>
+                            <a href="update/<?= pos_encrypt($d->pembelian_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
+                            <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="pembelian" data-id="<?= pos_encrypt($d->pembelian_id) ?>" data-label="pembelian dari <?= $d->nama_supplier ?>"></i>
+                           <?php endif; ?>
                           </td>
                   			</tr>
                   			<?php } ?>

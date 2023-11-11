@@ -22,7 +22,7 @@ class Navbar extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(
-                  'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
+                  'https://cdn.icon-icons.com/icons2/2335/PNG/512/female_cashier_avatar_people_icon_142371.png',
                   fit: BoxFit.cover,
                   width: 90,
                   height: 90,
@@ -34,7 +34,7 @@ class Navbar extends StatelessWidget {
               image: DecorationImage(
                   fit: BoxFit.fill,
                   image: NetworkImage(
-                      'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+                      'https://indocenter.co.id/wp-content/uploads/2022/07/10-Desain-Menarik-untuk-Toko-Online-Kamu-scaled.jpg')),
             ),
           ),
           ListTile(

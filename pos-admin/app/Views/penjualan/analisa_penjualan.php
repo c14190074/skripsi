@@ -77,6 +77,8 @@
                               } 
                               
                             }
+                          } else {
+                            echo "<p>Tidak ditemukan</p>"; 
                           }
 
                         endif; 
@@ -122,7 +124,101 @@
                         <td><?= $rule['support'] ?></td>
                         <td><?= $rule['confidence'] ?></td>
                       </tr>
+
+                      <?php
+                        $kategori_antecedent = [];
+                        $kategori_consequent = [];
+
+                        $db      = \Config\Database::connect();
+                        foreach($rule['antecedent'] as $a) {
+                          $builder = $db->table('tbl_kategori k');
+                          $builder->select('k.*');
+                          $builder->like('p.nama_produk', $a);
+                          $builder->where('k.is_deleted', 0);
+                          $builder->join('tbl_produk p', 'p.kategori_id = k.kategori_id');
+                          $kategori_data   = $builder->get();
+                          if($kategori_data) {
+                            foreach($kategori_data->getResult() as $kategori) {
+                              if (!in_array($kategori->nama_kategori, $kategori_antecedent)) {
+                                array_push($kategori_antecedent, $kategori->nama_kategori);
+                              }
+                            }
+                          }
+                        }
+
+
+                        foreach($rule['consequent'] as $c) {
+                          $builder = $db->table('tbl_kategori k');
+                          $builder->select('k.*');
+                          $builder->like('p.nama_produk', $c);
+                          $builder->where('k.is_deleted', 0);
+                          $builder->join('tbl_produk p', 'p.kategori_id = k.kategori_id');
+                          $kategori_data   = $builder->get();
+                          if($kategori_data) {
+                            foreach($kategori_data->getResult() as $kategori) {
+                              if (!in_array($kategori->nama_kategori, $kategori_consequent)) {
+                                array_push($kategori_consequent, $kategori->nama_kategori);
+                              }
+                            }
+                          }
+                        }
+
+                        if(count($kategori_antecedent) > 0 && count($kategori_consequent) > 0) {
+                          $rules_by_kategori[] = array(
+                            'antecedent' => $kategori_antecedent,
+                            'consequent' => $kategori_consequent
+                          );
+                        }
+
+                      ?>
+
                       <?php } ?>
+                      
+                    </tbody>
+                  </table>
+                </div>
+
+
+            <?php else: ?>
+                
+                <div class="table-responsive">
+                  <p>Tidak ada data</p>
+                </div>
+
+
+            <?php endif; ?>
+
+
+            <hr />
+            <br />
+            <h5 class="btn d-flex btn-light-danger w-100 d-block text-danger font-medium mb-3">Asosiasi Kategori Produk</h5>
+            <p class="md-4"><i>Rekomendasi penataan barang pada rak berdasarkan kategori produk</i></p>
+             <?php if(count($rules_by_kategori) > 0) : ?>
+
+                <div class="table-responsive">
+                  <table class="table table-striped active-table">
+                    <thead>
+                      <tr>
+                        <th>Rekomendasi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                        $printed_rules = [];
+                        
+                        foreach($rules_by_kategori as $r) {
+                          $string_antecedent = implode(', ', $r['antecedent']);
+                          $string_consequent = implode(', ', $r['consequent']);
+
+
+                          if(!in_array(pos_encrypt($string_antecedent.$string_consequent), $printed_rules)) {
+                            echo '<tr><td>Produk dengan kategori <span><b>'.$string_antecedent.'</b></span> berdekatan dengan <span><b>'.$string_consequent.'</b></span></td></tr>';
+                          }
+                          
+                          array_push($printed_rules, pos_encrypt($string_antecedent.$string_consequent));
+                        }
+
+                      ?>
                       
                     </tbody>
                   </table>

@@ -34,7 +34,12 @@ class _LoginState extends State<Login> {
   isLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getString("user_id");
+    var nama = prefs.getString("nama");
+    var no_telp = prefs.getString("no_telp");
+    print(user_id);
     if (user_id != null) {
+      globals.namaKasir = nama.toString();
+      globals.noTelp = no_telp.toString();
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Kasir()));
     }

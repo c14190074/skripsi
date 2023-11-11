@@ -117,6 +117,7 @@
 
                       </tbody>
                     </table>
+                    <a href="<?= base_url().'pembelian/create' ?>" type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-primary text-primary">Lakukan Pembelian</a>
                   </div>
 
 

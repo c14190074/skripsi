@@ -120,8 +120,100 @@ class Pembelian extends BaseController
 
         return view('pembelian/form', array(
             'form_action' => base_url().'pembelian/create',
+            'is_new_data' => true,
             'supplier_data' => $supplier_data,
-            
+            'pembelian_id' => 0
+        ));
+    }
+
+    public function update($id) {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $id = pos_decrypt($id);
+
+        $pembelian_model = new PembelianModel();
+        $pembelian_data = $pembelian_model->find($id);
+        
+        // get data supplier
+        $supplier_model = new SupplierModel();
+        $supplier_data = $supplier_model->where('is_deleted', 0)
+                                        ->findAll();
+
+        if ($this->request->is('post')) {
+            $selected_supplier = $supplier_model->find($_POST['supplier_id']);
+            $today = date('Y-m-d');
+            $tgl_jatuh_tempo = date('Y-m-d', strtotime($today . ' +'.$selected_supplier['tempo_pembayaran'].' day'));
+            $total_invoice = 0;
+
+            $data = [
+                'supplier_id' => $_POST['supplier_id'],
+                'total_invoice' => $total_invoice,
+                'tgl_datang' => '',
+                'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+                'status_pembayaran' => '0',
+                'tgl_bayar' => '',
+                'bukti_pembayaran' => '',
+                'tgl_dibuat' => date('Y-m-d H:i:s'),
+                'dibuat_oleh' => session()->user_id,
+                'tgl_diupdate' => null,
+                'diupdate_oleh' => 0
+            ];
+
+
+            $hasil = $pembelian_model->update($id, $data);
+            if($hasil) {
+                 if(isset($_POST['produk_id']) && isset($_POST['qty']) && isset($_POST['harga_beli'])) {
+                    $index = 0;
+                    $pembelian_detail_model = new PembelianDetailModel();
+
+
+                    $db      = \Config\Database::connect();
+                    $builder = $db->table('tbl_pembelian_detail');
+                    $builder->set('is_deleted', 1);
+                    $builder->where('pembelian_id', $id);
+                    $builder->update();
+
+                    foreach($_POST['produk_id'] as $produk_id) {
+                        $total_invoice += $_POST['qty'][$index] * $_POST['harga_beli'][$index];
+
+                        $data = [
+                            'pembelian_id' => $id,
+                            'produk_id' => $produk_id,
+                            'qty' => $_POST['qty'][$index],
+                            'harga_beli' => $_POST['harga_beli'][$index],
+                        ];
+
+                        $pembelian_detail_model->insert($data);
+                        $index++;
+                    } 
+
+                    $pembelian_model->update($id, ['total_invoice' => $total_invoice]);   
+                }
+
+
+
+                session()->setFlashData('danger', 'Data pembelian berhasil diubah');
+                return redirect()->to(base_url('pembelian/list'));
+            }
+        }
+
+        
+        return view('pembelian/form', array(
+            'form_action' => base_url().'pembelian/update/'.pos_encrypt($id),
+            'is_new_data' => false,
+            // 'data' => (object) $produk_data,
+            'supplier_data' => $supplier_data,
+            'pembelian_data' => $pembelian_data,
+            'pembelian_id' => $id
+            // 'pembelian_detail_data' => $pembelian_detail_data,
+            // 'kategori_data' => $kategori_data,
+            // 'produk_stok' => $produk_stok_query->getResult(),
+            // 'produk_harga' => $produk_harga_query->getResult(),
+            // 'daftar_produk'   => $daftar_produk,
+            // 'related_produk_ids' => $related_produk_ids,
+
         ));
     }
 
@@ -147,6 +239,7 @@ class Pembelian extends BaseController
         $builder = $db->table('tbl_pembelian_detail');
         $builder->select('tbl_produk.nama_produk, tbl_produk.satuan_terkecil, tbl_produk.netto, tbl_pembelian_detail.*');
         $builder->where('tbl_pembelian_detail.pembelian_id', pos_decrypt($id));
+        $builder->where('tbl_pembelian_detail.is_deleted', 0);
         $builder->join('tbl_produk', 'tbl_pembelian_detail.produk_id = tbl_produk.produk_id');
         $pembelian_detail   = $builder->get();
 
@@ -154,6 +247,34 @@ class Pembelian extends BaseController
             'pembelian_header' => $pembelian_header->getResult(),
             'pembelian_detail' => $pembelian_detail->getResult(),
         ));
+    }
+
+    public function delete($id) {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $id = pos_decrypt($id);
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_pembelian_detail');
+        $builder->set('is_deleted', 1);
+        $builder->where('pembelian_id', $id);
+        $builder->update();
+
+        $pembelian_model = new PembelianModel();
+        $data = [
+            'is_deleted' => 1,
+        ];
+
+        
+        if($pembelian_model->update($id, $data)) {
+            session()->setFlashData('danger', 'Data pembelian berhasil dihapus!');      
+        } else {
+            session()->setFlashData('danger', 'Internal server error');
+        }
+
+        return redirect()->to(base_url('pembelian/list')); 
     }
 
     public function getProduk($supplier_id) {
@@ -172,6 +293,28 @@ class Pembelian extends BaseController
             $response = array(
                 'status' => 200,
                 'data' => $produk_data
+            );
+        }
+
+        return $this->respond($response);
+    }
+
+    public function getDetail($pembelian_id) {
+        $response = array(
+            'status' => 404,
+            'data' => []
+        );
+
+
+        $pembelian_detail_model = new PembelianDetailModel();
+        $pembelian_detail_data = $pembelian_detail_model->where('pembelian_id', $pembelian_id)
+                                    ->where('is_deleted', 0)
+                                    ->findAll();
+
+        if($pembelian_detail_data) {
+            $response = array(
+                'status' => 200,
+                'data' => $pembelian_detail_data
             );
         }
 

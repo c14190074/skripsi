@@ -1,9 +1,10 @@
 var produk_data = [];
 
 function initProduKData() {
-	var supplier_id = $('#supplier_id').val();	
+	var supplier_id = $('#supplier_id').val();
+	var ajaxUrl = $('#baseUrl').val() + 'pembelian/getproduk/'+supplier_id;
 	if(typeof supplier_id !== "undefined") {
-		$.get("getproduk/"+supplier_id, function( response ) {
+		$.get(ajaxUrl, function( response ) {
 			produk_data = response;
 			var produk_opsi = '';
 
@@ -16,13 +17,40 @@ function initProduKData() {
 
 			$('#table-pembelian').find('.produk-data:first').html(produk_opsi);
 			$('#table-pembelian').find('.produk-data:first').change();
+
+			loadPembelianData();
 		});
 		
 	}
 }
 
+function loadPembelianData() {
+	var pembelian_id = $('#pembelian_id').val();
+	if(pembelian_id > 0) {
+		var ajaxUrl = $('#baseUrl').val() + 'pembelian/getdetail/'+pembelian_id;
+
+		$.get(ajaxUrl, function( response ) {
+			console.log(response.data);
+			for(var i = 0; i < response.data.length; i++) {
+				$('#table-pembelian').find('tbody tr:last').find('.produk-data').val(response.data[i].produk_id);
+				$('#table-pembelian').find('tbody tr:last').find('.produk-qty').val(response.data[i].qty);
+				$('#table-pembelian').find('tbody tr:last').find('.produk-harga-beli').val(response.data[i].harga_beli);
+
+				$('#table-pembelian').find('tbody tr:last').find('.produk-data').change();
+				$('#table-pembelian').find('tbody tr:last').find('.btn-add-row').click();
+				
+
+			}
+
+			$('#table-pembelian').find('tbody tr:last').find('.btn-delete-row').click();
+		});
+	}
+}
+
 $(document).ready(function() {
 	initProduKData();
+	
+
 	$('.input-date').datepicker({
 		format: 'dd-M-yy',
 		autoclose: true,
@@ -142,11 +170,11 @@ $(document).ready(function() {
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="qty[]" />';
+          		htmlElement += '<input type="text" class="form-control produk-qty" name="qty[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="harga_beli[]" />';
+          		htmlElement += '<input type="text" class="form-control produk-harga-beli" name="harga_beli[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
@@ -187,12 +215,13 @@ $(document).ready(function() {
 	$('#table-pembelian').on('change', 'tbody .produk-data', function() {
 		var obj = $(this)
 		var produk_id = $(this).val();
-		console.log(produk_id);
+		// console.log(produk_id);
 
 		$(obj).parent().parent().find('.label-ket').html('');
 		$(obj).parent().parent().find('.label-netto').html('');
 
-		$.get("getprodukinfopenjualan/"+produk_id, function( response ) {
+		var ajaxUrl = $('#baseUrl').val() + 'pembelian/getprodukinfopenjualan/'+produk_id;
+		$.get(ajaxUrl, function( response ) {
 			var labelKet = "";
 			labelKet += "<p>Mulai: "+response.data_penjualan.start_penjualan+"</p>";
 			labelKet += "<p>Akhir: "+response.data_penjualan.end_penjualan+"</p>";

@@ -58,6 +58,10 @@ $routes->group("pembelian", function ($routes) {
     $routes->get('getprodukinfopenjualan/(:any)', 'Pembelian::getProdukInfoPenjualan/$1');
     $routes->post('updatetgldatang', 'Pembelian::updateTglDatang');
     $routes->post('updatepembayaran', 'Pembelian::updatePembayaran');
+    $routes->get('update/(:any)', 'Pembelian::update/$1');
+    $routes->post('update/(:any)', 'Pembelian::update/$1');
+    $routes->get('getdetail/(:any)', 'Pembelian::getDetail/$1');
+    $routes->get('delete/(:any)', 'Pembelian::delete/$1');
     
 });
 $routes->group("kategori", function ($routes) {
@@ -69,6 +73,7 @@ $routes->group("kategori", function ($routes) {
     $routes->get('delete/(:any)', 'Kategori::delete/$1');
 });
 $routes->group("produk", function ($routes) {
+    $routes->get('test', 'Produk::test');
     $routes->get('create', 'Produk::add');
     $routes->post('create', 'Produk::add');
     $routes->get('update/(:any)', 'Produk::update/$1');
@@ -120,7 +125,8 @@ $routes->group("api/penjualan", function ($routes) {
     $routes->get('getheader/(:any)', 'PenjualanApi::getPenjualan/$1');
     $routes->get('getdetail/(:any)', 'PenjualanApi::detailPenjualan/$1');
     $routes->get('testsuggestion', 'PenjualanApi::testProdukRekomendasi');
-    $routes->post('getsuggestion', 'PenjualanApi::getProdukRekomendasi');
+    $routes->post('getsuggestion', 'PenjualanApi::
+        ');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');

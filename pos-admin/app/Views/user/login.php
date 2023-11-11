@@ -37,7 +37,7 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                   </div>
-                  <div class="d-flex align-items-center justify-content-between mb-4">
+                  <div style="display: none !important;" class="d-flex align-items-center justify-content-between mb-4">
                     
                     <a class="text-primary fw-bold" href="./index.html">Forgot Password ?</a>
                   </div>

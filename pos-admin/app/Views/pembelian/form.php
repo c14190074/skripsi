@@ -18,12 +18,18 @@
                   <form method="POST" action="<?= $form_action ?>">
                     <div class="card-body">
                       <div class="mb-3">
+                          <input type="hidden" value="<?= $pembelian_id ?>" id="pembelian_id" />
                           <label for="supplier_id" class="form-label">Supplier</label>
                           <select id="supplier_id" name="supplier_id" class="form-select acive-dropdown">
                             <?php
                               if($supplier_data) {
                                 foreach($supplier_data as $supplier) {
-                                  echo "<option value='".$supplier['supplier_id']."'>".$supplier['nama_supplier']."</option>";
+                                  $is_selected = '';
+                                  if(!$is_new_data && $pembelian_data) {
+                                    $is_selected = $supplier['supplier_id'] == $pembelian_data['supplier_id'] ? ' selected' : '';
+                                  }
+                                  
+                                  echo "<option".$is_selected." value='".$supplier['supplier_id']."'>".$supplier['nama_supplier']."</option>";
                                 }
                               }
 
@@ -32,7 +38,6 @@
                           <p class="error-msg"><?= \Config\Services::validation()->getError('supplier_id') ?></p>
                       </div>
 
-                      
                     </div>
 
 
@@ -51,6 +56,7 @@
                         </thead>
 
                         <tbody>
+                          
                           <tr>
                               <td>
                                 <select class="form-control produk-data" name="produk_id[]"></select>
@@ -58,11 +64,11 @@
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="qty[]" />
+                                <input type="text" class="form-control produk-qty" name="qty[]" />
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="harga_beli[]" />
+                                <input type="text" class="form-control produk-harga-beli" name="harga_beli[]" />
                                 
                               </td>
 
@@ -71,7 +77,7 @@
                                 <i role="button" class="ti ti-plus btn-add-row"></i>
                                 <i role="button" class="ti ti-trash btn-delete-row"></i>
                               </td>
-                            </tr>
+                          </tr>
                            
                         </tbody>
                       </table>

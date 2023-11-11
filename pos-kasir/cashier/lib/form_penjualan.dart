@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'package:cashier/pembayaran_midtrans.dart';
 import 'package:cashier/widget/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +32,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   List<TextEditingController> _qty_controllers = [];
   List<ItemPenjualan> list_qty_produk = <ItemPenjualan>[];
   List<DataRekomendasi> list_rekomendasi = <DataRekomendasi>[];
+  final TextEditingController inputNoTelp = new TextEditingController();
 
   int total_belanja = 0;
 
@@ -120,6 +122,72 @@ class _FormPenjualanState extends State<FormPenjualan> {
           list_rekomendasi.add(itemRekomendasi);
         });
       }
+    }
+  }
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Midtrans Payment Gateway'),
+            content: TextField(
+              onChanged: (value) {},
+              controller: inputNoTelp,
+              decoration: InputDecoration(hintText: "Input no telp pelanggan"),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context, 'Batal');
+                },
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context, 'Ok');
+                  submitOrderan('midtrans', inputNoTelp.text);
+                },
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        });
+  }
+
+  void submitOrderan(String metode_pembayaran, String no_telp_pelanggan) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_id = await prefs.getString('user_id') ?? '0';
+    Map dataToSave = {
+      "user_id": user_id,
+      "dataBelanja": json.encode(list_belanja.toList()),
+      "metode_pembayaran": metode_pembayaran,
+      "no_telp_pelanggan": no_telp_pelanggan
+    };
+
+    var jsonResponse = null;
+    var api_url = globals.baseURL + 'penjualan/simpanpenjualan';
+    var response = await http.post(Uri.parse(api_url), body: dataToSave);
+    jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+    if (jsonResponse['status'] == 200) {
+      setState(() {
+        list_belanja.clear();
+        hitungTotalBelanja();
+        list_rekomendasi.clear();
+
+        if (metode_pembayaran == 'midtrans') {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) =>
+                  MidtransPayment(midtrans_url: jsonResponse['midtrans_url'])));
+        }
+      });
+    } else {
+      String pesanError = jsonResponse['msg'];
+      final SnackBarMsg = SnackBar(
+        content: Text(pesanError),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBarMsg);
     }
   }
 
@@ -744,9 +812,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  String user_id = await prefs.getString('user_id') ?? '0';
                   if (list_belanja.length > 0) {
                     showDialog<String>(
                       context: context,
@@ -763,38 +828,61 @@ class _FormPenjualanState extends State<FormPenjualan> {
                             onPressed: () async {
                               Navigator.pop(context, 'Ya');
 
-                              Map dataToSave = {
-                                "user_id": user_id,
-                                "dataBelanja":
-                                    json.encode(list_belanja.toList()),
-                              };
-
-                              var jsonResponse = null;
-                              var api_url =
-                                  globals.baseURL + 'penjualan/simpanpenjualan';
-                              var response = await http.post(Uri.parse(api_url),
-                                  body: dataToSave);
-                              jsonResponse = json.decode(response.body);
-                              print(jsonResponse);
-                              if (jsonResponse['status'] == 200) {
-                                const SnackBarMsg = SnackBar(
-                                  content: Text('Sukses!'),
-                                );
-                                // ScaffoldMessenger.of(context)
-                                //     .showSnackBar(SnackBarMsg);
-
-                                setState(() {
-                                  list_belanja.clear();
-                                  hitungTotalBelanja();
-                                });
-                              } else {
-                                String pesanError = jsonResponse['msg'];
-                                final SnackBarMsg = SnackBar(
-                                  content: Text(pesanError),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBarMsg);
-                              }
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                    // title: const Text('Konfirmasi'),
+                                    content: Container(
+                                  height: 100,
+                                  child: Column(
+                                    children: [
+                                      const Text('Pilih metode pembayaran: '),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(right: 10),
+                                            child: TextButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context, 'Tunai');
+                                                submitOrderan('tunai', '');
+                                              },
+                                              child: const Text('Tunai'),
+                                              style: ElevatedButton.styleFrom(
+                                                primary:
+                                                    Colors.red, // background
+                                                onPrimary:
+                                                    Colors.white, // foreground
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            child: TextButton(
+                                              onPressed: () async {
+                                                Navigator.pop(
+                                                    context, 'Midtrans');
+                                                _displayTextInputDialog(
+                                                    context);
+                                              },
+                                              child: const Text('Midtrans'),
+                                              style: ElevatedButton.styleFrom(
+                                                primary:
+                                                    Colors.blue, // background
+                                                onPrimary:
+                                                    Colors.white, // foreground
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )),
+                              );
                             },
                             child: const Text('Ya'),
                           ),

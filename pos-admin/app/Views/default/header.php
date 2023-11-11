@@ -10,21 +10,31 @@
     $produk_stok_model = new ProdukStokModel();
 
     $db      = \Config\Database::connect();
-    $builder = $db->table('tbl_produk');
-    $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
-    $builder->where('tbl_produk.is_deleted', 0);
-    $builder->where('tbl_produk_stok.is_deleted', 0);
-    $builder->where('tbl_produk_stok.stok <= tbl_produk.stok_min');
-    $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
-    $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
-    $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
-    $query_stok   = $builder->get();
+
+    $builder = $db->table('tbl_produk p');
+    $builder->select('p.*, s.stok');
+    $builder->selectSum('s.stok');
+    
+    $subQuery = $db->table('tbl_produk_stok ps');
+    $subQuery->selectSum('ps.stok', false);
+    $subQuery->where('ps.produk_id = p.produk_id');
+    $subQuery->where('ps.is_deleted', '0');
+    $subQuery->groupBy('ps.produk_id');
+
+    $builder->where('p.is_deleted', 0);
+    $builder->where('s.is_deleted', 0);
+    $builder->where('p.stok_min >=', $subQuery);
+    $builder->join('tbl_produk_stok s', 's.produk_id = p.produk_id');
+    $builder->groupBy('p.produk_id');
+    $query_stok = $builder->get();
 
     if($query_stok->getResult()) {
          $total_notif += count($query_stok->getResult());
     }
-   
+    
 
+
+    $builder = $db->table('tbl_produk');
     $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok_id, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
     $builder->where('tbl_produk.is_deleted', 0);
     $builder->where('tbl_produk_stok.is_deleted', 0);
@@ -56,6 +66,7 @@
 </head>
 
 <body>
+  <input type="hidden" id="baseUrl" value="<?php echo base_url(); ?>">
   <!--  Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">

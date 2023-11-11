@@ -133,20 +133,20 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
                                           ),
                                         ],
                                       ),
-                                      Column(
-                                        children: [
-                                          Text('Status Nota:'),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            'Pending',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      )
+                                      // Column(
+                                      //   children: [
+                                      //     Text('Status Nota:'),
+                                      //     SizedBox(
+                                      //       height: 5,
+                                      //     ),
+                                      //     Text(
+                                      //       'Pending',
+                                      //       style: TextStyle(
+                                      //           fontSize: 16,
+                                      //           fontWeight: FontWeight.bold),
+                                      //     )
+                                      //   ],
+                                      // )
                                     ],
                                   ),
                                   Divider(),

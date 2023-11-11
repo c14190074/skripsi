@@ -94,6 +94,12 @@
             </div>
             
             <div>
+              <?php if($pembelian_header[0]->status_pembayaran == 0 && $pembelian_header[0]->status == 0) { ?>
+                <a href="<?= base_url().'pembelian/update/'.pos_encrypt($pembelian_header[0]->pembelian_id) ?>" type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-warning text-primary">
+                  <i class="ti ti-edit"></i> Edit
+                </a>
+              <?php } ?>
+
               <?php if($pembelian_header[0]->tgl_datang == '0000-00-00') { ?>
                 <button type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-primary text-primary" data-bs-toggle="modal" data-bs-target="#modal-tgl-datang" data-bs-whatever="@mdo">
                   <i class="ti ti-calendar"></i> Datang
