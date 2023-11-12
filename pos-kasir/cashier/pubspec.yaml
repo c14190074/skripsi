@@ -41,6 +41,7 @@ dependencies:
   shared_preferences: ^2.2.2
   confirm_dialog: ^1.0.2
   webview_flutter: ^4.4.2
+  blue_thermal_printer: ^1.2.3
 
 dev_dependencies:
   flutter_test:

@@ -125,8 +125,7 @@ $routes->group("api/penjualan", function ($routes) {
     $routes->get('getheader/(:any)', 'PenjualanApi::getPenjualan/$1');
     $routes->get('getdetail/(:any)', 'PenjualanApi::detailPenjualan/$1');
     $routes->get('testsuggestion', 'PenjualanApi::testProdukRekomendasi');
-    $routes->post('getsuggestion', 'PenjualanApi::
-        ');
+    $routes->post('getsuggestion', 'PenjualanApi::getProdukRekomendasi');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');

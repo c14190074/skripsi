@@ -2,6 +2,7 @@ import 'package:cashier/kasir.dart';
 import 'package:cashier/list_diskon.dart';
 import 'package:cashier/list_penjualan.dart';
 import 'package:cashier/main.dart';
+import 'package:cashier/pengaturan.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './widget/globals.dart' as globals;
@@ -70,7 +71,10 @@ class Navbar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Pengaturan'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => Pengaturan()));
+            },
           ),
 
           Divider(),
