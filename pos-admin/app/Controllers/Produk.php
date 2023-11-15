@@ -529,7 +529,7 @@ class Produk extends BaseController
         $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok_id, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
         $builder->where('tbl_produk.is_deleted', 0);
         $builder->where('tbl_produk_stok.is_deleted', 0);
-        $builder->where('tbl_produk_stok.tgl_kadaluarsa >=', $first_date);
+        // $builder->where('tbl_produk_stok.tgl_kadaluarsa >=', $first_date);
         $builder->where('tbl_produk_stok.tgl_kadaluarsa <=', $last_date);
         $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
         $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
