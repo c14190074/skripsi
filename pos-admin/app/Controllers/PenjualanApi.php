@@ -17,9 +17,9 @@ use Phpml\Association\Apriori;
 
 class PenjualanApi extends ResourceController
 {
-	use ResponseTrait;
+    use ResponseTrait;
    
-   	public function simpanPenjualan(){
+    public function simpanPenjualan(){
         $user_id = $this->request->getVar('user_id');
         $data = $this->request->getVar('dataBelanja');
         $metode_pembayaran = $this->request->getVar('metode_pembayaran');
@@ -34,6 +34,8 @@ class PenjualanApi extends ResourceController
             'data' => []
         );
 
+        $tgl_dibuat = date('Y-m-d H:i:s');
+
         if(count($data) > 0) {
             $penjualan_model = new PenjualanModel();
             $dataToSave = [
@@ -42,7 +44,7 @@ class PenjualanApi extends ResourceController
                 'status_pembayaran' => 'lunas',
                 'midtrans_id' => 0,
                 'midtrans_status' => '',
-                'tgl_dibuat' => date('Y-m-d H:i:s'),
+                'tgl_dibuat' => $tgl_dibuat,
                 'dibuat_oleh' => $user_id,
                 'tgl_diupdate' => null,
                 'diupdate_oleh' => 0,
@@ -134,7 +136,8 @@ class PenjualanApi extends ResourceController
 
                     if($metode_pembayaran == 'tunai') {
                         $response = array(
-                            'status' => 200
+                            'status' => 200,
+                            'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
                         );
                     } else {
                         // Set your Merchant Server Key
@@ -163,6 +166,7 @@ class PenjualanApi extends ResourceController
                         $penjualan_model->update($penjualan_id, ['midtrans_id' => $midtrans_id]);
                         $response = array(
                             'status' => 200,
+                            'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
                             'midtrans_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
                         );
                     }
@@ -189,10 +193,12 @@ class PenjualanApi extends ResourceController
 
     }
 
-    public function getAllPenjualan($user_id) {
+    public function getAllPenjualan($user_id, $date_filter) {
+        $date_filter = $date_filter == '1' ? date('Y-m-d') : date('Y-m-d', strtotime($date_filter));
         $response = array();
         $model = new PenjualanModel();
         $data = $model->where('is_deleted', 0)
+                        ->where('DATE(tgl_dibuat)', $date_filter)
                         ->where('dibuat_oleh', $user_id)
                         ->orderBy('tgl_dibuat', 'desc')->findAll();
 

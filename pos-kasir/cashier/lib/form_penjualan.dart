@@ -18,6 +18,7 @@ import './model/produk_harga_model.dart'
     show DataHarga, DataDiskon, ProdukHargaModel;
 import './model/penjualan_detail.dart' show ItemPenjualan;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 
 class FormPenjualan extends StatefulWidget {
   const FormPenjualan({Key? key}) : super(key: key);
@@ -33,6 +34,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   List<ItemPenjualan> list_qty_produk = <ItemPenjualan>[];
   List<DataRekomendasi> list_rekomendasi = <DataRekomendasi>[];
   final TextEditingController inputNoTelp = new TextEditingController();
+  final TextEditingController inputJumlahBayar = new TextEditingController();
 
   int total_belanja = 0;
 
@@ -125,16 +127,20 @@ class _FormPenjualanState extends State<FormPenjualan> {
     }
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
+  Future<void> _showInputNoTelp(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Midtrans Payment Gateway'),
+            title: Text('No Telp Pelanggan'),
             content: TextField(
               onChanged: (value) {},
               controller: inputNoTelp,
-              decoration: InputDecoration(hintText: "Input no telp pelanggan"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              decoration: InputDecoration(hintText: "Contoh. 081321348877"),
             ),
             actions: <Widget>[
               TextButton(
@@ -146,7 +152,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
               TextButton(
                 onPressed: () async {
                   Navigator.pop(context, 'Ok');
-                  submitOrderan('midtrans', inputNoTelp.text);
+                  submitOrderan('midtrans', inputNoTelp.text, '0');
                 },
                 child: const Text('Ok'),
               ),
@@ -155,7 +161,63 @@ class _FormPenjualanState extends State<FormPenjualan> {
         });
   }
 
-  void submitOrderan(String metode_pembayaran, String no_telp_pelanggan) async {
+  Future<void> _showInputJumlahBayar(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Pembayaran Tunai'),
+            content: TextField(
+              onChanged: (value) {},
+              controller: inputJumlahBayar,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              decoration: InputDecoration(hintText: "Jumlah Bayar"),
+            ),
+            actions: <Widget>[
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.grey.shade600, // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                onPressed: () async {
+                  Navigator.pop(context, 'Batal');
+                },
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red, // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                onPressed: () {
+                  Navigator.pop(context, 'Uang Pas');
+
+                  submitOrderan('tunai', '', total_belanja.toString());
+                },
+                child: const Text('Uang Pas'),
+              ),
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue, // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                onPressed: () {
+                  Navigator.pop(context, 'Bayar');
+
+                  submitOrderan('tunai', '', inputJumlahBayar.text);
+                },
+                child: const Text('Bayar'),
+              ),
+            ],
+          );
+        });
+  }
+
+  void submitOrderan(String metode_pembayaran, String no_telp_pelanggan,
+      String jumlah_bayar) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user_id = await prefs.getString('user_id') ?? '0';
     Map dataToSave = {
@@ -171,23 +233,88 @@ class _FormPenjualanState extends State<FormPenjualan> {
     jsonResponse = json.decode(response.body);
     print(jsonResponse);
     if (jsonResponse['status'] == 200) {
-      setState(() {
-        list_belanja.clear();
-        hitungTotalBelanja();
-        list_rekomendasi.clear();
-
-        if (metode_pembayaran == 'midtrans') {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) =>
-                  MidtransPayment(midtrans_url: jsonResponse['midtrans_url'])));
-        }
-      });
+      cetakNota(jumlah_bayar, jsonResponse['tgl_transaksi']);
+      if (metode_pembayaran == 'midtrans') {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                MidtransPayment(midtrans_url: jsonResponse['midtrans_url'])));
+      }
     } else {
       String pesanError = jsonResponse['msg'];
       final SnackBarMsg = SnackBar(
         content: Text(pesanError),
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBarMsg);
+    }
+  }
+
+  void cetakNota(String jumlah_bayar, String tgl_transaksi) async {
+    BlueThermalPrinter printer = BlueThermalPrinter.instance;
+    if ((await printer.isConnected)!) {
+      printer.printNewLine();
+      printer.printCustom('TOKO XYZ', 1, 1);
+      printer.printCustom('JL. BASUKI RAHMAT 70, TUBAN', 1, 1);
+      printer.printNewLine();
+      printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
+      printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
+      // printer.printNewLine();
+      printer.printCustom('-----------------------------', 1, 1);
+      printer.printNewLine();
+      for (var i = 0; i < list_belanja.length; i++) {
+        String diskon_label = list_belanja[i].getLabelDiskon();
+        String qty_label = list_belanja[i].getQtyLabel();
+        int subtotal = list_belanja[i].hitungSubtotal();
+
+        String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
+        String _netto = CurrencyFormat.convertToIdr(
+            int.parse(list_belanja[i].netto.toString()), 0);
+        String netto_label = _netto + ' ' + _satuan_terkecil;
+        String nama_produk_label =
+            list_belanja[i].namaProduk.toString() + ' ' + netto_label;
+
+        printer.printCustom(nama_produk_label, 1, 0);
+        printer.printCustom(qty_label, 1, 0);
+
+        if (diskon_label == '') {
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        } else {
+          printer.printCustom(diskon_label, 1, 0);
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        }
+      }
+      if (int.parse(jumlah_bayar) <= total_belanja) {
+        jumlah_bayar = total_belanja.toString();
+      }
+
+      int uang_kembali = int.parse(jumlah_bayar.toString()) -
+          int.parse(total_belanja.toString());
+
+      String total_label =
+          'Total ' + CurrencyFormat.convertToIdr(total_belanja, 0);
+      String jumlah_bayar_label =
+          'Bayar ' + CurrencyFormat.convertToIdr(int.parse(jumlah_bayar), 0);
+      String uang_kembali_label =
+          'Kembali ' + CurrencyFormat.convertToIdr(uang_kembali, 0);
+
+      printer.printNewLine();
+      printer.printCustom(total_label, 1, 2);
+      printer.printCustom(jumlah_bayar_label, 1, 2);
+      printer.printCustom(uang_kembali_label, 1, 2);
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printCustom("TERIMA KASIH", 1, 1);
+      printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+      setState(() {
+        list_belanja.clear();
+        hitungTotalBelanja();
+        list_rekomendasi.clear();
+        inputJumlahBayar.text = '';
+      });
     }
   }
 
@@ -542,7 +669,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = height - padding.top - padding.bottom - 350;
+    double newheight = height - padding.top - padding.bottom - 310;
 
     return SafeArea(
       child: Container(
@@ -849,7 +976,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                             child: TextButton(
                                               onPressed: () async {
                                                 Navigator.pop(context, 'Tunai');
-                                                submitOrderan('tunai', '');
+                                                _showInputJumlahBayar(context);
                                               },
                                               child: const Text('Tunai'),
                                               style: ElevatedButton.styleFrom(
@@ -865,8 +992,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                               onPressed: () async {
                                                 Navigator.pop(
                                                     context, 'Midtrans');
-                                                _displayTextInputDialog(
-                                                    context);
+                                                _showInputNoTelp(context);
                                               },
                                               child: const Text('Midtrans'),
                                               style: ElevatedButton.styleFrom(

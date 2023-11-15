@@ -120,12 +120,13 @@ $routes->group("setting", function ($routes) {
 
 $routes->group("api/penjualan", function ($routes) {
     $routes->post('simpanpenjualan', 'PenjualanApi::simpanPenjualan');
-    $routes->get('getall/(:any)', 'PenjualanApi::getAllPenjualan/$1');
+    $routes->get('getall/(:any)/(:any)', 'PenjualanApi::getAllPenjualan/$1/$2');
     $routes->post('hitungdiskon', 'PenjualanApi::hitungDiskon');
     $routes->get('getheader/(:any)', 'PenjualanApi::getPenjualan/$1');
     $routes->get('getdetail/(:any)', 'PenjualanApi::detailPenjualan/$1');
     $routes->get('testsuggestion', 'PenjualanApi::testProdukRekomendasi');
     $routes->post('getsuggestion', 'PenjualanApi::getProdukRekomendasi');
+    $routes->get('getsnaptoken', 'PenjualanApi::doMidtrans');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');
