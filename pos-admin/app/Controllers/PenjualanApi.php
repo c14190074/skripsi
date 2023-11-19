@@ -544,6 +544,8 @@ class PenjualanApi extends ResourceController
                     }
 
                     if(count($data) > 0) {
+                        $produk_model = new ProdukModel();
+
                         $labels  = [];
                         $associator = new Apriori($support, $confidence);
                         $associator->train($data, $labels);
@@ -557,10 +559,11 @@ class PenjualanApi extends ResourceController
                             foreach($rek as $r) {
                                 if(!in_array($r, $tmp_rekomendasi)) {
                                     array_push($tmp_rekomendasi, $r);
-
+                                    $produk_data = $produk_model->find($data_produk[$r]);
                                     $r_info = [
                                         'produk_id' => $data_produk[$r],
-                                        'nama_produk' => ucwords($r)
+                                        'nama_produk' => ucwords($r),
+                                        'satuan_terkecil' => $produk_data['satuan_terkecil']
                                     ];
                                     array_push($unique_rekomendasi, $r_info);
                                 }

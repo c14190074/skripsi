@@ -28,18 +28,21 @@ class ProdukRekomendasiModel {
 class DataRekomendasi {
   String? produkId;
   String? namaProduk;
+  String? satuanTerkecil;
 
   DataRekomendasi({this.produkId, this.namaProduk});
 
   DataRekomendasi.fromJson(Map<String, dynamic> json) {
     produkId = json['produk_id'];
     namaProduk = json['nama_produk'];
+    satuanTerkecil = json['satuan_terkecil'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['produk_id'] = this.produkId;
     data['nama_produk'] = this.namaProduk;
+    data['satuan_terkecil'] = this.satuanTerkecil;
     return data;
   }
 }

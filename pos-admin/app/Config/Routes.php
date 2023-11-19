@@ -101,9 +101,10 @@ $routes->group("penjualan", function ($routes) {
 
 // routes untuk API
 $routes->group("api/produk", function ($routes) {
-    $routes->get('getall', 'ProdukApi::getAllProduk');
-    $routes->get('getprice/(:any)', 'ProdukApi::getProdukHarga/$1');
-    $routes->get('getdiskon', 'ProdukApi::getProdukDiskon');
+    $routes->get('getall/(:any)', 'ProdukApi::getAllProduk/$1');
+    $routes->get('getprice/(:any)/(:any)', 'ProdukApi::getProdukHarga/$1/$2');
+    $routes->get('getnewestdiskon/(:any)/(:any)', 'ProdukApi::getNewestDiskon/$1/$2');
+    $routes->get('getdiskon/(:any)', 'ProdukApi::getProdukDiskon/$1');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');
@@ -111,6 +112,7 @@ $routes->group("api/produk", function ($routes) {
 
 $routes->group("api/user", function ($routes) {
     $routes->post('login', 'UserApi::login');
+    $routes->get('logout/(:any)', 'UserApi::logout/$1');
 });
 
 $routes->group("setting", function ($routes) {
@@ -119,13 +121,15 @@ $routes->group("setting", function ($routes) {
 });
 
 $routes->group("api/penjualan", function ($routes) {
-    $routes->post('simpanpenjualan', 'PenjualanApi::simpanPenjualan');
-    $routes->get('getall/(:any)/(:any)', 'PenjualanApi::getAllPenjualan/$1/$2');
-    $routes->post('hitungdiskon', 'PenjualanApi::hitungDiskon');
-    $routes->get('getheader/(:any)', 'PenjualanApi::getPenjualan/$1');
-    $routes->get('getdetail/(:any)', 'PenjualanApi::detailPenjualan/$1');
+    $routes->post('simpanpenjualan/(:any)', 'PenjualanApi::simpanPenjualan/$1');
+    $routes->get('getall/(:any)/(:any)/(:any)', 'PenjualanApi::getAllPenjualan/$1/$2/$3');
+    $routes->post('hitungdiskon/(:any)', 'PenjualanApi::hitungDiskon/$1');
+    // $routes->get('hitungdiskon/(:any)', 'PenjualanApi::hitungDiskon/$1');
+    $routes->get('getheader/(:any)/(:any)', 'PenjualanApi::getPenjualan/$1/$2');
+    $routes->get('getdetail/(:any)/(:any)', 'PenjualanApi::detailPenjualan/$1/$2');
     $routes->get('testsuggestion', 'PenjualanApi::testProdukRekomendasi');
-    $routes->post('getsuggestion', 'PenjualanApi::getProdukRekomendasi');
+    $routes->post('getsuggestion/(:any)', 'PenjualanApi::getProdukRekomendasi/$1');
+    // $routes->get('getsuggestion/(:any)', 'PenjualanApi::getProdukRekomendasi/$1');
     $routes->get('getsnaptoken', 'PenjualanApi::doMidtrans');
 
     // $routes->post('logout', 'User::logout');

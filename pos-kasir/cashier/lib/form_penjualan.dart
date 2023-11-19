@@ -45,9 +45,9 @@ class _FormPenjualanState extends State<FormPenjualan> {
     super.initState();
     _getAllDataProduk();
 
-    setState(() {
-      data_produk_harga = _getProdukHarga('0');
-    });
+    // setState(() {
+    //   data_produk_harga = _getProdukHarga('0');
+    // });
   }
 
   void _getAllDataProduk() async {
@@ -80,7 +80,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
     var api_url = globals.baseURL + 'penjualan/hitungdiskon/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
-    print(jsonResponse);
+    // print(jsonResponse);
 
     int hasil = 0;
     if (jsonResponse['status'] == 200 && jsonResponse['data'].length > 0) {
@@ -124,15 +124,17 @@ class _FormPenjualanState extends State<FormPenjualan> {
     var api_url = globals.baseURL + 'penjualan/getsuggestion/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
-    print(jsonResponse);
+    // print(jsonResponse);
     if (jsonResponse['status'] == 200) {
       for (var i = 0; i < jsonResponse['data_rekomendasi'].length; i++) {
-        print(jsonResponse['data_rekomendasi'][i]['nama_produk']);
+        // print(jsonResponse['data_rekomendasi'][i]['nama_produk']);
         final itemRekomendasi = new DataRekomendasi();
         itemRekomendasi.produkId =
             jsonResponse['data_rekomendasi'][i]['produk_id'];
         itemRekomendasi.namaProduk =
             jsonResponse['data_rekomendasi'][i]['nama_produk'];
+        itemRekomendasi.satuanTerkecil =
+            jsonResponse['data_rekomendasi'][i]['satuan_terkecil'];
 
         setState(() {
           list_rekomendasi.add(itemRekomendasi);
@@ -340,10 +342,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
     var response = await http.get(Uri.parse(
         globals.baseURL + 'produk/getprice/' + produk_id + '/' + user_token));
 
-    var json_response = json.decode(response.body);
-    // print(json_response);
-    final result =
-        json.decode(response.body)['data'].cast<Map<String, dynamic>>();
+    var json_response = await json.decode(response.body);
+    final result = json_response['data'].cast<Map<String, dynamic>>();
 
     return result.map<DataHarga>((json) => DataHarga.fromJson(json)).toList();
   }
@@ -366,7 +366,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   Future<void> _showMyDialog(String nama_produk, String produk_id,
-      String produk_harga_id, String qty) async {
+      String produk_harga_id, String qty, String satuan_terkecil) async {
     list_qty_produk.clear();
     _qty_controllers.clear();
     int indexInputQty = 0;
@@ -381,8 +381,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                   child: Column(
                     children: [
                       FutureBuilder<List<DataHarga>>(
-                          // future: _getProdukHarga(produk_id),
-                          future: data_produk_harga,
+                          future: _getProdukHarga(produk_id),
+                          // future: data_produk_harga,
                           builder: (BuildContext context, snapshot) {
                             if (snapshot.hasData) {
                               // data harga berhasil didapat
@@ -410,10 +410,9 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                             daftar_harga[index].produkId;
                                         produk_info.produkHargaId =
                                             daftar_harga[index].produkHargaId;
-                                        produk_info.namaProduk =
-                                            daftar_harga[index].namaProduk;
+                                        produk_info.namaProduk = nama_produk;
                                         produk_info.satuanTerkecil =
-                                            daftar_harga[index].satuanTerkecil;
+                                            satuan_terkecil;
                                         produk_info.netto =
                                             daftar_harga[index].netto;
                                         produk_info.hargaJual =
@@ -494,9 +493,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                                                     .toString()),
                                                             0) +
                                                         ' ' +
-                                                        daftar_harga[index]
-                                                            .satuanTerkecil
-                                                            .toString() +
+                                                        satuan_terkecil +
                                                         ')'),
                                                   ],
                                                 ),
@@ -716,7 +713,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = height - padding.top - padding.bottom - 335;
+    double newheight = height - padding.top - padding.bottom - 350;
 
     return SafeArea(
       child: Container(
@@ -772,8 +769,12 @@ class _FormPenjualanState extends State<FormPenjualan> {
                   );
                 },
                 onSelected: (value) => setState(() {
-                  _showMyDialog(value.namaProduk.toString().toUpperCase(),
-                      value.produkId.toString(), "0", "0");
+                  _showMyDialog(
+                      value.namaProduk.toString().toUpperCase(),
+                      value.produkId.toString(),
+                      "0",
+                      "0",
+                      value.satuanTerkecil.toString());
                 }),
                 displayStringForOption: (Data d) => '',
               ),
@@ -826,7 +827,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
                             // A SlidableAction can have an icon and/or a label.
                             SlidableAction(
                               onPressed: (context) {
-                                print("Delete = " + _produkHargaId);
                                 setState(() {
                                   list_belanja.removeWhere((element) =>
                                       element.produkHargaId == _produkHargaId);
@@ -852,7 +852,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                               flex: 2,
                               onPressed: (context) {
                                 _showMyDialog(_namaProduk, _produkId,
-                                    _produkHargaId, _qty);
+                                    _produkHargaId, _qty, _satuan_terkecil);
                               },
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -961,7 +961,10 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                   list_rekomendasi[index].namaProduk.toString(),
                                   list_rekomendasi[index].produkId.toString(),
                                   "0",
-                                  "0");
+                                  "0",
+                                  list_rekomendasi[index]
+                                      .satuanTerkecil
+                                      .toString());
                             },
                             child: Container(
                               width: 130,
