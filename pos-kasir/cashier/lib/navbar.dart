@@ -93,14 +93,14 @@ class Navbar extends StatelessWidget {
 
               var json_response = json.decode(response.body);
 
-              if (json_response['status'] == 200) {
-                prefs.clear();
+              // if (json_response['status'] == 200) {
+              prefs.clear();
 
-                globals.namaKasir = "";
-                globals.noTelp = "";
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => MainApp()));
-              }
+              globals.namaKasir = "";
+              globals.noTelp = "";
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => MainApp()));
+              // }
             },
           ),
         ],

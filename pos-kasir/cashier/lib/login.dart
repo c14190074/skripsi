@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:cashier/kasir.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import './widget/globals.dart' as globals;
@@ -72,6 +73,10 @@ class _LoginState extends State<Login> {
                   margin: EdgeInsets.only(bottom: 15),
                   child: TextField(
                     controller: noTelpController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                     decoration: InputDecoration(
                       hintText: 'No Telp',
                       suffixIcon: Icon(Icons.phone),
