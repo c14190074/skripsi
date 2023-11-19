@@ -34,7 +34,7 @@
                       </div>
 
                       <div class="mb-3">
-                        <label for="nominal" class="form-label">Nominal</label>
+                        <label for="nominal" class="form-label">Nominal*</label>
                         <div class="input-group">
                           <input type="text" class="form-control" id="nominal" name="nominal" value="<?= set_value('nama_produk', $produk_diskon_data->nominal) ?>" placeholder="Nominal">
                           <span class="input-group-text">
@@ -68,7 +68,7 @@
                       </div>
 
                       <div class="mb-3">
-                        <label for="start_diskon" class="form-label">Start Diskon</label>
+                        <label for="start_diskon" class="form-label">Start Diskon*</label>
                         <div class="input-group">
                           <input type="text" class="form-control input-date" id="start_diskon" name="start_diskon" value="<?= $produk_diskon_data->start_diskon ? date('d-M-Y', strtotime($produk_diskon_data->start_diskon)) : '' ?>" placeholder="Start Diskon">
                           <span class="input-group-text">
@@ -80,7 +80,7 @@
                       </div>
 
                       <div class="mb-3">
-                        <label for="end_diskon" class="form-label">End Diskon</label>
+                        <label for="end_diskon" class="form-label">End Diskon*</label>
                         <div class="input-group">
                           <input type="text" class="form-control input-date" id="end_diskon" name="end_diskon" value="<?= $produk_diskon_data->end_diskon ? date('d-M-Y', strtotime($produk_diskon_data->end_diskon)) : '' ?>" placeholder="End Diskon">
                           <span class="input-group-text">

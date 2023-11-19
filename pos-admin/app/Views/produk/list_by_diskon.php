@@ -82,7 +82,7 @@
                               <td><?= ucwords($status_diskon) ?></td>
                               <td>
                                 <a href="<?= base_url().'produk/updatediskon/'.pos_encrypt($d->produk_diskon_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
-                                <a href="<?= base_url().'produk/deletediskon/'.pos_encrypt($d->produk_diskon_id) ?>" onclick="return confirm('Apakah anda yakin untuk menghapus program diskon ini?')"><i role="button" class="ti ti-trash fa-2y"></i></a>
+                                <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="produk-diskon" data-id="<?= pos_encrypt($d->produk_diskon_id) ?>" data-label="program diskon pada produk <?= $d->nama_produk ?>" data-url="deletediskon"></i>
                               </td>
                             </tr>
 

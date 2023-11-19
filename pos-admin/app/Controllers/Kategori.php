@@ -31,7 +31,7 @@ class Kategori extends BaseController
                 $hasil = $kategori_model->insert($data);
 
                 if($hasil) {
-                    session()->setFlashData('danger', 'Data kategori berhasil ditambahkan');
+                    session()->setFlashData('success', 'Data kategori berhasil ditambahkan');
                     return redirect()->to(base_url('kategori/list'));
                 }
             }
@@ -69,7 +69,7 @@ class Kategori extends BaseController
                 $hasil = $kategori_model->update($id, $data);
 
                 if($hasil) {
-                    session()->setFlashData('danger', 'Data kategori berhasil diubah');
+                    session()->setFlashData('success', 'Data kategori berhasil diubah');
                     return redirect()->to(base_url('kategori/list'));
                 }
             }
@@ -94,7 +94,7 @@ class Kategori extends BaseController
 
         
         if($kategori_model->update(pos_decrypt($id), $data)) {
-            session()->setFlashData('danger', 'Data kategori berhasil dihapus!');      
+            session()->setFlashData('success', 'Data kategori berhasil dihapus!');      
         } else {
             session()->setFlashData('danger', 'Internal server error');
         }
@@ -111,6 +111,7 @@ class Kategori extends BaseController
         $kategori_model = new KategoriModel();
         $kategori_data = $kategori_model->where('is_deleted', 0)
                                 ->findAll();
+
         return view('kategori/list', array(
             'data' => $kategori_data
         ));

@@ -15,7 +15,7 @@
                   
               <h5 class="card-title fw-semibold mb-4">Tambah Data Produk</h5>
               <div class="card">
-                  <form method="POST" action="<?= $form_action ?>">
+                  <form id="form-pembelian" method="POST" action="<?= $form_action ?>">
                     <div class="card-body">
                       <div class="mb-3">
                           <input type="hidden" value="<?= $pembelian_id ?>" id="pembelian_id" />
@@ -82,7 +82,7 @@
                         </tbody>
                       </table>
 
-                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="button" id="btn-save-pembelian" class="btn btn-primary">Submit</button>
                     </div>
 
                   </form>

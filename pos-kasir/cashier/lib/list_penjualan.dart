@@ -35,11 +35,17 @@ class _ListPenjualanState extends State<ListPenjualan> {
   Future<List<PenjualanHeader>> _getAllDataPenjualan(String date_filter) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user_id = await prefs.getString('user_id') ?? '0';
-    var response = await http.get(Uri.parse(
-        globals.baseURL + 'penjualan/getall/' + user_id + '/' + date_filter));
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http.get(Uri.parse(globals.baseURL +
+        'penjualan/getall/' +
+        user_id +
+        '/' +
+        date_filter +
+        '/' +
+        user_token));
 
     var json_response = json.decode(response.body);
-
+    print(json_response);
     final result =
         json.decode(response.body)['data'].cast<Map<String, dynamic>>();
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cashier/kasir.dart';
 import 'package:cashier/list_diskon.dart';
 import 'package:cashier/list_penjualan.dart';
@@ -5,6 +6,7 @@ import 'package:cashier/main.dart';
 import 'package:cashier/pengaturan.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import './widget/globals.dart' as globals;
 
 class Navbar extends StatelessWidget {
@@ -84,12 +86,21 @@ class Navbar extends StatelessWidget {
             onTap: () async {
               final SharedPreferences prefs =
                   await SharedPreferences.getInstance();
-              prefs.clear();
+              var user_token = prefs.getString("user_token");
 
-              globals.namaKasir = "";
-              globals.noTelp = "";
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => MainApp()));
+              var response = await http.get(Uri.parse(
+                  globals.baseURL + 'user/logout/' + user_token.toString()));
+
+              var json_response = json.decode(response.body);
+
+              if (json_response['status'] == 200) {
+                prefs.clear();
+
+                globals.namaKasir = "";
+                globals.noTelp = "";
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => MainApp()));
+              }
             },
           ),
         ],

@@ -79,12 +79,32 @@ $(document).ready(function() {
 		var id = $(this).data('id');
 		var label = $(this).data('label');
 		var modul = $(this).data('modul');
+		var url = 'delete';
 
-		if (confirm("Apakah anda yakin untuk menghapus data " + label + "?")) {
-		  window.location.href = "delete/"+id;
-		} else {
-		  return;
+		if(modul == 'produk-diskon') {
+			url = $(this).data('url');
 		}
+
+		Swal.fire({
+		  title: 'Konfirmasi',
+		  text: "Apakah anda yakin untuk menghapus data " + label + "?",
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Ya',
+		  cancelButtonText: 'Batal'
+		}).then((result) => {
+		  if (result.isConfirmed) {
+		  	window.location.href = url + "/" + id;
+		  }
+		});
+
+		// if (confirm("Apakah anda yakin untuk menghapus data " + label + "?")) {
+		//   window.location.href = "delete/"+id;
+		// } else {
+		//   return;
+		// }
 	});
 
 	$('#table-produk-stok').on('click', 'tbody .btn-add-row', function() {
@@ -95,7 +115,7 @@ $(document).ready(function() {
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="stok[]" />';
+          		htmlElement += '<input type="text" class="form-control input-stok" name="stok[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
@@ -119,19 +139,19 @@ $(document).ready(function() {
 		var htmlElement = '';
 		htmlElement += '<tr>';
         	htmlElement += '<td>'
-          		htmlElement += '<input type="text" class="form-control" name="satuan_penjualan[]" />';
+          		htmlElement += '<input type="text" class="form-control input-satuan" name="satuan_penjualan[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="jumlah_penjualan[]" />';
+          		htmlElement += '<input type="text" class="form-control input-qty" name="jumlah_penjualan[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="harga_beli[]" />';
+          		htmlElement += '<input type="text" class="form-control input-harga-beli" name="harga_beli[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
-          		htmlElement += '<input type="text" class="form-control" name="harga_jual[]" />';
+          		htmlElement += '<input type="text" class="form-control input-harga-jual" name="harga_jual[]" />';
         	htmlElement += '</td>';
 
         	htmlElement += '<td>';
@@ -249,7 +269,7 @@ $(document).ready(function() {
 		  if (result.isConfirmed) {
 		    $('#form-tgl-datang').submit();
 		  }
-		})
+		});
 	});
 
 	$('#btn_update_pembayaran').on('click', function() {
@@ -269,4 +289,101 @@ $(document).ready(function() {
 		})
 	});
 	
+	$('#btn_save_produk').on('click', function() {
+		var readyToSubmit = true;
+		$('#nama_produk').parent().find('p.error-msg').html('');
+		$('#netto').parent().find('p.error-msg').html('');
+
+		if($('#nama_produk').val() == '') {
+			readyToSubmit = false
+			$('#nama_produk').parent().find('p.error-msg').html('Nama produk wajib diisi.');
+		}
+
+		if($('#netto').val() == '') {
+			readyToSubmit = false
+			$('#netto').parent().find('p.error-msg').html('Jumlah / Netto produk wajib diisi.');
+		}
+
+		$('#table-produk-stok tbody tr').each(function(index, tr){
+			$(tr).find('.input-date').parent().find('p.error-msg').remove();
+			$(tr).find('.input-stok').parent().find('p.error-msg').remove();
+
+			if($(tr).find('.input-date').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Tanggal kadaluarsa wajib diisi.</p>';
+				$(tr).find('.input-date').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+
+			if($(tr).find('.input-stok').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Stok produk wajib diisi.</p>';
+				$(tr).find('.input-stok').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+		});
+
+		$('#table-produk-penjualan tbody tr').each(function(index, tr){
+			$(tr).find('.input-satuan').parent().find('p.error-msg').remove();
+			$(tr).find('.input-qty').parent().find('p.error-msg').remove();
+			$(tr).find('.input-harga-beli').parent().find('p.error-msg').remove();
+			$(tr).find('.input-harga-jual').parent().find('p.error-msg').remove();
+
+			if($(tr).find('.input-satuan').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Satuan penjualan wajib diisi.</p>';
+				$(tr).find('.input-satuan').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+
+			if($(tr).find('.input-qty').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Jumlah / netto penjualan wajib diisi.</p>';
+				$(tr).find('.input-qty').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+
+			if($(tr).find('.input-harga-beli').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Harga beli wajib diisi.</p>';
+				$(tr).find('.input-harga-beli').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+
+			if($(tr).find('.input-harga-jual').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Harga jual wajib diisi.</p>';
+				$(tr).find('.input-harga-jual').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+		});
+
+		if(readyToSubmit) {
+			// alert('Form is ready');
+			$('#form-produk').submit();
+		}
+		
+	});
+
+	$('#btn-save-pembelian').on('click', function() {
+		var readyToSubmit = true;
+		$('#table-pembelian tbody tr').each(function(index, tr){
+			$(tr).find('.produk-qty').parent().find('p.error-msg').remove();
+			$(tr).find('.produk-harga-beli').parent().find('p.error-msg').remove();
+
+			if($(tr).find('.produk-qty').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">QTY produk wajib diisi.</p>';
+				$(tr).find('.produk-qty').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+
+			if($(tr).find('.produk-harga-beli').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Harga beli produk wajib diisi.</p>';
+				$(tr).find('.produk-harga-beli').parent().append(errorMsg);
+				readyToSubmit = false;
+			}
+		});
+
+		
+
+		if(readyToSubmit) {
+			// alert('Form is ready');
+			$('#form-pembelian').submit();
+		}
+		
+	});
 });

@@ -15,7 +15,7 @@
                   
               <h5 class="card-title fw-semibold mb-4">Tambah Data Produk</h5>
               <div class="card">
-                  <form method="POST" action="<?= $form_action ?>">
+                  <form id="form-produk" method="POST" action="<?= $form_action ?>">
                     <div class="card-body">
                       <div class="mb-3">
                           <label for="supplier_id" class="form-label">Supplier</label>
@@ -58,7 +58,7 @@
                       </div>
 
                       <div class="mb-3">
-                        <label for="nama_produk" class="form-label">Nama Produk</label>
+                        <label for="nama_produk" class="form-label">Nama Produk*</label>
                         <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', $data->nama_produk) ?>" placeholder="Nama Produk" required>
                         <p class="error-msg"><?= \Config\Services::validation()->getError('nama_produk') ?></p>
                       </div>
@@ -92,7 +92,7 @@
                       </div>
 
                       <div class="mb-3">
-                        <label for="netto" class="form-label">Jumlah / Netto per Carton (Dalam Satuan Terkecil)</label>
+                        <label for="netto" class="form-label">Jumlah / Netto per Carton (Dalam Satuan Terkecil)*</label>
                         <input type="text" class="form-control" id="netto" name="netto" value="<?= set_value('netto', $data->netto) ?>" placeholder="Jumlah" required>
                         <p class="error-msg"><?= \Config\Services::validation()->getError('netto') ?></p>
                       </div>
@@ -134,7 +134,7 @@
                                   </td>
 
                                   <td>
-                                    <input type="text" class="form-control" value="<?= $p->stok / $data->netto ?>" name="stok[]" />
+                                    <input type="text" class="form-control input-stok" value="<?= $p->stok / $data->netto ?>" name="stok[]" />
                                   </td>
 
                                   <td>
@@ -151,7 +151,7 @@
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="stok[]" />
+                                <input type="text" class="form-control input-stok" name="stok[]" />
                               </td>
 
                               <td>
@@ -189,19 +189,19 @@
                                 <tr>
                                   <td>
                                     <input type="hidden" name="produk_harga_id[]" value="<?= $p->produk_harga_id ?>" />
-                                    <input type="text" class="form-control" value="<?= $p->satuan ?>" name="satuan_penjualan[]" />
+                                    <input type="text" class="form-control input-satuan" value="<?= $p->satuan ?>" name="satuan_penjualan[]" />
                                   </td>
 
                                   <td>
-                                    <input type="text" class="form-control" value="<?= $p->netto ?>" name="jumlah_penjualan[]" />
+                                    <input type="text" class="form-control input-qty" value="<?= $p->netto ?>" name="jumlah_penjualan[]" />
                                   </td>
 
                                   <td>
-                                    <input type="text" class="form-control" value="<?= (int)$p->harga_beli ?>" name="harga_beli[]" />
+                                    <input type="text" class="form-control input-harga-beli" value="<?= (int)$p->harga_beli ?>" name="harga_beli[]" />
                                   </td>
 
                                   <td>
-                                    <input type="text" class="form-control" value="<?= (int)$p->harga_jual ?>" name="harga_jual[]" />
+                                    <input type="text" class="form-control input-harga-jual" value="<?= (int)$p->harga_jual ?>" name="harga_jual[]" />
                                   </td>
 
                                   <td>
@@ -214,19 +214,19 @@
                           <?php } else { ?>
                             <tr>
                               <td>
-                                <input type="text" class="form-control" name="satuan_penjualan[]" />
+                                <input type="text" class="form-control input-satuan" name="satuan_penjualan[]" />
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="jumlah_penjualan[]" />
+                                <input type="text" class="form-control input-qty" name="jumlah_penjualan[]" />
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="harga_beli[]" />
+                                <input type="text" class="form-control input-harga-beli" name="harga_beli[]" />
                               </td>
 
                               <td>
-                                <input type="text" class="form-control" name="harga_jual[]" />
+                                <input type="text" class="form-control input-harga-jual" name="harga_jual[]" />
                               </td>
 
                               <td>
@@ -240,7 +240,7 @@
                         </tbody>
                       </table>
 
-                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="button" id="btn_save_produk" class="btn btn-primary">Submit</button>
                     </div>
 
                   </form>

@@ -34,7 +34,7 @@ class Supplier extends BaseController
                 $hasil = $supplier_model->insert($data);
 
                 if($hasil) {
-                   session()->setFlashData('danger', 'Data supplier berhasil ditambahkan');
+                    session()->setFlashData('success', 'Data supplier berhasil ditambahkan');
                     return redirect()->to(base_url('supplier/list'));
                 } 
             }
@@ -100,6 +100,7 @@ class Supplier extends BaseController
         $supplier_model = new SupplierModel();
         $supplier_data = $supplier_model->where('is_deleted', 0)
                                 ->findAll();
+
         return view('supplier/list', array(
             'data' => $supplier_data
         ));

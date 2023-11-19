@@ -135,6 +135,8 @@ class _LoginState extends State<Login> {
                               globals.namaKasir = jsonResponse['data']['nama'];
                               globals.noTelp = jsonResponse['data']['no_telp'];
                               prefs.setString(
+                                  "user_token", jsonResponse['user_token']);
+                              prefs.setString(
                                   "user_id", jsonResponse['data']['user_id']);
                               prefs.setString(
                                   "no_telp", jsonResponse['data']['no_telp']);
@@ -146,11 +148,20 @@ class _LoginState extends State<Login> {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => Kasir()));
                             } else {
-                              const SnackBarMsg = SnackBar(
-                                content: Text('Informasi login tidak sesuai!'),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBarMsg);
+                              if (jsonResponse['status'] == 403) {
+                                const SnackBarMsg = SnackBar(
+                                  content: Text('User sedang digunakan!'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBarMsg);
+                              } else {
+                                const SnackBarMsg = SnackBar(
+                                  content:
+                                      Text('Informasi login tidak sesuai!'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBarMsg);
+                              }
                             }
                           },
                         ),

@@ -35,6 +35,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   List<DataRekomendasi> list_rekomendasi = <DataRekomendasi>[];
   final TextEditingController inputNoTelp = new TextEditingController();
   final TextEditingController inputJumlahBayar = new TextEditingController();
+  late Future<List<DataHarga>> data_produk_harga;
 
   int total_belanja = 0;
 
@@ -43,10 +44,17 @@ class _FormPenjualanState extends State<FormPenjualan> {
     // TODO: implement initState
     super.initState();
     _getAllDataProduk();
+
+    setState(() {
+      data_produk_harga = _getProdukHarga('0');
+    });
   }
 
   void _getAllDataProduk() async {
-    var response = await http.get(Uri.parse(globals.baseURL + 'produk/getall'));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http
+        .get(Uri.parse(globals.baseURL + 'produk/getall/' + user_token));
 
     setState(() {
       produkModel = ProdukModel.fromJson(json.decode(response.body));
@@ -65,8 +73,11 @@ class _FormPenjualanState extends State<FormPenjualan> {
       "dataBelanja": json.encode(list_belanja.toList()),
     };
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+
     var jsonResponse = null;
-    var api_url = globals.baseURL + 'penjualan/hitungdiskon';
+    var api_url = globals.baseURL + 'penjualan/hitungdiskon/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
     print(jsonResponse);
@@ -106,8 +117,11 @@ class _FormPenjualanState extends State<FormPenjualan> {
       "dataBelanja": json.encode(list_belanja.toList()),
     };
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+
     var jsonResponse = null;
-    var api_url = globals.baseURL + 'penjualan/getsuggestion';
+    var api_url = globals.baseURL + 'penjualan/getsuggestion/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
     print(jsonResponse);
@@ -220,6 +234,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
       String jumlah_bayar) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user_id = await prefs.getString('user_id') ?? '0';
+    String user_token = await prefs.getString('user_token') ?? '0';
     Map dataToSave = {
       "user_id": user_id,
       "dataBelanja": json.encode(list_belanja.toList()),
@@ -228,7 +243,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
     };
 
     var jsonResponse = null;
-    var api_url = globals.baseURL + 'penjualan/simpanpenjualan';
+    var api_url = globals.baseURL + 'penjualan/simpanpenjualan/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
     print(jsonResponse);
@@ -319,11 +334,14 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   Future<List<DataHarga>> _getProdukHarga(String produk_id) async {
-    var response = await http
-        .get(Uri.parse(globals.baseURL + 'produk/getprice/' + produk_id));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+
+    var response = await http.get(Uri.parse(
+        globals.baseURL + 'produk/getprice/' + produk_id + '/' + user_token));
 
     var json_response = json.decode(response.body);
-
+    // print(json_response);
     final result =
         json.decode(response.body)['data'].cast<Map<String, dynamic>>();
 
@@ -331,8 +349,13 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   Future<List<DataDiskon>> _getProdukDiskon(String produk_id) async {
-    var response = await http
-        .get(Uri.parse(globals.baseURL + 'produk/getprice/' + produk_id));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http.get(Uri.parse(globals.baseURL +
+        'produk/getnewestdiskon/' +
+        produk_id +
+        '/' +
+        user_token));
 
     var json_response = json.decode(response.body);
 
@@ -346,6 +369,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
       String produk_harga_id, String qty) async {
     list_qty_produk.clear();
     _qty_controllers.clear();
+    int indexInputQty = 0;
     return showDialog<void>(
         context: context,
         // barrierDismissible: false, // user must tap button!
@@ -357,7 +381,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                   child: Column(
                     children: [
                       FutureBuilder<List<DataHarga>>(
-                          future: _getProdukHarga(produk_id),
+                          // future: _getProdukHarga(produk_id),
+                          future: data_produk_harga,
                           builder: (BuildContext context, snapshot) {
                             if (snapshot.hasData) {
                               // data harga berhasil didapat
@@ -370,216 +395,238 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                     scrollDirection: Axis.vertical,
                                     itemBuilder:
                                         (BuildContext context, int index) {
-                                      TextEditingController _qty_controller =
-                                          TextEditingController();
+                                      bool displayItem = false;
 
-                                      final produk_info = new ItemPenjualan();
-                                      produk_info.produkId =
-                                          daftar_harga[index].produkId;
-                                      produk_info.produkHargaId =
-                                          daftar_harga[index].produkHargaId;
-                                      produk_info.namaProduk =
-                                          daftar_harga[index].namaProduk;
-                                      produk_info.satuanTerkecil =
-                                          daftar_harga[index].satuanTerkecil;
-                                      produk_info.netto =
-                                          daftar_harga[index].netto;
-                                      produk_info.hargaJual =
-                                          daftar_harga[index].hargaJual;
-                                      produk_info.satuan =
-                                          daftar_harga[index].satuan;
-                                      produk_info.qty = "0";
-                                      produk_info.isNew = "1";
-                                      produk_info.diskon = "0";
-                                      produk_info.tipe_diskon = 'nominal';
+                                      if (daftar_harga[index]
+                                              .produkId
+                                              .toString() ==
+                                          produk_id) {
+                                        displayItem = true;
+                                        TextEditingController _qty_controller =
+                                            TextEditingController();
 
-                                      if (produk_harga_id ==
-                                          produk_info.produkHargaId) {
-                                        produk_info.qty = qty;
-                                        produk_info.isNew = "0";
+                                        final produk_info = new ItemPenjualan();
+                                        produk_info.produkId =
+                                            daftar_harga[index].produkId;
+                                        produk_info.produkHargaId =
+                                            daftar_harga[index].produkHargaId;
+                                        produk_info.namaProduk =
+                                            daftar_harga[index].namaProduk;
+                                        produk_info.satuanTerkecil =
+                                            daftar_harga[index].satuanTerkecil;
+                                        produk_info.netto =
+                                            daftar_harga[index].netto;
+                                        produk_info.hargaJual =
+                                            daftar_harga[index].hargaJual;
+                                        produk_info.satuan =
+                                            daftar_harga[index].satuan;
+                                        produk_info.qty = "0";
+                                        produk_info.isNew = "1";
+                                        produk_info.diskon = "0";
+                                        produk_info.tipe_diskon = 'nominal';
+
+                                        if (produk_harga_id ==
+                                            produk_info.produkHargaId) {
+                                          produk_info.qty = qty;
+                                          produk_info.isNew = "0";
+                                        }
+
+                                        list_qty_produk.add(produk_info);
+
+                                        _qty_controllers.add(_qty_controller);
+                                        _qty_controllers[
+                                                _qty_controllers.length - 1]
+                                            .text = "0";
+
+                                        if (produk_harga_id ==
+                                            produk_info.produkHargaId) {
+                                          _qty_controllers[
+                                                  _qty_controllers.length - 1]
+                                              .text = qty;
+                                        }
+                                      } else {
+                                        displayItem = false;
                                       }
 
-                                      list_qty_produk.add(produk_info);
+                                      if (!displayItem) {
+                                        return Container();
+                                      } else {
+                                        indexInputQty += 1;
+                                        int indexInputQtyPrev =
+                                            _qty_controllers.length - 1;
 
-                                      _qty_controllers.add(_qty_controller);
-                                      _qty_controllers[index].text = "0";
-
-                                      if (produk_harga_id ==
-                                          produk_info.produkHargaId) {
-                                        _qty_controllers[index].text = qty;
-                                      }
-                                      return Container(
-                                          margin: EdgeInsets.only(bottom: 10),
-                                          padding: EdgeInsets.only(bottom: 5),
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color: Colors.grey))),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(CurrencyFormat
-                                                      .convertToIdr(
-                                                          int.parse(
-                                                              daftar_harga[
-                                                                      index]
-                                                                  .hargaJual
-                                                                  .toString()),
-                                                          0)),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Text(daftar_harga[index]
-                                                          .satuan
-                                                          .toString() +
-                                                      ' (' +
-                                                      CurrencyFormat.convertToIdr(
-                                                          int.parse(
-                                                              daftar_harga[
-                                                                      index]
-                                                                  .netto
-                                                                  .toString()),
-                                                          0) +
-                                                      ' ' +
-                                                      daftar_harga[index]
-                                                          .satuanTerkecil
-                                                          .toString() +
-                                                      ')'),
-                                                ],
-                                              ),
-                                              Text("x"),
-                                              Container(
-                                                width: 75.0,
-                                                foregroundDecoration:
-                                                    BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5.0),
-                                                ),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: TextFormField(
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          contentPadding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5.0),
-                                                          ),
-                                                        ),
-                                                        controller:
-                                                            _qty_controllers[
-                                                                index],
-                                                        keyboardType: TextInputType
-                                                            .numberWithOptions(
-                                                          decimal: false,
-                                                          signed: true,
-                                                        ),
-                                                        inputFormatters: <
-                                                            TextInputFormatter>[
-                                                          FilteringTextInputFormatter
-                                                              .digitsOnly
-                                                        ],
-                                                      ),
+                                        return Container(
+                                            margin: EdgeInsets.only(bottom: 10),
+                                            padding: EdgeInsets.only(bottom: 5),
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    bottom: BorderSide(
+                                                        color: Colors.grey))),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(CurrencyFormat
+                                                        .convertToIdr(
+                                                            int.parse(
+                                                                daftar_harga[
+                                                                        index]
+                                                                    .hargaJual
+                                                                    .toString()),
+                                                            0)),
+                                                    SizedBox(
+                                                      height: 5,
                                                     ),
-                                                    Container(
-                                                      height: 60.0,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              border: Border(
-                                                                bottom:
-                                                                    BorderSide(
-                                                                  width: 0.5,
+                                                    Text(daftar_harga[index]
+                                                            .satuan
+                                                            .toString() +
+                                                        ' (' +
+                                                        CurrencyFormat.convertToIdr(
+                                                            int.parse(
+                                                                daftar_harga[
+                                                                        index]
+                                                                    .netto
+                                                                    .toString()),
+                                                            0) +
+                                                        ' ' +
+                                                        daftar_harga[index]
+                                                            .satuanTerkecil
+                                                            .toString() +
+                                                        ')'),
+                                                  ],
+                                                ),
+                                                Text("x"),
+                                                Container(
+                                                  width: 75.0,
+                                                  foregroundDecoration:
+                                                      BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                  ),
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: TextFormField(
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            contentPadding:
+                                                                EdgeInsets.all(
+                                                                    8.0),
+                                                            border:
+                                                                OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5.0),
+                                                            ),
+                                                          ),
+                                                          controller:
+                                                              _qty_controllers[
+                                                                  indexInputQtyPrev],
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .numberWithOptions(
+                                                            decimal: false,
+                                                            signed: true,
+                                                          ),
+                                                          inputFormatters: <
+                                                              TextInputFormatter>[
+                                                            FilteringTextInputFormatter
+                                                                .digitsOnly
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 60.0,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                border: Border(
+                                                                  bottom:
+                                                                      BorderSide(
+                                                                    width: 0.5,
+                                                                  ),
                                                                 ),
                                                               ),
+                                                              child: InkWell(
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .arrow_drop_up,
+                                                                  size: 28.0,
+                                                                ),
+                                                                onTap: () {
+                                                                  int currentValue =
+                                                                      int.parse(
+                                                                          _qty_controllers[indexInputQtyPrev]
+                                                                              .text);
+                                                                  setState(() {
+                                                                    currentValue++;
+                                                                    _qty_controllers[indexInputQtyPrev]
+                                                                            .text =
+                                                                        (currentValue)
+                                                                            .toString();
+                                                                    list_qty_produk[indexInputQtyPrev]
+                                                                            .qty =
+                                                                        currentValue
+                                                                            .toString(); // incrementing value
+                                                                  });
+                                                                },
+                                                              ),
                                                             ),
-                                                            child: InkWell(
+                                                            InkWell(
                                                               child: Icon(
                                                                 Icons
-                                                                    .arrow_drop_up,
+                                                                    .arrow_drop_down,
                                                                 size: 28.0,
                                                               ),
                                                               onTap: () {
                                                                 int currentValue =
                                                                     int.parse(_qty_controllers[
-                                                                            index]
+                                                                            indexInputQtyPrev]
                                                                         .text);
                                                                 setState(() {
-                                                                  currentValue++;
+                                                                  currentValue--;
                                                                   _qty_controllers[
-                                                                              index]
-                                                                          .text =
-                                                                      (currentValue)
-                                                                          .toString();
+                                                                          indexInputQtyPrev]
+                                                                      .text = (currentValue >
+                                                                              0
+                                                                          ? currentValue
+                                                                          : 0)
+                                                                      .toString();
                                                                   list_qty_produk[
-                                                                              index]
+                                                                              indexInputQtyPrev]
                                                                           .qty =
                                                                       currentValue
-                                                                          .toString(); // incrementing value
+                                                                          .toString(); // decrementing value
                                                                 });
                                                               },
                                                             ),
-                                                          ),
-                                                          InkWell(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .arrow_drop_down,
-                                                              size: 28.0,
-                                                            ),
-                                                            onTap: () {
-                                                              int currentValue =
-                                                                  int.parse(
-                                                                      _qty_controllers[
-                                                                              index]
-                                                                          .text);
-                                                              setState(() {
-                                                                currentValue--;
-                                                                _qty_controllers[
-                                                                        index]
-                                                                    .text = (currentValue >
-                                                                            0
-                                                                        ? currentValue
-                                                                        : 0)
-                                                                    .toString();
-                                                                list_qty_produk[
-                                                                            index]
-                                                                        .qty =
-                                                                    currentValue
-                                                                        .toString(); // decrementing value
-                                                              });
-                                                            },
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ));
+                                              ],
+                                            ));
+                                      }
                                     });
                               } else {
                                 return Text("Data tidak ditemukan");
@@ -669,7 +716,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = height - padding.top - padding.bottom - 310;
+    double newheight = height - padding.top - padding.bottom - 335;
 
     return SafeArea(
       child: Container(

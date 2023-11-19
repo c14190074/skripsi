@@ -26,8 +26,10 @@ class _ListDiskonState extends State<ListDiskon> {
   }
 
   Future<List<DataDiskon>> _getAllProdukDiskon() async {
-    var response =
-        await http.get(Uri.parse(globals.baseURL + 'produk/getdiskon'));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http
+        .get(Uri.parse(globals.baseURL + 'produk/getdiskon/' + user_token));
 
     var json_response = json.decode(response.body);
 

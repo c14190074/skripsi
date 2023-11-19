@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:cashier/navbar.dart';
 import 'package:cashier/widget/formatter.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +22,27 @@ class DetailPenjualan extends StatefulWidget {
 }
 
 class _DetailPenjualanState extends State<DetailPenjualan> {
+  late Future<List<PenjualanDetail>> data_detail_penjualan;
+  String tgl_transaksi = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    setState(() {
+      data_detail_penjualan = _getPenjualanDetail(widget.penjualan_id);
+    });
+  }
+
   Future<List<PenjualanHeader>> _getPenjualanHeader(
       String _penjualan_id) async {
-    var response = await http.get(
-        Uri.parse(globals.baseURL + 'penjualan/getheader/' + _penjualan_id));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http.get(Uri.parse(globals.baseURL +
+        'penjualan/getheader/' +
+        _penjualan_id +
+        '/' +
+        user_token));
 
     var json_response = json.decode(response.body);
 
@@ -39,10 +57,16 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
 
   Future<List<PenjualanDetail>> _getPenjualanDetail(
       String _penjualan_id) async {
-    var response = await http.get(
-        Uri.parse(globals.baseURL + 'penjualan/getdetail/' + _penjualan_id));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user_token = await prefs.getString('user_token') ?? '0';
+    var response = await http.get(Uri.parse(globals.baseURL +
+        'penjualan/getdetail/' +
+        _penjualan_id +
+        '/' +
+        user_token));
 
     var json_response = json.decode(response.body);
+    tgl_transaksi = json_response['tgl_transaksi'];
 
     final result = json
         .decode(response.body)['penjualan_detail']
@@ -51,6 +75,62 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
     return result
         .map<PenjualanDetail>((json) => PenjualanDetail.fromJson(json))
         .toList();
+  }
+
+  void cetakNota(int _total_belanja) async {
+    final list_belanja = await data_detail_penjualan;
+
+    BlueThermalPrinter printer = BlueThermalPrinter.instance;
+
+    if ((await printer.isConnected)!) {
+      printer.printNewLine();
+      printer.printCustom('TOKO XYZ', 1, 1);
+      printer.printCustom('JL. BASUKI RAHMAT 70, TUBAN', 1, 1);
+      printer.printNewLine();
+      printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
+      printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
+      // printer.printNewLine();
+      printer.printCustom('-----------------------------', 1, 1);
+      printer.printNewLine();
+
+      list_belanja.forEach((item) {
+        String diskon_label = item.getLabelDiskon();
+        String qty_label = item.getLabelQty();
+        int subtotal = item.getSubtotal();
+
+        String _satuan_terkecil = item.satuanTerkecil.toString();
+        String _netto =
+            CurrencyFormat.convertToIdr(int.parse(item.netto.toString()), 0);
+        String netto_label = _netto + ' ' + _satuan_terkecil;
+        String nama_produk_label =
+            item.namaProduk.toString() + ' ' + netto_label;
+
+        printer.printCustom(nama_produk_label, 1, 0);
+        printer.printCustom(qty_label, 1, 0);
+
+        if (diskon_label == '') {
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        } else {
+          printer.printCustom(diskon_label, 1, 0);
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        }
+      });
+
+      String total_label =
+          'Total ' + CurrencyFormat.convertToIdr(_total_belanja, 0);
+
+      printer.printNewLine();
+      printer.printCustom(total_label, 1, 2);
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printCustom("TERIMA KASIH", 1, 1);
+      printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+    }
   }
 
   @override
@@ -107,7 +187,7 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
                                           ),
                                           Row(
                                             children: [
-                                              Text('Tanggal: '),
+                                              Text('Waktu: '),
                                               Text(header_penjualan[index]
                                                   .tglDibuat
                                                   .toString())
@@ -133,20 +213,18 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
                                           ),
                                         ],
                                       ),
-                                      // Column(
-                                      //   children: [
-                                      //     Text('Status Nota:'),
-                                      //     SizedBox(
-                                      //       height: 5,
-                                      //     ),
-                                      //     Text(
-                                      //       'Pending',
-                                      //       style: TextStyle(
-                                      //           fontSize: 16,
-                                      //           fontWeight: FontWeight.bold),
-                                      //     )
-                                      //   ],
-                                      // )
+                                      Container(
+                                        child: TextButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.red, // background
+                                              onPrimary:
+                                                  Colors.white, // foreground
+                                            ),
+                                            onPressed: () {
+                                              cetakNota(total_belanja);
+                                            },
+                                            child: Text('CETAK')),
+                                      )
                                     ],
                                   ),
                                   Divider(),

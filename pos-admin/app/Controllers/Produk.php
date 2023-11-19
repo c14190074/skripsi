@@ -738,7 +738,7 @@ class Produk extends BaseController
             session()->setFlashData('danger', 'Internal server error');
         }
 
-        return redirect()->to(base_url('produk/detail/'.pos_encrypt($produk_diskon_data['produk_id']))); 
+        return redirect()->to(base_url('produk/listdiskon')); 
     }
 
     public function listDiskon() {
