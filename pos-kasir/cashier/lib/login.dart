@@ -150,6 +150,17 @@ class _LoginState extends State<Login> {
                               prefs.setString(
                                   "jabatan", jsonResponse['data']['jabatan']);
 
+                              var getProdukHargaResponse = await http.get(
+                                  Uri.parse(globals.baseURL +
+                                      'produk/getprice/0/' +
+                                      jsonResponse['user_token']));
+
+                              var json_produk_harga = await json
+                                  .decode(getProdukHargaResponse.body);
+
+                              prefs.setString("local_produk_harga",
+                                  jsonEncode(json_produk_harga['data']));
+
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => Kasir()));
                             } else {

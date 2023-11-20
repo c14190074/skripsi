@@ -143,11 +143,8 @@ class ProdukApi extends ResourceController
         if($api_model->isTokenValid($user_token)) {
             $db      = \Config\Database::connect();
             $builder = $db->table('tbl_produk_harga');
-            // $builder->select('tbl_produk_harga.produk_harga_id, tbl_produk_harga.produk_id, tbl_produk_harga.satuan, tbl_produk_harga.netto, tbl_produk_harga.harga_jual, UPPER(tbl_produk.nama_produk) as nama_produk, tbl_produk.satuan_terkecil');
             $builder->select('tbl_produk_harga.produk_harga_id, tbl_produk_harga.produk_id, tbl_produk_harga.satuan, tbl_produk_harga.netto, tbl_produk_harga.harga_jual');
             $builder->where('tbl_produk_harga.is_deleted', 0);
-            $builder->where('tbl_produk_harga.produk_id', $produk_id);
-            // $builder->join('tbl_produk', 'tbl_produk.produk_id = tbl_produk_harga.produk_id');
             $builder->orderBy('tbl_produk_harga.netto');
             $query   = $builder->get();
 

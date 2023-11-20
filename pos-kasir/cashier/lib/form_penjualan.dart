@@ -38,16 +38,21 @@ class _FormPenjualanState extends State<FormPenjualan> {
   late Future<List<DataHarga>> data_produk_harga;
 
   int total_belanja = 0;
+  String jumlahBayarErrorMsg = '';
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getAllDataProduk();
+    // displayLocalProdukHarga();
+  }
 
-    // setState(() {
-    //   data_produk_harga = _getProdukHarga('0');
-    // });
+  void displayLocalProdukHarga() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String local_produk_harga =
+        await prefs.getString('local_produk_harga') ?? '';
+    print(local_produk_harga);
   }
 
   void _getAllDataProduk() async {
@@ -181,54 +186,80 @@ class _FormPenjualanState extends State<FormPenjualan> {
     return showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text('Pembayaran Tunai'),
-            content: TextField(
-              onChanged: (value) {},
-              controller: inputJumlahBayar,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Pembayaran Tunai'),
+              content: Container(
+                height: 65,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      onChanged: (value) {},
+                      controller: inputJumlahBayar,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      decoration: InputDecoration(hintText: "Jumlah Bayar"),
+                    ),
+                    // SizedBox(
+                    //   height: 5,
+                    // ),
+                    Text(
+                      jumlahBayarErrorMsg,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                    )
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.grey.shade600, // background
+                    onPrimary: Colors.white, // foreground
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context, 'Batal');
+                  },
+                  child: const Text('Batal'),
+                ),
+                TextButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red, // background
+                    onPrimary: Colors.white, // foreground
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, 'Uang Pas');
+
+                    submitOrderan('tunai', '', total_belanja.toString());
+                  },
+                  child: const Text('Uang Pas'),
+                ),
+                TextButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue, // background
+                    onPrimary: Colors.white, // foreground
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      jumlahBayarErrorMsg = '';
+                    });
+                    if (int.parse(inputJumlahBayar.text.toString()) <
+                        total_belanja) {
+                      setState(() {
+                        jumlahBayarErrorMsg = 'Jumlah bayar terlalu kecil';
+                      });
+                    } else {
+                      Navigator.pop(context, 'Bayar');
+                      submitOrderan('tunai', '', inputJumlahBayar.text);
+                    }
+                  },
+                  child: const Text('Bayar'),
+                ),
               ],
-              decoration: InputDecoration(hintText: "Jumlah Bayar"),
-            ),
-            actions: <Widget>[
-              TextButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.grey.shade600, // background
-                  onPrimary: Colors.white, // foreground
-                ),
-                onPressed: () async {
-                  Navigator.pop(context, 'Batal');
-                },
-                child: const Text('Batal'),
-              ),
-              TextButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.red, // background
-                  onPrimary: Colors.white, // foreground
-                ),
-                onPressed: () {
-                  Navigator.pop(context, 'Uang Pas');
-
-                  submitOrderan('tunai', '', total_belanja.toString());
-                },
-                child: const Text('Uang Pas'),
-              ),
-              TextButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue, // background
-                  onPrimary: Colors.white, // foreground
-                ),
-                onPressed: () {
-                  Navigator.pop(context, 'Bayar');
-
-                  submitOrderan('tunai', '', inputJumlahBayar.text);
-                },
-                child: const Text('Bayar'),
-              ),
-            ],
-          );
+            );
+          });
         });
   }
 
@@ -337,13 +368,9 @@ class _FormPenjualanState extends State<FormPenjualan> {
 
   Future<List<DataHarga>> _getProdukHarga(String produk_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String user_token = await prefs.getString('user_token') ?? '0';
-
-    var response = await http.get(Uri.parse(
-        globals.baseURL + 'produk/getprice/' + produk_id + '/' + user_token));
-
-    var json_response = await json.decode(response.body);
-    final result = json_response['data'].cast<Map<String, dynamic>>();
+    String local_produk_harga =
+        await prefs.getString('local_produk_harga') ?? '';
+    final result = jsonDecode(local_produk_harga).cast<Map<String, dynamic>>();
 
     return result.map<DataHarga>((json) => DataHarga.fromJson(json)).toList();
   }
@@ -887,7 +914,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                           _satuan_terkecil +
                                           ')',
                                       style: TextStyle(
-                                          fontSize: 16, color: Colors.black),
+                                          fontSize: 14, color: Colors.black),
                                     ),
                                     SizedBox(
                                       height: 5,
@@ -973,7 +1000,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                   child: Text(
                                 list_rekomendasi[index].namaProduk.toString(),
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.white),
+                                    fontSize: 13, color: Colors.white),
                               )),
                             ),
                           );
