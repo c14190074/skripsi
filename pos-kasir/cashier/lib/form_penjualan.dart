@@ -300,8 +300,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
     BlueThermalPrinter printer = BlueThermalPrinter.instance;
     if ((await printer.isConnected)!) {
       printer.printNewLine();
-      printer.printCustom('TOKO XYZ', 1, 1);
-      printer.printCustom('JL. BASUKI RAHMAT 70, TUBAN', 1, 1);
+      printer.printCustom('TOKO BAHAN KUE', 1, 1);
+      printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
       printer.printNewLine();
       printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
       printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
