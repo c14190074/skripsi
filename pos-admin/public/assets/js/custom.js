@@ -100,11 +100,6 @@ $(document).ready(function() {
 		  }
 		});
 
-		// if (confirm("Apakah anda yakin untuk menghapus data " + label + "?")) {
-		//   window.location.href = "delete/"+id;
-		// } else {
-		//   return;
-		// }
 	});
 
 	$('#table-produk-stok').on('click', 'tbody .btn-add-row', function() {

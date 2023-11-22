@@ -8,10 +8,16 @@
             <div class="card-body"> -->
 
               <?php if(session()->getFlashData('success')){ ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashData('success') ?>
-                    </div>
-                  <?php } ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashData('success') ?>
+                </div>
+              <?php } ?>
+
+              <?php if(session()->getFlashData('danger')){ ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashData('danger') ?>
+                </div>
+              <?php } ?>
                   
               <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">

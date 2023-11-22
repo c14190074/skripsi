@@ -28,10 +28,28 @@
 	background-color: transparent;
 }
 
-.fa-2y {
-	font-size: 1.25em;
-}
 
 .label-ket p {
 	margin-bottom: 0;
+}
+
+.fa-2y {
+	font-size: 1.5em;
+}
+
+.ti-info-circle {
+
+}
+
+.btn-edit-table {
+
+}
+
+
+.ti-discount-2 {
+	
+}
+
+.btn-delete-table {
+	color: red;
 }

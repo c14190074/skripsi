@@ -1,6 +1,5 @@
 $(function () {
 
-
   // =====================================
   // Profit
   // =====================================
@@ -12,6 +11,7 @@ $(function () {
     $('#earning').html('');
 
     $.get("getreport/"+tahun_laporan, function( response ) {
+        console.log(response['data']['omset_penjualan']);
         var omset_penjualan = response['data']['omset_penjualan'];
         var jumlah_penjualan = response['data']['jumlah_penjualan'];
         var periode_penjualan = response['data']['periode_penjualan'];
@@ -32,8 +32,6 @@ $(function () {
           $('#persentase_bulanan').html('-'+response['data']['persentase_profit']+'%');
         }
 
-
-
         var chart = {
           series: [
             { name: "Omset Penjualan:", data: omset_penjualan },
@@ -50,9 +48,7 @@ $(function () {
             sparkline: { enabled: false },
           },
 
-
           colors: ["#5D87FF", "#49BEFF"],
-
 
           plotOptions: {
             bar: {
@@ -74,7 +70,6 @@ $(function () {
             show: false,
           },
 
-
           grid: {
             borderColor: "rgba(0,0,0,0.1)",
             strokeDashArray: 3,
@@ -92,7 +87,6 @@ $(function () {
               style: { cssClass: "grey--text lighten-2--text fill-color" },
             },
           },
-
 
           yaxis: {
             show: true,
@@ -112,7 +106,6 @@ $(function () {
             colors: ["transparent"],
           },
 
-
           tooltip: { theme: "light" },
 
           responsive: [
@@ -127,8 +120,6 @@ $(function () {
               }
             }
           ]
-
-
       };
 
       var chart = new ApexCharts(document.querySelector("#chart"), chart);
@@ -184,7 +175,6 @@ $(function () {
     });
 
   });
-
 
   $('#periode_laporan').change();
       

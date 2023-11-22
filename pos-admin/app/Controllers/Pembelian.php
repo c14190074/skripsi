@@ -32,7 +32,7 @@ class Pembelian extends BaseController
         $builder->where('tbl_pembelian.is_deleted', 0);
         $builder->join('tbl_supplier', 'tbl_supplier.supplier_id = tbl_pembelian.supplier_id');
         $builder->join('tbl_user', 'tbl_pembelian.dibuat_oleh = tbl_user.user_id');
-        $builder->orderBy('tbl_pembelian.tgl_dibuat', 'DESC');
+        $builder->orderBy('tbl_pembelian.tgl_dibuat', 'desc');
         $pembelian_data   = $builder->get();
 
         return view('pembelian/list', array(
@@ -109,8 +109,10 @@ class Pembelian extends BaseController
 
 
 
-                    session()->setFlashData('danger', 'Data pembelian berhasil ditambahkan');
+                    session()->setFlashData('success', 'Data pembelian berhasil ditambahkan');
                     return redirect()->to(base_url('pembelian/list'));
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
              
             }
@@ -194,8 +196,10 @@ class Pembelian extends BaseController
 
 
 
-                session()->setFlashData('danger', 'Data pembelian berhasil diubah');
+                session()->setFlashData('success', 'Data pembelian berhasil diubah');
                 return redirect()->to(base_url('pembelian/list'));
+            } else {
+                session()->setFlashData('danger', 'Internal server error');
             }
         }
 
@@ -269,7 +273,7 @@ class Pembelian extends BaseController
 
         
         if($pembelian_model->update($id, $data)) {
-            session()->setFlashData('danger', 'Data pembelian berhasil dihapus!');      
+            session()->setFlashData('success', 'Data pembelian berhasil dihapus!');      
         } else {
             session()->setFlashData('danger', 'Internal server error');
         }
@@ -355,7 +359,7 @@ class Pembelian extends BaseController
             $hasil = $pembelian_model->update($pembelian_id, ['status' => 1, 'tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
 
             if($hasil) {
-                session()->setFlashData('danger', 'Tanggal pembelian berhasil diupdate');
+                session()->setFlashData('success', 'Tanggal pembelian berhasil diupdate');
                 
             } else {
                 session()->setFlashData('danger', 'Update tanggal pembelian gagal.');
@@ -413,7 +417,7 @@ class Pembelian extends BaseController
             $hasil = $pembelian_model->update($pembelian_id, $data);
 
             if($hasil) {
-                session()->setFlashData('danger', 'Status pembayaran berhasil diupdate.');
+                session()->setFlashData('success', 'Status pembayaran berhasil diupdate.');
                 
             } else {
                 session()->setFlashData('danger', 'Update pembayaran gagal.');

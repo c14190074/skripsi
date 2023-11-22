@@ -50,7 +50,7 @@
                       <div class="d-flex justify-content-end">
                         <div
                           class="text-white bg-secondary rounded-circle p-6 d-flex align-items-center justify-content-center">
-                          <i class="ti ti-currency-dollar fs-6"></i>
+                          Rp
                         </div>
                       </div>
                     </div>

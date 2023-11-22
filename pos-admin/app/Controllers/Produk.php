@@ -174,9 +174,11 @@ class Produk extends BaseController
                         }
                     }
 
-                    session()->setFlashData('danger', 'Data produk berhasil ditambahkan');
+                    session()->setFlashData('success', 'Data produk berhasil ditambahkan');
                     return redirect()->to(base_url('produk/list'));
-                } 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
+                }
             }
         }
         
@@ -211,16 +213,15 @@ class Produk extends BaseController
             return redirect()->to(base_url('user/login')); 
         }
 
-
         $db      = \Config\Database::connect();
         $builder = $db->table('tbl_produk');
         $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier');
         $builder->where('tbl_produk.is_deleted', 0);
         $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
         $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
+        $builder->orderBy('tbl_produk.tgl_dibuat', 'desc');
         $query   = $builder->get();
 
-        
         return view('produk/list', array(
             'produk_data' => $query->getResult(),
             'produk_model' => new ProdukModel(),
@@ -436,8 +437,10 @@ class Produk extends BaseController
                         }
                     }
 
-                    session()->setFlashData('danger', 'Data produk berhasil diubah');
+                    session()->setFlashData('success', 'Data produk berhasil diubah');
                     return redirect()->to(base_url('produk/list')); 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
             }
         }
@@ -469,7 +472,7 @@ class Produk extends BaseController
 
         
         if($produk_model->update(pos_decrypt($id), $data)) {
-            session()->setFlashData('danger', 'Data produk berhasil dihapus!');      
+            session()->setFlashData('success', 'Data produk berhasil dihapus!');      
         } else {
             session()->setFlashData('danger', 'Internal server error');
         }
@@ -598,14 +601,15 @@ class Produk extends BaseController
                         }
                     }
 
-                    session()->setFlashData('danger', 'Pengaturan diskon berhasil ditambahkan');
+                    session()->setFlashData('success', 'Pengaturan diskon berhasil ditambahkan');
                     return redirect()->to(base_url('produk/detail/'.pos_encrypt($id)));
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
                 
 
             }
         }
-
 
         return view('produk/form_diskon', array(
             'form_action' => base_url().'produk/diskon/'.pos_encrypt($id),
@@ -693,8 +697,10 @@ class Produk extends BaseController
                         }
                     }
 
-                    session()->setFlashData('danger', 'Pengaturan diskon berhasil diubah');
+                    session()->setFlashData('success', 'Pengaturan diskon berhasil diubah');
                     return redirect()->to(base_url('produk/detail/'.pos_encrypt($produk_id)));
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
                 
 
@@ -733,7 +739,7 @@ class Produk extends BaseController
             $builder->where('produk_diskon_id', $produk_diskon_id);
             $builder->update();
 
-            session()->setFlashData('danger', 'Data produk diskon berhasil dihapus!');      
+            session()->setFlashData('success', 'Data produk diskon berhasil dihapus!');      
         } else {
             session()->setFlashData('danger', 'Internal server error');
         }

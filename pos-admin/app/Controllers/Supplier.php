@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use App\Models\SupplierModel;
+use App\Models\ProdukModel;
 
 class Supplier extends BaseController
 {
@@ -36,7 +37,9 @@ class Supplier extends BaseController
                 if($hasil) {
                     session()->setFlashData('success', 'Data supplier berhasil ditambahkan');
                     return redirect()->to(base_url('supplier/list'));
-                } 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
+                }
             }
         }
         
@@ -78,9 +81,11 @@ class Supplier extends BaseController
                 $hasil = $supplier_model->update($id, $data);
 
                 if($hasil) {
-                    session()->setFlashData('danger', 'Data supplier berhasil diubah');
+                    session()->setFlashData('success', 'Data supplier berhasil diubah');
                     return redirect()->to(base_url('supplier/list'));
-                } 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
+                }
             }
         }
         
@@ -99,6 +104,7 @@ class Supplier extends BaseController
 
         $supplier_model = new SupplierModel();
         $supplier_data = $supplier_model->where('is_deleted', 0)
+                                ->orderBy('tgl_dibuat', 'desc')
                                 ->findAll();
 
         return view('supplier/list', array(
@@ -116,11 +122,19 @@ class Supplier extends BaseController
             'is_deleted' => 1,
         ];
 
-        
-        if($supplier_model->update(pos_decrypt($id), $data)) {
-            session()->setFlashData('danger', 'Data supplier berhasil dihapus!');      
+        $produk_model = new ProdukModel();
+        $produk_data  = $produk_model->where('is_deleted', 0)
+                                        ->where('supplier_id', pos_decrypt($id))
+                                        ->findAll();
+
+        if($produk_data) {
+            session()->setFlashData('danger', 'Data supplier tidak dapat dihapus karena terdapat produk yang masih aktif.');
         } else {
-            session()->setFlashData('danger', 'Internal server error');
+            if($supplier_model->update(pos_decrypt($id), $data)) {
+                session()->setFlashData('success', 'Data supplier berhasil dihapus!');      
+            } else {
+                session()->setFlashData('danger', 'Internal server error');
+            }
         }
 
         return redirect()->to(base_url('supplier/list')); 

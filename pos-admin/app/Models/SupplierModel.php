@@ -37,9 +37,10 @@ class SupplierModel extends Model
                 ]
             ],
             'email' => [
-                'rules'=> 'required',
+                'rules'=> 'required|valid_email',
                 'errors' => [
-                    'required'=> 'Email wajib diisi!'
+                    'required'=> 'Email wajib diisi!',
+                    'valid_email' => 'Format email tidak sesuai!'
                 ]
             ],
         ];

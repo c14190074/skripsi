@@ -7,22 +7,17 @@
         <div class="container-fluid">
           <!-- <div class="card">
             <div class="card-body"> -->
-              <?php
-                // $encrypter = \Config\Services::encrypter();
-                // $plainText  = 'abcee2725df6b25dccdc474b7a119f54f80e3a91b39ac6fd18ed0da1YwFlf5D0H5jDxH/kja2lMak=';
-                // $ciphertext = $encrypter->decrypt($plainText);
-
-                // // Outputs: This is a plain-text message!
-                // echo $ciphertext;
-                // echo pos_encrypt('admin1234');
-                // echo "<br />";
-                // echo pos_decrypt('PPZJ46MYyKSE');
-              ?>
               <?php if(session()->getFlashData('danger')){ ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashData('danger') ?>
-                    </div>
-                  <?php } ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashData('danger') ?>
+                </div>
+              <?php } ?>
+
+              <?php if(session()->getFlashData('success')){ ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashData('success') ?>
+                </div>
+              <?php } ?>
                   
               <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">

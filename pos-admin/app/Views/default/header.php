@@ -3,14 +3,12 @@
 
     $today = date("Y-m-d");
     $date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
-    $first_date = date('Y-m-01', strtotime($date));
     $last_date = date('Y-m-t', strtotime($date));
 
     $total_notif = 0;
     $produk_stok_model = new ProdukStokModel();
 
     $db      = \Config\Database::connect();
-
     $builder = $db->table('tbl_produk p');
     $builder->select('p.*, s.stok');
     $builder->selectSum('s.stok');
@@ -38,7 +36,6 @@
     $builder->select('tbl_produk.*, tbl_kategori.kategori_id, tbl_kategori.nama_kategori, tbl_supplier.supplier_id, tbl_supplier.nama_supplier, tbl_produk_stok.stok_id, tbl_produk_stok.stok, tbl_produk_stok.tgl_kadaluarsa');
     $builder->where('tbl_produk.is_deleted', 0);
     $builder->where('tbl_produk_stok.is_deleted', 0);
-    // $builder->where('tbl_produk_stok.tgl_kadaluarsa >=', $first_date);
     $builder->where('tbl_produk_stok.tgl_kadaluarsa <=', $last_date);
     $builder->join('tbl_produk_stok', 'tbl_produk.produk_id = tbl_produk_stok.produk_id');
     $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
@@ -88,6 +85,14 @@
             <li class="nav-small-cap">
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">MENU</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="<?= base_url('penjualan/harian') ?>" aria-expanded="false">
+                <span>
+                  <i class="ti ti-home"></i>
+                </span>
+                <span class="hide-menu">Dashboard</span>
+              </a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="<?= base_url('user/list') ?>" aria-expanded="false">

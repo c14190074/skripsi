@@ -9,6 +9,18 @@
               <h5 class="card-title fw-semibold mb-4">Add User</h5>
               <div class="card">
                 <div class="card-body">
+                  <?php if(session()->getFlashData('danger')){ ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashData('danger') ?>
+                    </div>
+                  <?php } ?>
+
+                  <?php if(session()->getFlashData('success')){ ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashData('success') ?>
+                    </div>
+                  <?php } ?>
+                  
                   <form method="POST" action="<?= $form_action ?>">
                     <?php if($is_new_data) { ?>
                       <div class="mb-3">

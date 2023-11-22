@@ -51,7 +51,6 @@ class Penjualan extends BaseController
         ));
     }
 
-
     public function getReport($tahun_laporan) {
         $omset_penjualan = [];
         $jumlah_penjualan = [];
@@ -59,7 +58,6 @@ class Penjualan extends BaseController
         $profit_penjualan = [];
         $omset_tertinggi = 0;
         // $bulan_penjualan = [];
-
 
         $db      = \Config\Database::connect();
         $builder = $db->table('tbl_penjualan');
@@ -71,7 +69,6 @@ class Penjualan extends BaseController
         $builder->orderBy('tgl_dibuat', 'asc');
         $builder->groupBy('Month(tgl_dibuat)');
         $penjualan_data   = $builder->get();
-
 
         $builder = $db->table('tbl_penjualan_detail d');
         $builder->selectSum('((d.harga_jual * d.qty) - (d.harga_beli * d.qty))', 'profit');
@@ -136,7 +133,6 @@ class Penjualan extends BaseController
             $omset_tertinggi = max($omset_penjualan);
         }
         
-
         $response = array(
             'status' => 200,
             'data' => [
@@ -152,9 +148,6 @@ class Penjualan extends BaseController
             ]
         );
 
-
-    
-
         return $this->respond($response);
     }
 
@@ -169,7 +162,7 @@ class Penjualan extends BaseController
         $builder->select('tbl_penjualan.*, tbl_user.nama');
         $builder->where('tbl_penjualan.is_deleted', 0);
         $builder->join('tbl_user', 'tbl_penjualan.dibuat_oleh = tbl_user.user_id');
-        $builder->orderBy('tgl_dibuat', 'DESC');
+        $builder->orderBy('tbl_penjualan.tgl_dibuat', 'desc');
         $penjualan_data   = $builder->get();
 
         return view('penjualan/list', array(
@@ -224,7 +217,6 @@ class Penjualan extends BaseController
         $support = '';
         $confidence = '';
 
-
         $setting_model = new SettingModel();
         $setting_support = $setting_model->where('setting_name', 'support')->first();
         $setting_confidence = $setting_model->where('setting_name', 'confidence')->first();
@@ -236,7 +228,6 @@ class Penjualan extends BaseController
             $support = $_POST['support'];
             $confidence = $_POST['confidence'];
             $produk_ids = isset($_POST['produk_ids']) ? $_POST['produk_ids'] : [];
-
 
             if($support > 0 && $confidence > 0) {
                 $db      = \Config\Database::connect();
@@ -336,6 +327,94 @@ class Penjualan extends BaseController
             'target_prediksi' => $target_prediksi,
             'produk_sebanding' => $produk_sebanding,
             'rules_by_kategori' => []
+        ));
+    }
+
+    public function getReportHarian() {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $tgl_dipilih = date('d M Y');
+        // $tgl_dipilih = '2023-11-20';
+        $omset = 0;
+        $jumlah_transaksi = 0;
+        $profit = 0;
+        $persentase_profit = 0;
+        $most_wanted_produk = [];
+
+        if ($this->request->is('post')) {
+            $tgl_dipilih = $_POST['report_date'];
+        }
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_penjualan p');
+        $builder->select('p.total_bayar');
+        $builder->where('p.is_deleted', 0);
+        $builder->where('DATE(p.tgl_dibuat)', date('Y-m-d', strtotime($tgl_dipilih)));
+        $query   = $builder->get();
+        $query_result = $query->getResult();
+
+        if($query_result) {
+            foreach($query_result as $q) {
+                $jumlah_transaksi++;
+                $omset += $q->total_bayar;
+            }
+        }
+
+        $builder = $db->table('tbl_penjualan_detail d');
+        $builder->select('d.harga_beli, d.harga_jual, d.qty');
+        $builder->where('d.is_deleted', 0);
+        $builder->where('p.is_deleted', 0);
+        $builder->where('DATE(p.tgl_dibuat)', date('Y-m-d', strtotime($tgl_dipilih)));
+        $builder->join('tbl_penjualan p', 'd.penjualan_id = p.penjualan_id');
+        $query   = $builder->get();
+        $query_result = $query->getResult();
+
+        if($query_result) {
+            foreach($query_result as $q) {
+                $profit += ($q->harga_jual - $q->harga_beli) * $q->qty;
+            }
+        }
+
+        if($omset > 0 && $profit > 0) {
+            $persentase_profit = $profit / $omset * 100;
+        }
+
+
+        $builder = $db->table('tbl_penjualan_detail d');
+        $builder->select('pr.nama_produk');
+        $builder->selectCount('pr.produk_id');
+        $builder->where('d.is_deleted', 0);
+        $builder->where('p.is_deleted', 0);
+        $builder->where('DATE(p.tgl_dibuat)', date('Y-m-d', strtotime($tgl_dipilih)));
+        $builder->join('tbl_penjualan p', 'd.penjualan_id = p.penjualan_id');
+        $builder->join('tbl_produk pr', 'd.produk_id = pr.produk_id');
+        $builder->groupBy('pr.produk_id');
+
+        $query   = $builder->get();
+        $query_result = $query->getResult();
+
+        if($query_result) {
+            foreach ($query_result as $key => $value) {
+                $most_wanted_produk[] = array(
+                    'nama_produk' => $value->nama_produk,
+                    'jumlah' => $value->produk_id
+                );
+            }
+
+            usort($most_wanted_produk, function ($a, $b) {return $a['jumlah'] < $b['jumlah'];});
+        }
+       
+
+        return view('penjualan/report_harian', array(
+            'form_action' => base_url().'penjualan/harian',
+            'tgl_dipilih' => $tgl_dipilih,
+            'omset' => number_format($omset),
+            'jumlah_transaksi' => number_format($jumlah_transaksi),
+            'profit' => number_format($profit),
+            'persentase_profit' => $persentase_profit > 0 ? number_format($persentase_profit, 2) : 0,
+            'terlaris' => $most_wanted_produk
         ));
     }
 }

@@ -10,6 +10,12 @@
                 <?= session()->getFlashData('danger') ?>
             </div>
           <?php } ?>
+
+          <?php if(session()->getFlashData('success')){ ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= session()->getFlashData('success') ?>
+            </div>
+          <?php } ?>
               
           <h5 class="card-title fw-semibold mb-4">Informasi Produk</h5>
           <div class="card">

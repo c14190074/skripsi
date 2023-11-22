@@ -34,7 +34,7 @@ class User extends BaseController
                 ];
 
                 session()->set($data_login);
-                return redirect()->to(base_url('user/list')); 
+                return redirect()->to(base_url('penjualan/harian')); 
             } else {
                 session()->setFlashData('danger', 'No telp dan password tidak cocok!');
             }
@@ -58,7 +58,7 @@ class User extends BaseController
 
         if(!session()->is_superadmin) {
             if($user_data['jabatan'] == 'admin') {
-                session()->setFlashData('danger', 'Akses ditolak');
+                session()->setFlashData('danger', 'Anda tidak memiliki akses ini!');
                 return redirect()->to(base_url('user/list'));
             }
         }
@@ -68,7 +68,7 @@ class User extends BaseController
 
         
         if($user_model->update(pos_decrypt($id), $data)) {
-            session()->setFlashData('danger', 'Data user berhasil dihapus!');      
+            session()->setFlashData('success', 'Data user berhasil dihapus!');      
         } else {
             session()->setFlashData('danger', 'Internal server error');
         }
@@ -114,8 +114,10 @@ class User extends BaseController
                 $hasil = $user_model->update($id, $data);
 
                 if($hasil) {
-                    session()->setFlashData('danger', 'Data user berhasil diubah');
+                    session()->setFlashData('success', 'Data user berhasil diubah');
                     return redirect()->to(base_url('user/list')); 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
             }
         }
@@ -153,8 +155,10 @@ class User extends BaseController
                 $hasil = $user_model->insert($data);
 
                 if($hasil) {
-                    session()->setFlashData('danger', 'Data user berhasil ditambahkan');
+                    session()->setFlashData('success', 'Data user berhasil ditambahkan');
                     return redirect()->to(base_url('user/list')); 
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
             }
         }
@@ -174,6 +178,7 @@ class User extends BaseController
 
         $user_model = new UserModel();
         $user_data = $user_model->where('is_deleted', 0)
+                                ->orderBy('tgl_dibuat', 'desc')
                                 ->findAll();
         return view('user/list', array(
             'data' => $user_data

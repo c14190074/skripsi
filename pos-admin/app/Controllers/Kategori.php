@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use App\Models\KategoriModel;
+use App\Models\ProdukModel;
 
 class Kategori extends BaseController
 {
@@ -33,6 +34,8 @@ class Kategori extends BaseController
                 if($hasil) {
                     session()->setFlashData('success', 'Data kategori berhasil ditambahkan');
                     return redirect()->to(base_url('kategori/list'));
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
             }
         }
@@ -71,6 +74,8 @@ class Kategori extends BaseController
                 if($hasil) {
                     session()->setFlashData('success', 'Data kategori berhasil diubah');
                     return redirect()->to(base_url('kategori/list'));
+                } else {
+                    session()->setFlashData('danger', 'Internal server error');
                 }
             }
         }
@@ -92,11 +97,19 @@ class Kategori extends BaseController
             'is_deleted' => 1,
         ];
 
+        $produk_model = new ProdukModel();
+        $produk_data  = $produk_model->where('is_deleted', 0)
+                                        ->where('kategori_id', pos_decrypt($id))
+                                        ->findAll();
         
-        if($kategori_model->update(pos_decrypt($id), $data)) {
-            session()->setFlashData('success', 'Data kategori berhasil dihapus!');      
+        if($produk_data) {
+            session()->setFlashData('danger', 'Kategori tidak dapat dihapus karena terdapat produk yang masih aktif.');
         } else {
-            session()->setFlashData('danger', 'Internal server error');
+            if($kategori_model->update(pos_decrypt($id), $data)) {
+                session()->setFlashData('success', 'Data kategori berhasil dihapus!');      
+            } else {
+                session()->setFlashData('danger', 'Internal server error');
+            }
         }
 
         return redirect()->to(base_url('kategori/list')); 
@@ -110,7 +123,8 @@ class Kategori extends BaseController
         
         $kategori_model = new KategoriModel();
         $kategori_data = $kategori_model->where('is_deleted', 0)
-                                ->findAll();
+                                        ->orderBy('tgl_dibuat', 'desc')
+                                        ->findAll();
 
         return view('kategori/list', array(
             'data' => $kategori_data

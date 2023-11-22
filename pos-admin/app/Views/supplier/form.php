@@ -16,7 +16,17 @@
               <h5 class="card-title fw-semibold mb-4">Add Supplier</h5>
               <div class="card">
                 <div class="card-body">
-                  
+                  <?php if(session()->getFlashData('success')){ ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashData('success') ?>
+                    </div>
+                  <?php } ?>
+
+                  <?php if(session()->getFlashData('danger')){ ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashData('danger') ?>
+                    </div>
+                  <?php } ?>
                   <form method="POST" action="<?= $form_action ?>">
                     <div class="mb-3">
                       <label for="nama_supplier" class="form-label">Nama Supplier*</label>
