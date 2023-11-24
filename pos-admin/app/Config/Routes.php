@@ -97,8 +97,16 @@ $routes->group("penjualan", function ($routes) {
     $routes->get('analisa', 'Penjualan::analisa');
     $routes->post('analisa', 'Penjualan::analisa');
     $routes->get('getreport/(:any)', 'Penjualan::getReport/$1');
-    $routes->get('harian', 'Penjualan::getReportHarian');
-    $routes->post('harian', 'Penjualan::getReportHarian');
+});
+$routes->group("payment", function ($routes) {
+    $routes->get('notification', 'Payment::notification');
+    $routes->post('notification', 'Payment::notification');
+    $routes->get('recurring', 'Payment::recurring');
+    $routes->get('account', 'Payment::account');
+    $routes->get('success', 'Payment::success');
+    $routes->post('success', 'Payment::success');
+    $routes->post('failed', 'Payment::failed');
+    $routes->get('error', 'Payment::error');
 });
 
 // routes untuk API

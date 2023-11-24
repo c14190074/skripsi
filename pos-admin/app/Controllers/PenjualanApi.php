@@ -44,7 +44,7 @@ class PenjualanApi extends ResourceController
                 $dataToSave = [
                     'total_bayar' => 0,
                     'metode_pembayaran' => $metode_pembayaran,
-                    'status_pembayaran' => 'lunas',
+                    'status_pembayaran' => $metode_pembayaran == 'tunai' ? 'lunas' : 'pending',
                     'midtrans_id' => 0,
                     'midtrans_status' => '',
                     'tgl_dibuat' => $tgl_dibuat,
@@ -135,7 +135,8 @@ class PenjualanApi extends ResourceController
                     }
 
                     if(count($data) == $jumlahDataTersimpan) {
-                        $penjualan_model->update($penjualan_id, ['total_bayar' => $total_belanja]);
+                        $midtrans_id = time().'#'.$penjualan_id;
+                        $penjualan_model->update($penjualan_id, ['total_bayar' => $total_belanja, 'midtrans_id' => $midtrans_id]);
 
                         if($metode_pembayaran == 'tunai') {
                             $response = array(
@@ -152,8 +153,7 @@ class PenjualanApi extends ResourceController
                             // Set 3DS transaction for credit card to true
                             \Midtrans\Config::$is3ds = true;
 
-                            $midtrans_id = time().'#'.$penjualan_id;
-
+                            
                             $params = array(
                                 'transaction_details' => array(
                                     'order_id' => $midtrans_id,
