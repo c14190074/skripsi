@@ -95,7 +95,7 @@ class PenjualanApi extends ResourceController
 
                             $produk_stok_model = new ProdukStokModel();
                             $produk_stok = $produk_stok_model->where('is_deleted', 0)
-                                                            ->where('produk_id', 32)
+                                                            ->where('produk_id', $produk_id)
                                                             ->orderBy('tgl_kadaluarsa', 'asc')
                                                             ->findAll();
 

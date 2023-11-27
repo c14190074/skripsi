@@ -9,7 +9,7 @@ class ProdukModel extends Model
     protected $table = 'tbl_produk';
     protected $primaryKey = 'produk_id';
     protected $foreignKey = ['supplier_id', 'kategori_id'];
-    protected $allowedFields = ['supplier_id', 'kategori_id', 'nama_produk', 'satuan_terkecil', 'netto', 'stok_min', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
+    protected $allowedFields = ['supplier_id', 'kategori_id', 'nama_produk', 'satuan_terkecil', 'netto', 'stok_min', 'satuan_terbesar', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
    
 
     public function getFormRules() {
@@ -48,11 +48,13 @@ class ProdukModel extends Model
         $total_stok = 0;
         $nett_per_carton = 0;
         $satuan_terkecil = 'pcs';
+        $satuan_terbesar = 'dos';
 
         foreach ($query->getResult() as $row) {
             $total_stok += $row->stok;
             $nett_per_carton = $row->netto;
             $satuan_terkecil = $row->satuan_terkecil;
+            $satuan_terbesar = $row->satuan_terbesar;
         }
 
         $stok_carton = floor($total_stok / $nett_per_carton);
@@ -60,12 +62,12 @@ class ProdukModel extends Model
 
         if($stok_ecer > 0) {
             if($stok_carton > 0) {
-                return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+                return $stok_carton.' '.$satuan_terbesar.' '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
             } else {
                 return number_format($stok_ecer, 0).' '.$satuan_terkecil;
             }
         } else {
-            return $stok_carton.' dos';
+            return $stok_carton.' '.$satuan_terbesar;
         }
     }
 

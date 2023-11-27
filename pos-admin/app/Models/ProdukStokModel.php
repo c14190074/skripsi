@@ -12,7 +12,7 @@ class ProdukStokModel extends Model
     protected $allowedFields = ['produk_id', 'tgl_kadaluarsa', 'stok', 'tgl_dibuat', 'dibuat_oleh', 'tgl_diupdate', 'diupdate_oleh', 'is_deleted'];
 
 
-    public function convertStok($stok, $netto, $satuan_terkecil) {
+    public function convertStok($stok, $netto, $satuan_terkecil, $satuan_terbesar = 'dos') {
        
         $stok_carton = floor($stok / $netto);
         $stok_ecer = $stok - ($netto * $stok_carton);
@@ -25,7 +25,7 @@ class ProdukStokModel extends Model
             }
             
         } else {
-            return $stok_carton.' dos';
+            return $stok_carton.' '.$satuan_terbesar;
         }
 
         

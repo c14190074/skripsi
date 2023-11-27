@@ -103,6 +103,12 @@
                         <p class="error-msg"><?= \Config\Services::validation()->getError('stok_min') ?></p>
                       </div>
 
+                      <div class="mb-3">
+                        <label for="satuan_terbesar" class="form-label">Satuan Terbesar</label>
+                        <input type="text" class="form-control" id="satuan_terbesar" name="satuan_terbesar" value="<?= set_value('satuan_terbesar', $data->satuan_terbesar) ?>" placeholder="Satuan Terbesar">
+                        <p class="error-msg"><?= \Config\Services::validation()->getError('satuan_terbesar') ?></p>
+                      </div>
+
                       <?php if(!$is_new_data) { ?>
                       <div class="mb-0 form-check">
                         <input type="checkbox" class="form-check-input" id="update_stock" name="update_stock" value="1">

@@ -97,6 +97,8 @@ $routes->group("penjualan", function ($routes) {
     $routes->get('analisa', 'Penjualan::analisa');
     $routes->post('analisa', 'Penjualan::analisa');
     $routes->get('getreport/(:any)', 'Penjualan::getReport/$1');
+    $routes->get('harian', 'Penjualan::getReportHarian');
+    $routes->post('harian', 'Penjualan::getReportHarian');
 });
 $routes->group("payment", function ($routes) {
     $routes->get('notification', 'Payment::notification');

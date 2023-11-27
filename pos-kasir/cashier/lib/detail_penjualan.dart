@@ -211,6 +211,24 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
                                               )
                                             ],
                                           ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text('Metode Pembayaran: '),
+                                              Text(
+                                                header_penjualan[index]
+                                                    .metodePembayaran
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
                                       Container(

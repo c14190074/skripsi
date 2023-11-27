@@ -54,7 +54,7 @@
                   				<td><?php echo ucwords(strtolower($produk->nama_produk)); ?></td>
                   				<td><?php echo ucwords(strtolower($produk->nama_kategori)); ?></td>
                   				<td><?php echo ucwords(strtolower($produk->nama_supplier)); ?></td>
-                          <td><?php echo $produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil); ?></td>
+                          <td><?php echo $produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil, $produk->satuan_terbesar); ?></td>
                           <td>
                             <?php echo $produk_model->getStok($produk->produk_id); ?>
                               
