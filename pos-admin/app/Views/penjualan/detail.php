@@ -27,7 +27,7 @@
                     <tr>
                       <td>Metode Pembayaran</td>
                       <td>
-                        <?= ucwords(strtolower($penjualan_data[0]->metode_pembayaran)) ?>
+                        <?= strtoupper(strtolower($penjualan_data[0]->metode_pembayaran)) ?>
                       </td>
                     </tr>
 
@@ -35,7 +35,7 @@
                     <tr>
                       <td>Status Pembayaran</td>
                       <td>
-                        <?= ucwords(strtolower($penjualan_data[0]->status_pembayaran)) ?>
+                        <?= strtoupper(strtolower($penjualan_data[0]->status_pembayaran)) ?>
                       </td>
                     </tr>
 
@@ -63,7 +63,7 @@
                     <tr>
                       <td>Kasir</td>
                       <td>
-                        <?= ucwords(strtolower($penjualan_data[0]->nama)) ?>
+                        <?= strtoupper(strtolower($penjualan_data[0]->nama)) ?>
                       </td>
                     </tr>
 
@@ -95,7 +95,7 @@
                           <?php foreach($penjualan_detail as $d) { ?>
 
                             <tr>
-                              <td><?= ucwords(strtolower($d->nama_produk)) ?></td>
+                              <td><?= strtoupper(strtolower($d->nama_produk)) ?></td>
                               <td><?= $d->satuan ?></td>
                               <td><?= number_format($d->netto, 0).' '.$d->satuan_terkecil ?></td>
                               <td><?= $d->qty ?></td>

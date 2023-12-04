@@ -46,7 +46,7 @@
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
-                  				<td><?php echo $d['nama_kategori']; ?></td>
+                  				<td><?php echo strtoupper($d['nama_kategori']); ?></td>
 
                   				<td><?php echo date('d M Y H:i:s', strtotime($d['tgl_dibuat'])); ?></td>
                   				<td>

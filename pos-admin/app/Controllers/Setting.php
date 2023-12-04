@@ -18,6 +18,7 @@ class Setting extends BaseController
         $setting_model = new SettingModel();
        
         if ($this->request->is('post')) {
+
             for($i=0; $i<count($_POST['setting_id']); $i++) {
                 $setting_model->update($_POST['setting_id'][$i], ['setting_value' => $_POST['setting_value'][$i]]);
             }
@@ -27,7 +28,7 @@ class Setting extends BaseController
         $setting_data = $setting_model->findAll();
         
         return view('setting/form', array(
-            'form_action' => base_url().'setting/update/',
+            'form_action' => base_url().'setting/update',
             'setting_data' => $setting_data
         ));
     }

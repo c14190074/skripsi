@@ -26,14 +26,14 @@
                     <tr>
                       <td class="col-md-2">Nama Produk</td>
                       <td>
-                        <?= ucwords(strtolower($produk_data->nama_produk)) ?>
+                        <?= strtoupper(strtolower($produk_data->nama_produk)) ?>
                       </td>
                     </tr>
 
                     <tr>
                       <td>Kategori</td>
                       <td>
-                        <?= ucwords(strtolower($produk_data->nama_kategori)) ?>
+                        <?= strtoupper(strtolower($produk_data->nama_kategori)) ?>
                       </td>
                     </tr>
 
@@ -41,7 +41,7 @@
                     <tr>
                       <td>Supplier</td>
                       <td>
-                        <?= ucwords(strtolower($produk_data->nama_supplier)) ?>
+                        <?= strtoupper(strtolower($produk_data->nama_supplier)) ?>
                       </td>
                     </tr>
 
@@ -79,7 +79,7 @@
                         <?php
                           $tmp = [];
                           foreach ($related_produk as $p) {
-                            array_push($tmp, ucwords(strtolower($p->nama_produk)));
+                            array_push($tmp, strtoupper(strtolower($p->nama_produk)));
                           }
 
                           echo implode(', ', $tmp);
@@ -204,7 +204,7 @@
                               }
                             ?>
                             <tr>
-                              <td><?= ucwords($d->tipe_diskon) ?></td>
+                              <td><?= strtoupper($d->tipe_diskon) ?></td>
                               <td>
                                 <?php
                                   if(strtolower($d->tipe_nominal) == 'nominal') {
@@ -226,7 +226,7 @@
                               </td>
                               <td><?= date('d M Y', strtotime($d->start_diskon)) ?></td>
                               <td><?= date('d M Y', strtotime($d->end_diskon)) ?></td>
-                              <td><?= ucwords($status_diskon) ?></td>
+                              <td><?= strtoupper($status_diskon) ?></td>
                               <td>
                                 <a href="<?= base_url().'produk/updatediskon/'.pos_encrypt($d->produk_diskon_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
                                 <a href="<?= base_url().'produk/deletediskon/'.pos_encrypt($d->produk_diskon_id) ?>" onclick="return confirm('Apakah anda yakin untuk menghapus program diskon ini?')"><i role="button" class="ti ti-trash fa-2y"></i></a>

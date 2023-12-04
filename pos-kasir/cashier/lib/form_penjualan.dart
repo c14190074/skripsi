@@ -48,12 +48,12 @@ class _FormPenjualanState extends State<FormPenjualan> {
     // displayLocalProdukHarga();
   }
 
-  void displayLocalProdukHarga() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String local_produk_harga =
-        await prefs.getString('local_produk_harga') ?? '';
-    print(local_produk_harga);
-  }
+  // void displayLocalProdukHarga() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String local_produk_harga =
+  //       await prefs.getString('local_produk_harga') ?? '';
+  //   print(local_produk_harga);
+  // }
 
   void _getAllDataProduk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -297,6 +297,12 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   void cetakNota(String jumlah_bayar, String tgl_transaksi) async {
+    // setState(() {
+    //   list_belanja.clear();
+    //   hitungTotalBelanja();
+    //   list_rekomendasi.clear();
+    //   inputJumlahBayar.text = '';
+    // });
     BlueThermalPrinter printer = BlueThermalPrinter.instance;
     if ((await printer.isConnected)!) {
       printer.printNewLine();
@@ -316,7 +322,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
         String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
         String _netto = CurrencyFormat.convertToIdr(
             int.parse(list_belanja[i].netto.toString()), 0);
-        String netto_label = _netto + ' ' + _satuan_terkecil;
+        // String netto_label = _netto + ' ' + _satuan_terkecil;
+        String netto_label = list_belanja[i].getNetto();
         String nama_produk_label =
             list_belanja[i].namaProduk.toString() + ' ' + netto_label;
 
@@ -366,11 +373,25 @@ class _FormPenjualanState extends State<FormPenjualan> {
     }
   }
 
+  // Future<List<DataHarga>> _getProdukHargaFromSession(String produk_id) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String local_produk_harga =
+  //       await prefs.getString('local_produk_harga') ?? '';
+  //   final result = jsonDecode(local_produk_harga).cast<Map<String, dynamic>>();
+
+  //   return result.map<DataHarga>((json) => DataHarga.fromJson(json)).toList();
+  // }
+
   Future<List<DataHarga>> _getProdukHarga(String produk_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String local_produk_harga =
-        await prefs.getString('local_produk_harga') ?? '';
-    final result = jsonDecode(local_produk_harga).cast<Map<String, dynamic>>();
+    String user_token = await prefs.getString('user_token') ?? '0';
+
+    var response = await http.get(Uri.parse(
+        globals.baseURL + 'produk/getprice/' + produk_id + '/' + user_token));
+
+    var json_response = json.decode(response.body);
+    final result =
+        json.decode(response.body)['data'].cast<Map<String, dynamic>>();
 
     return result.map<DataHarga>((json) => DataHarga.fromJson(json)).toList();
   }
@@ -508,20 +529,11 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                                     SizedBox(
                                                       height: 5,
                                                     ),
-                                                    Text(daftar_harga[index]
-                                                            .satuan
-                                                            .toString() +
-                                                        ' (' +
-                                                        CurrencyFormat.convertToIdr(
-                                                            int.parse(
-                                                                daftar_harga[
-                                                                        index]
-                                                                    .netto
-                                                                    .toString()),
-                                                            0) +
-                                                        ' ' +
-                                                        satuan_terkecil +
-                                                        ')'),
+                                                    Text('(' +
+                                                        daftar_harga[index]
+                                                            .getNetto(
+                                                                satuan_terkecil) +
+                                                        ')')
                                                   ],
                                                 ),
                                                 Text("x"),
@@ -740,8 +752,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = height - padding.top - padding.bottom - 350;
-
+    double newheight = (height - padding.top - padding.bottom) * 0.475;
+    // double newheight = height * 0.5;
     return SafeArea(
       child: Container(
         padding: EdgeInsets.only(top: 10, right: 16, bottom: 16, left: 16),
@@ -904,17 +916,20 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      list_belanja[index]
-                                              .namaProduk
-                                              .toString() +
-                                          ' (' +
-                                          _netto +
-                                          ' ' +
-                                          _satuan_terkecil +
-                                          ')',
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.black),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.7,
+                                      child: Text(
+                                        list_belanja[index]
+                                                .namaProduk
+                                                .toString() +
+                                            ' (' +
+                                            list_belanja[index].getNetto() +
+                                            ')',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
                                     ),
                                     SizedBox(
                                       height: 5,

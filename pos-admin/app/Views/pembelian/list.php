@@ -52,7 +52,7 @@
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
-                          <td><?php echo $d->nama_supplier; ?></td>
+                          <td><?php echo strtoupper($d->nama_supplier); ?></td>
                   				<td style="text-align: right;"><?php echo number_format($d->total_invoice, 0); ?></td>
                           <td>
                             <?php

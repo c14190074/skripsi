@@ -26,7 +26,7 @@
                       <div class="mb-3">
                         <input type="hidden" name="produk_id" value="<?= $produk_data->produk_id ?>">
                         <label for="nama_produk" class="form-label">Nama Produk</label>
-                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', $produk_data->nama_produk) ?>" placeholder="Nama Produk" disabled>
+                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= set_value('nama_produk', strtoupper($produk_data->nama_produk)) ?>" placeholder="Nama Produk" disabled>
                         
                       </div>
 

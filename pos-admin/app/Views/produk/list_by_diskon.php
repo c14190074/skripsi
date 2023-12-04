@@ -62,8 +62,8 @@
                             ?>
 
                             <tr>
-                              <td><?= ucwords($d->nama_produk) ?></td>
-                              <td><?= ucwords($d->tipe_diskon) ?></td>
+                              <td><?= strtoupper($d->nama_produk) ?></td>
+                              <td><?= strtoupper($d->tipe_diskon) ?></td>
                               <td>
                                 <?php
                                   if(strtolower($d->tipe_nominal) == 'nominal') {
@@ -85,7 +85,7 @@
                               </td>
                               <td><?= date('d M Y', strtotime($d->start_diskon)) ?></td>
                               <td><?= date('d M Y', strtotime($d->end_diskon)) ?></td>
-                              <td><?= ucwords($status_diskon) ?></td>
+                              <td><?= strtoupper($status_diskon) ?></td>
                               <td>
                                 <a href="<?= base_url().'produk/updatediskon/'.pos_encrypt($d->produk_diskon_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
                                 <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="produk-diskon" data-id="<?= pos_encrypt($d->produk_diskon_id) ?>" data-label="program diskon pada produk <?= $d->nama_produk ?>" data-url="deletediskon"></i>

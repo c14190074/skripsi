@@ -101,7 +101,8 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
         String _satuan_terkecil = item.satuanTerkecil.toString();
         String _netto =
             CurrencyFormat.convertToIdr(int.parse(item.netto.toString()), 0);
-        String netto_label = _netto + ' ' + _satuan_terkecil;
+        // String netto_label = _netto + ' ' + _satuan_terkecil;
+        String netto_label = item.getNetto();
         String nama_produk_label =
             item.namaProduk.toString() + ' ' + netto_label;
 

@@ -105,6 +105,22 @@ class ItemPenjualan {
     return hasil;
   }
 
+  String getNetto() {
+    String result = '';
+    double _netto = 0;
+    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+
+    result = CurrencyFormat.convertToIdr(int.parse(this.netto.toString()), 0) +
+        ' ' +
+        this.satuanTerkecil.toString();
+
+    if (int.parse(this.netto.toString()) >= 1000) {
+      _netto = int.parse(this.netto.toString()) / 1000;
+      result = _netto.toString().replaceAll(regex, '') + ' KG';
+    }
+    return result;
+  }
+
   void resetDiskon() {
     this.diskon = '0';
     this.tipe_diskon = 'nominal';

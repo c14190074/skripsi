@@ -52,9 +52,9 @@
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
-                  				<td><?php echo ucwords(strtolower($d['nama_supplier'])); ?></td>
-                  				<td><?php echo ucwords(strtolower($d['nama_sales'])); ?></td>
-                  				<td><?php echo $d['alamat']; ?></td>
+                  				<td><?php echo strtoupper(strtolower($d['nama_supplier'])); ?></td>
+                  				<td><?php echo strtoupper(strtolower($d['nama_sales'])); ?></td>
+                  				<td><?php echo strtoupper(strtolower($d['alamat'])) ?></td>
                           <td><?php echo $d['no_telp']; ?></td>
                           <td><?php echo $d['email']; ?></td>
                           <td>

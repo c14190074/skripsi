@@ -167,14 +167,43 @@ class PenjualanDetail {
     return data;
   }
 
+  String getNetto() {
+    String result;
+    double _netto = 0;
+    String printed_netto = '';
+    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+
+    printed_netto =
+        CurrencyFormat.convertToIdr(int.parse(this.netto.toString()), 0) +
+            ' ' +
+            this.satuanTerkecil.toString();
+
+    if (int.parse(this.netto.toString()) >= 1000) {
+      _netto = int.parse(this.netto.toString()) / 1000;
+      printed_netto = _netto.toString().replaceAll(regex, '') + ' KG';
+    }
+
+    result = printed_netto;
+    return result;
+  }
+
   String getLabelNama() {
     String result;
-    result = this.namaProduk.toString() +
-        ' (' +
+    double _netto = 0;
+    String printed_netto = '';
+    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+
+    printed_netto =
         CurrencyFormat.convertToIdr(int.parse(this.netto.toString()), 0) +
-        ' ' +
-        this.satuanTerkecil.toString() +
-        ')';
+            ' ' +
+            this.satuanTerkecil.toString();
+
+    if (int.parse(this.netto.toString()) >= 1000) {
+      _netto = int.parse(this.netto.toString()) / 1000;
+      printed_netto = _netto.toString().replaceAll(regex, '') + ' KG';
+    }
+
+    result = this.namaProduk.toString() + ' (' + printed_netto + ')';
     return result;
   }
 

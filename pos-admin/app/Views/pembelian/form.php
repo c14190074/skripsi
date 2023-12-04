@@ -35,7 +35,7 @@
                                     $is_selected = $supplier['supplier_id'] == $pembelian_data['supplier_id'] ? ' selected' : '';
                                   }
                                   
-                                  echo "<option".$is_selected." value='".$supplier['supplier_id']."'>".$supplier['nama_supplier']."</option>";
+                                  echo "<option".$is_selected." value='".$supplier['supplier_id']."'>".strtoupper($supplier['nama_supplier'])."</option>";
                                 }
                               }
 

@@ -46,7 +46,7 @@ class ProdukDiskonModel extends Model
         $query   = $builder->get();
         $result = [];
         foreach($query->getResult() as $d) {
-            array_push($result, $d->nama_produk);
+            array_push($result, strtoupper($d->nama_produk));
         }
 
         return implode(', ', $result);

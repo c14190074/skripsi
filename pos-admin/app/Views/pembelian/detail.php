@@ -129,7 +129,7 @@
                     <tr>
                       <td>Supplier</td>
                       <td>
-                        <?= ucwords(strtolower($pembelian_header[0]->nama_supplier)) ?>
+                        <?= strtoupper(strtolower($pembelian_header[0]->nama_supplier)) ?>
                       </td>
                     </tr>
 
@@ -170,7 +170,7 @@
                     <tr>
                       <td>Metode Pembayaran</td>
                       <td>
-                        <?php echo $pembelian_header[0]->metode_pembayaran == '' ? '-' : ucwords($pembelian_header[0]->metode_pembayaran); ?>
+                        <?php echo $pembelian_header[0]->metode_pembayaran == '' ? '-' : strtoupper($pembelian_header[0]->metode_pembayaran); ?>
                       </td>
                     </tr>
 
@@ -214,7 +214,7 @@
                     <tr>
                       <td>Admin</td>
                       <td>
-                        <?= ucwords(strtolower($pembelian_header[0]->nama)) ?>
+                        <?= strtoupper(strtolower($pembelian_header[0]->nama)) ?>
                       </td>
                     </tr>
 
@@ -283,7 +283,7 @@
                           <?php foreach($pembelian_detail as $d) { ?>
 
                             <tr>
-                              <td><?= ucwords(strtolower($d->nama_produk)) ?></td>
+                              <td><?= strtoupper(strtolower($d->nama_produk)) ?></td>
                               <td><?= number_format($d->netto, 0).' '.$d->satuan_terkecil ?></td>
                               <td style="text-align: right;"><?= $d->qty ?></td>
                               <td style="text-align: right;"><?= number_format($d->harga_beli, 0) ?></td>

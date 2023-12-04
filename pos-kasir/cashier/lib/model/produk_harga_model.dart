@@ -1,3 +1,5 @@
+import 'package:cashier/widget/formatter.dart';
+
 class ProdukHargaModel {
   int? status;
   List<DataHarga>? data;
@@ -96,6 +98,27 @@ class DataHarga {
     data['nama_produk'] = this.namaProduk;
     data['satuan_terkecil'] = this.satuanTerkecil;
     return data;
+  }
+
+  String getNetto(String _satuan_terkecil) {
+    String result = '';
+    double _netto = 0;
+    result = CurrencyFormat.convertToIdr(int.parse(this.netto.toString()), 0) +
+        ' ' +
+        _satuan_terkecil.toString();
+
+    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+
+    if (int.parse(this.netto.toString()) >= 1000) {
+      _netto = int.parse(this.netto.toString()) / 1000;
+      result = _netto.toString().replaceAll(regex, '') + ' KG';
+    }
+
+    if (_satuan_terkecil.toString() != this.satuan.toString()) {
+      result = result + ' | ' + this.satuan.toString();
+    }
+
+    return result;
   }
 }
 

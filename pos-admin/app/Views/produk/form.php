@@ -28,7 +28,7 @@
                                     $is_selected = ' selected';
                                   }
 
-                                  echo "<option".$is_selected." value='".$supplier['supplier_id']."'>".$supplier['nama_supplier']."</option>";
+                                  echo "<option".$is_selected." value='".$supplier['supplier_id']."'>".strtoupper($supplier['nama_supplier'])."</option>";
                                 }
                               }
 
@@ -48,7 +48,7 @@
                                     $is_selected = ' selected';
                                   }
 
-                                  echo "<option".$is_selected." value='".$kategori['kategori_id']."'>".$kategori['nama_kategori']."</option>";
+                                  echo "<option".$is_selected." value='".$kategori['kategori_id']."'>".strtoupper($kategori['nama_kategori'])."</option>";
                                 }
                               }
 
