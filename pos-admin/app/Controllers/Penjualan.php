@@ -43,8 +43,8 @@ class Penjualan extends BaseController
                                     ->findAll();
 
         $setting_model = new SettingModel();
-        $setting_thn_min = $setting_model->where('setting_name', 'thn_min')->first();
-        $setting_thn_max = $setting_model->where('setting_name', 'thn_max')->first();
+        $setting_thn_min = $setting_model->where('setting_name', 'tahun_awal')->first();
+        $setting_thn_max = $setting_model->where('setting_name', 'tahun_akhir')->first();
 
         return view('penjualan/report', array(
             'produk_count' => count($produk_count),
