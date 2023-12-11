@@ -297,80 +297,80 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   void cetakNota(String jumlah_bayar, String tgl_transaksi) async {
-    // setState(() {
-    //   list_belanja.clear();
-    //   hitungTotalBelanja();
-    //   list_rekomendasi.clear();
-    //   inputJumlahBayar.text = '';
-    // });
-    BlueThermalPrinter printer = BlueThermalPrinter.instance;
-    if ((await printer.isConnected)!) {
-      printer.printNewLine();
-      printer.printCustom('TOKO BAHAN KUE', 1, 1);
-      printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
-      printer.printNewLine();
-      printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
-      printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
-      // printer.printNewLine();
-      printer.printCustom('-----------------------------', 1, 1);
-      printer.printNewLine();
-      for (var i = 0; i < list_belanja.length; i++) {
-        String diskon_label = list_belanja[i].getLabelDiskon();
-        String qty_label = list_belanja[i].getQtyLabel();
-        int subtotal = list_belanja[i].hitungSubtotal();
+    setState(() {
+      list_belanja.clear();
+      hitungTotalBelanja();
+      list_rekomendasi.clear();
+      inputJumlahBayar.text = '';
+    });
+    // BlueThermalPrinter printer = BlueThermalPrinter.instance;
+    // if ((await printer.isConnected)!) {
+    //   printer.printNewLine();
+    //   printer.printCustom('TOKO BAHAN KUE', 1, 1);
+    //   printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
+    //   printer.printNewLine();
+    //   printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
+    //   printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
+    //   // printer.printNewLine();
+    //   printer.printCustom('-----------------------------', 1, 1);
+    //   printer.printNewLine();
+    //   for (var i = 0; i < list_belanja.length; i++) {
+    //     String diskon_label = list_belanja[i].getLabelDiskon();
+    //     String qty_label = list_belanja[i].getQtyLabel();
+    //     int subtotal = list_belanja[i].hitungSubtotal();
 
-        String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
-        String _netto = CurrencyFormat.convertToIdr(
-            int.parse(list_belanja[i].netto.toString()), 0);
-        // String netto_label = _netto + ' ' + _satuan_terkecil;
-        String netto_label = list_belanja[i].getNetto();
-        String nama_produk_label =
-            list_belanja[i].namaProduk.toString() + ' ' + netto_label;
+    //     String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
+    //     String _netto = CurrencyFormat.convertToIdr(
+    //         int.parse(list_belanja[i].netto.toString()), 0);
+    //     // String netto_label = _netto + ' ' + _satuan_terkecil;
+    //     String netto_label = list_belanja[i].getNetto();
+    //     String nama_produk_label =
+    //         list_belanja[i].namaProduk.toString() + ' ' + netto_label;
 
-        printer.printCustom(nama_produk_label, 1, 0);
-        printer.printCustom(qty_label, 1, 0);
+    //     printer.printCustom(nama_produk_label, 1, 0);
+    //     printer.printCustom(qty_label, 1, 0);
 
-        if (diskon_label == '') {
-          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
-        } else {
-          printer.printCustom(diskon_label, 1, 0);
-          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
-        }
-      }
-      if (int.parse(jumlah_bayar) <= total_belanja) {
-        jumlah_bayar = total_belanja.toString();
-      }
+    //     if (diskon_label == '') {
+    //       printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+    //     } else {
+    //       printer.printCustom(diskon_label, 1, 0);
+    //       printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+    //     }
+    //   }
+    //   if (int.parse(jumlah_bayar) <= total_belanja) {
+    //     jumlah_bayar = total_belanja.toString();
+    //   }
 
-      int uang_kembali = int.parse(jumlah_bayar.toString()) -
-          int.parse(total_belanja.toString());
+    //   int uang_kembali = int.parse(jumlah_bayar.toString()) -
+    //       int.parse(total_belanja.toString());
 
-      String total_label =
-          'Total ' + CurrencyFormat.convertToIdr(total_belanja, 0);
-      String jumlah_bayar_label =
-          'Bayar ' + CurrencyFormat.convertToIdr(int.parse(jumlah_bayar), 0);
-      String uang_kembali_label =
-          'Kembali ' + CurrencyFormat.convertToIdr(uang_kembali, 0);
+    //   String total_label =
+    //       'Total ' + CurrencyFormat.convertToIdr(total_belanja, 0);
+    //   String jumlah_bayar_label =
+    //       'Bayar ' + CurrencyFormat.convertToIdr(int.parse(jumlah_bayar), 0);
+    //   String uang_kembali_label =
+    //       'Kembali ' + CurrencyFormat.convertToIdr(uang_kembali, 0);
 
-      printer.printNewLine();
-      printer.printCustom(total_label, 1, 2);
-      printer.printCustom(jumlah_bayar_label, 1, 2);
-      printer.printCustom(uang_kembali_label, 1, 2);
-      printer.printNewLine();
-      printer.printNewLine();
-      printer.printCustom("TERIMA KASIH", 1, 1);
-      printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+    //   printer.printNewLine();
+    //   printer.printCustom(total_label, 1, 2);
+    //   printer.printCustom(jumlah_bayar_label, 1, 2);
+    //   printer.printCustom(uang_kembali_label, 1, 2);
+    //   printer.printNewLine();
+    //   printer.printNewLine();
+    //   printer.printCustom("TERIMA KASIH", 1, 1);
+    //   printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
 
-      printer.printNewLine();
-      printer.printNewLine();
-      printer.printNewLine();
-      printer.printNewLine();
-      setState(() {
-        list_belanja.clear();
-        hitungTotalBelanja();
-        list_rekomendasi.clear();
-        inputJumlahBayar.text = '';
-      });
-    }
+    //   printer.printNewLine();
+    //   printer.printNewLine();
+    //   printer.printNewLine();
+    //   printer.printNewLine();
+    //   setState(() {
+    //     list_belanja.clear();
+    //     hitungTotalBelanja();
+    //     list_rekomendasi.clear();
+    //     inputJumlahBayar.text = '';
+    //   });
+    // }
   }
 
   // Future<List<DataHarga>> _getProdukHargaFromSession(String produk_id) async {
@@ -752,7 +752,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = (height - padding.top - padding.bottom) * 0.475;
+    double newheight = (height - padding.top - padding.bottom) * 0.6;
     // double newheight = height * 0.5;
     return SafeArea(
       child: Container(

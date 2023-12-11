@@ -42,11 +42,17 @@ class Penjualan extends BaseController
                                     ->where('jabatan', 'kasir')
                                     ->findAll();
 
+        $setting_model = new SettingModel();
+        $setting_thn_min = $setting_model->where('setting_name', 'thn_min')->first();
+        $setting_thn_max = $setting_model->where('setting_name', 'thn_max')->first();
+
         return view('penjualan/report', array(
             'produk_count' => count($produk_count),
             'supplier_count' => count($supplier_count),
             'admin_count' => count($admin_count),
             'kasir_count' => count($kasir_count),
+            'setting_thn_min' => $setting_thn_min['setting_value'],
+            'setting_thn_max' => $setting_thn_max['setting_value']
 
         ));
     }
@@ -205,11 +211,13 @@ class Penjualan extends BaseController
             return redirect()->to(base_url('user/login')); 
         }
         
+        //mengambil semua nama produk
         $produk_model = new ProdukModel();
         $produk_data = $produk_model->where('is_deleted', 0)
                                     ->orderBy('nama_produk', 'asc')
                                     ->findAll();
 
+        //parameter kosongan
         $rules = [];
         $prediksi = [];
         $target_prediksi = [];
@@ -217,18 +225,21 @@ class Penjualan extends BaseController
         $support = '';
         $confidence = '';
 
+        //select data setting dari database
         $setting_model = new SettingModel();
         $setting_support = $setting_model->where('setting_name', 'support')->first();
         $setting_confidence = $setting_model->where('setting_name', 'confidence')->first();
 
+        //untuk menampung nilai support dan confidence
         $support = $setting_support['setting_value'];
         $confidence = $setting_confidence['setting_value'];
 
-        if ($this->request->is('post')) {
-            $support = $_POST['support'];
-            $confidence = $_POST['confidence'];
-            $produk_ids = isset($_POST['produk_ids']) ? $_POST['produk_ids'] : [];
+        if ($this->request->is('post')) { // jika user menekan tombol submit
+            $support = $_POST['support']; // menampung input user ke variabel support
+            $confidence = $_POST['confidence']; // menampung input user ke variabel support
+            $produk_ids = isset($_POST['produk_ids']) ? $_POST['produk_ids'] : []; // mengecek apakah ada prediksi produk
 
+            //mengambil semua detail penjualan
             if($support > 0 && $confidence > 0) {
                 $db      = \Config\Database::connect();
                 $builder = $db->table('tbl_penjualan_detail');
@@ -238,11 +249,13 @@ class Penjualan extends BaseController
                 $builder->orderBy('tbl_penjualan_detail.penjualan_id', 'asc');
                 $penjualan_detail   = $builder->get();
 
+                //menampung semua detail penjualan
                 if($penjualan_detail) {
                     $data = [];
                     $current_penjualan_id = 0;
                     $result = $penjualan_detail->getResult();    
 
+                    //pengecekan agar tidak ada data redundant
                     if($result) {
                         $current_penjualan_id = $result[0]->penjualan_id;
                         $tmp_data = [];
@@ -269,7 +282,7 @@ class Penjualan extends BaseController
                         }
                     }
 
-
+                    //pengecekan jika ada produk yang akan diprediksi
                     if(count($produk_ids) > 0) {
                         foreach($produk_ids as $produk_id) {
                             $produk = $produk_model->find($produk_id);
@@ -277,12 +290,16 @@ class Penjualan extends BaseController
                         }
                     }
                     
+                    //train data
                     if(count($data) > 0) {
                         $labels  = [];
                         $associator = new Apriori($support, $confidence);
                         $associator->train($data, $labels);
+
+                        //mendapatkan rules
                         $rules = $associator->getRules();
 
+                        //dari rules kita dapat memprediksi produk dan jika tidak ada ditemukan data maka akan dilempar ke produk sebanding
                         if(count($target_prediksi) > 0) {
                             $prediksi = $associator->predict($target_prediksi);
 

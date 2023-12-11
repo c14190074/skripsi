@@ -13,12 +13,21 @@
                   <p><i>Skala 1,000</i></p>
                 </div>
                 <div>
-                  <select class="form-select" id="periode_laporan">
+
+                  <!-- <input type="text" class="form-control" id="periode_laporan" placeholder="Tahun"> -->
+
+                  <!-- <select class="form-select" id="periode_laporan">
                     <option value="2023">2023</option>
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
                     <option value="2027">2027</option>
+                  </select> -->
+
+                  <select class="form-select" id="periode_laporan">
+                    <?php for($i = $setting_thn_min; $i <= $setting_thn_max; $i++) { ?>
+                      <option value="<?= $i ?>"><?= $i ?></option>
+                    <?php } ?>
                   </select>
                 </div>
               </div>
