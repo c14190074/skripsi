@@ -129,7 +129,6 @@ class _PengaturanState extends State<Pengaturan> {
                       child: Text('Connect')),
                 ],
               ),
-
               SizedBox(
                 height: 10,
               ),
@@ -139,28 +138,6 @@ class _PengaturanState extends State<Pengaturan> {
                   Text(printerStatus ? 'Connected' : 'Disconnected')
                 ],
               ),
-
-              // ElevatedButton(
-              //     onPressed: () async {
-              //       printer.disconnect();
-
-              //     },
-              //     child: Text('Disconnect')),
-              // ElevatedButton(
-              //     onPressed: () async {
-              //       if ((await printer.isConnected)!) {
-              //         printer.printNewLine();
-              //         printer.printCustom("Skripsi Tinggal 1 Langkah", 1, 1);
-              //         printer.printCustom("Sebentar lagi Wisuda", 1, 1);
-              //         printer.printQRcode("Agung Wibowo", 200, 200, 1);
-              //         printer.printNewLine();
-              //         printer.printNewLine();
-              //         printer.printNewLine();
-              //         printer.printNewLine();
-              //         printer.printNewLine();
-              //       }
-              //     },
-              //     child: Text('Print')),
             ]),
           )),
     );

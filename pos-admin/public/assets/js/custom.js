@@ -285,9 +285,11 @@ $(document).ready(function() {
 	});
 	
 	$('#btn_save_produk').on('click', function() {
+		var numberRegex = /^\d+$/;
 		var readyToSubmit = true;
 		$('#nama_produk').parent().find('p.error-msg').html('');
 		$('#netto').parent().find('p.error-msg').html('');
+		$('#stok_min').parent().find('p.error-msg').html('');
 
 		if($('#nama_produk').val() == '') {
 			readyToSubmit = false
@@ -297,7 +299,20 @@ $(document).ready(function() {
 		if($('#netto').val() == '') {
 			readyToSubmit = false
 			$('#netto').parent().find('p.error-msg').html('Jumlah / Netto produk wajib diisi.');
+		} else {
+			if(numberRegex.test($('#netto').val()) == false) {
+				$('#netto').parent().find('p.error-msg').html('Jumlah / Netto produk harus angka.');
+				readyToSubmit = false;
+			}
 		}
+
+		if($('#stok_min').val() != '') {
+			if(numberRegex.test($('#stok_min').val()) == false) {
+				$('#stok_min').parent().find('p.error-msg').html('Stok minimal harus angka.');
+				readyToSubmit = false;
+			}
+		} 
+
 
 		$('#table-produk-stok tbody tr').each(function(index, tr){
 			$(tr).find('.input-date').parent().find('p.error-msg').remove();
@@ -313,6 +328,12 @@ $(document).ready(function() {
 				errorMsg = '<p class="error-msg fa-sm">Stok produk wajib diisi.</p>';
 				$(tr).find('.input-stok').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.input-stok').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Stok produk harus angka.</p>';
+					$(tr).find('.input-stok').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 		});
 
@@ -332,18 +353,36 @@ $(document).ready(function() {
 				errorMsg = '<p class="error-msg fa-sm">Jumlah / netto penjualan wajib diisi.</p>';
 				$(tr).find('.input-qty').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.input-qty').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Jumlah / netto penjualan harus angka.</p>';
+					$(tr).find('.input-qty').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 
 			if($(tr).find('.input-harga-beli').val() == '') {
 				errorMsg = '<p class="error-msg fa-sm">Harga beli wajib diisi.</p>';
 				$(tr).find('.input-harga-beli').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.input-harga-beli').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Harga beli harus angka.</p>';
+					$(tr).find('.input-harga-beli').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 
 			if($(tr).find('.input-harga-jual').val() == '') {
 				errorMsg = '<p class="error-msg fa-sm">Harga jual wajib diisi.</p>';
 				$(tr).find('.input-harga-jual').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.input-harga-jual').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Harga jual harus angka.</p>';
+					$(tr).find('.input-harga-jual').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 		});
 
@@ -355,7 +394,9 @@ $(document).ready(function() {
 	});
 
 	$('#btn-save-pembelian').on('click', function() {
+		var numberRegex = /^\d+$/;
 		var readyToSubmit = true;
+
 		$('#table-pembelian tbody tr').each(function(index, tr){
 			$(tr).find('.produk-qty').parent().find('p.error-msg').remove();
 			$(tr).find('.produk-harga-beli').parent().find('p.error-msg').remove();
@@ -364,12 +405,24 @@ $(document).ready(function() {
 				errorMsg = '<p class="error-msg fa-sm">QTY produk wajib diisi.</p>';
 				$(tr).find('.produk-qty').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.produk-qty').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">QTY produk harus angka.</p>';
+					$(tr).find('.produk-qty').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 
 			if($(tr).find('.produk-harga-beli').val() == '') {
 				errorMsg = '<p class="error-msg fa-sm">Harga beli produk wajib diisi.</p>';
 				$(tr).find('.produk-harga-beli').parent().append(errorMsg);
 				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.produk-harga-beli').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Harga beli harus angka.</p>';
+					$(tr).find('.produk-harga-beli').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
 			}
 		});
 

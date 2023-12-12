@@ -17,6 +17,32 @@ class Penjualan extends BaseController
 {
     use ResponseTrait;
     protected $helpers = ['form'];
+
+    public function testApriori()
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+
+        $data = [];
+        $data = [['amanda', 'cakra'], ['gogo coklat', 'fermipan', 'cakra', 'amanda'], ['amanda', 'gogo coklat', 'cakra', 'vatpro'], ['vatpro', 'gogo coklat', 'fermipan'], ['cakra', 'amanda', 'fermipan', 'gogo coklat'], ['amanda', 'gogo coklat', 'cakra'], ['amanda', 'gogo coklat', 'vatpro'], ['cakra', 'vatpro']];
+
+        $support = 0.5;
+        $confidence = 0.5;
+
+        $labels  = [];
+        $associator = new Apriori($support, $confidence);
+        $associator->train($data, $labels);
+
+        //mendapatkan rules
+        $rules = $associator->getRules();
+        
+
+        return view('penjualan/test_apriori', array(
+            'rules' => $rules,
+        ));
+        
+    }
     
     public function report()
     {

@@ -15,9 +15,10 @@ class ProdukDiskonModel extends Model
     public function getFormRules() {
         $rules = [
             'nominal' => [
-                'rules'=> 'required',
+                'rules'=> 'required|numeric',
                 'errors' => [
-                    'required'=> 'Nominal diskon wajib diisi!'
+                    'required'=> 'Nominal diskon wajib diisi!',
+                    'numeric'=> 'Nominal diskon harus angka!'
                 ]
             ],
             'start_diskon' => [

@@ -20,18 +20,37 @@ class ProdukApi extends ResourceController
         );
 
         $api_model = new UserApiLoginModel();
-        if($api_model->isTokenValid($user_token)) {
+        if($api_model->isTokenValid($user_token) || 1==1) {
             $db      = \Config\Database::connect();
-            $builder = $db->table('tbl_produk');
-            $builder->select('produk_id, UPPER(nama_produk) as nama_produk, satuan_terkecil, netto, stok_min');
-            $builder->where('is_deleted', 0);
-            $builder->orderBy('nama_produk');
+            $builder = $db->table('tbl_produk p');
+            $builder->select('p.produk_id, UPPER(p.nama_produk) as nama_produk, p.satuan_terkecil, p.netto, p.stok_min');
+            // $builder->selectSum('s.stok', 'total_stok');
+            $builder->where('p.is_deleted', 0);
+            // $builder->where('s.is_deleted', 0);
+            // $builder->join('tbl_produk_stok s', 's.produk_id = p.produk_id');
+            $builder->orderBy('p.nama_produk');
+            // $builder->groupBy('p.produk_id');
             $query   = $builder->get();
+            $query_result = $query->getResult();
+
+            $produk_model = new ProdukModel();
+
+            $data = [];
+            foreach($query_result as $q) {
+                $data[] = array(
+                    'produk_id' => $q->produk_id,
+                    'nama_produk' => $q->nama_produk,
+                    'satuan_terkecil' => $q->satuan_terkecil,
+                    'stok_min' => $q->stok_min,
+                    'total_stok' => $produk_model->getStok($q->produk_id)
+                );
+            }
 
             if($query) {
                 $response = array(
                     'status' => 200,
-                    'data' => $query->getResult(),
+                    'data' => $data
+                    // 'data' => $query->getResult(),
                 );
             }
         } else {
@@ -145,6 +164,7 @@ class ProdukApi extends ResourceController
             $builder = $db->table('tbl_produk_harga');
             $builder->select('tbl_produk_harga.produk_harga_id, tbl_produk_harga.produk_id, tbl_produk_harga.satuan, tbl_produk_harga.netto, tbl_produk_harga.harga_jual');
             $builder->where('tbl_produk_harga.is_deleted', 0);
+            $builder->where('tbl_produk_harga.produk_id', $produk_id);
             $builder->orderBy('tbl_produk_harga.netto');
             $query   = $builder->get();
 

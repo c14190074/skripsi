@@ -25,7 +25,7 @@ class Payment extends BaseController
 
         if($transaction_status == 'capture') {
             if($payment_type == 'credit_card') {
-                if($fraud == 'accept') {
+                if($fraud_status == 'accept') {
                     $order_status = 'lunas';
                 }
             }

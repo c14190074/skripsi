@@ -100,6 +100,8 @@
             </div>
             
             <div>
+              
+              
               <?php if($pembelian_header[0]->status_pembayaran == 0 && $pembelian_header[0]->status == 0) { ?>
                 <a href="<?= base_url().'pembelian/update/'.pos_encrypt($pembelian_header[0]->pembelian_id) ?>" type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-warning text-primary">
                   <i class="ti ti-edit"></i> Edit
@@ -117,6 +119,10 @@
                   <i class="ti ti-cash"></i> Pembayaran
                 </button>
               <?php } ?>
+
+              <a href="<?= base_url() ?>pembelian/list" type="button" class="btn mb-1 btn-lg px-4 fs-4 font-medium btn-light-warning text-primary">
+                  x
+              </a>
             </div>
           </div>
 
@@ -156,7 +162,15 @@
                     <tr>
                       <td>Tanggal Jatuh Tempo</td>
                       <td>
-                        <?php echo date('d M Y', strtotime($pembelian_header[0]->tgl_jatuh_tempo)); ?>
+                        <?php
+                          if($pembelian_header[0]->tgl_jatuh_tempo == '0000-00-00') {
+                            echo "-";
+                          } else {
+                            echo date('d M Y', strtotime($pembelian_header[0]->tgl_jatuh_tempo)); 
+                            
+                          }
+                          
+                        ?>
                       </td>
                     </tr>
 

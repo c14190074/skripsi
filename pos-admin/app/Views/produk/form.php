@@ -247,6 +247,7 @@
                       </table>
 
                       <button type="button" id="btn_save_produk" class="btn btn-primary">Submit</button>
+                      <a href="<?= base_url() ?>produk/list" class="btn btn-warning">Close</a>
                     </div>
 
                   </form>

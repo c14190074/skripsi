@@ -580,11 +580,15 @@ class PenjualanApi extends ResourceController
                                 if(!in_array($r, $tmp_rekomendasi)) {
                                     array_push($tmp_rekomendasi, $r);
                                     $produk_data = $produk_model->find($data_produk[$r]);
+
+
                                     $r_info = [
                                         'produk_id' => $data_produk[$r],
                                         'nama_produk' => ucwords($r),
-                                        'satuan_terkecil' => $produk_data['satuan_terkecil']
+                                        'satuan_terkecil' => $produk_data['satuan_terkecil'],
+                                        'total_stok' => $produk_model->getStok($data_produk[$r])
                                     ];
+
                                     array_push($unique_rekomendasi, $r_info);
                                 }
 

@@ -99,6 +99,7 @@ $routes->group("penjualan", function ($routes) {
     $routes->get('getreport/(:any)', 'Penjualan::getReport/$1');
     $routes->get('harian', 'Penjualan::getReportHarian');
     $routes->post('harian', 'Penjualan::getReportHarian');
+    $routes->get('testapriori', 'Penjualan::testApriori');
 });
 $routes->group("payment", function ($routes) {
     $routes->get('notification', 'Payment::notification');

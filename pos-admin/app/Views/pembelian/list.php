@@ -63,7 +63,17 @@
                               }
                             ?>
                           </td>
-                          <td><?php echo date('d M Y', strtotime($d->tgl_jatuh_tempo)); ?></td>
+                          <td>
+                            <?php
+                              if($d->tgl_jatuh_tempo == '0000-00-00') {
+                                echo "-";
+                              } else {
+                                echo date('d M Y', strtotime($d->tgl_jatuh_tempo)); 
+                                
+                              }
+                              
+                            ?>    
+                          </td>
                           <td>
                             <?php echo $d->status_pembayaran == 0 ? 'Outstanding' : 'Lunas'; ?>
                               

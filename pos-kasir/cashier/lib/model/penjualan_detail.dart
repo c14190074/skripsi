@@ -13,6 +13,7 @@ class ItemPenjualan {
   String? isNew;
   String? diskon;
   String? tipe_diskon;
+  String? total_stok;
 
   ItemPenjualan(
       {this.produkHargaId,
@@ -25,7 +26,8 @@ class ItemPenjualan {
       this.qty,
       this.isNew,
       this.diskon,
-      this.tipe_diskon});
+      this.tipe_diskon,
+      this.total_stok});
 
   ItemPenjualan.fromJson(Map<String, dynamic> json) {
     produkHargaId = json['produk_harga_id'];
@@ -39,6 +41,7 @@ class ItemPenjualan {
     isNew = json['isNew'];
     diskon = json['diskon'];
     tipe_diskon = json['tipe_diskon'];
+    total_stok = json['total_stok'];
   }
 
   Map<String, dynamic> toJson() {
@@ -54,6 +57,7 @@ class ItemPenjualan {
     data['isNew'] = this.isNew;
     data['diskon'] = this.diskon;
     data['tipe_diskon'] = this.tipe_diskon;
+    data['total_stok'] = this.total_stok;
 
     return data;
   }

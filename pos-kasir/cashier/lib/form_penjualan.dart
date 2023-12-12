@@ -45,15 +45,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
     // TODO: implement initState
     super.initState();
     _getAllDataProduk();
-    // displayLocalProdukHarga();
   }
-
-  // void displayLocalProdukHarga() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String local_produk_harga =
-  //       await prefs.getString('local_produk_harga') ?? '';
-  //   print(local_produk_harga);
-  // }
 
   void _getAllDataProduk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -132,7 +124,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
     // print(jsonResponse);
     if (jsonResponse['status'] == 200) {
       for (var i = 0; i < jsonResponse['data_rekomendasi'].length; i++) {
-        // print(jsonResponse['data_rekomendasi'][i]['nama_produk']);
         final itemRekomendasi = new DataRekomendasi();
         itemRekomendasi.produkId =
             jsonResponse['data_rekomendasi'][i]['produk_id'];
@@ -140,6 +131,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
             jsonResponse['data_rekomendasi'][i]['nama_produk'];
         itemRekomendasi.satuanTerkecil =
             jsonResponse['data_rekomendasi'][i]['satuan_terkecil'];
+        itemRekomendasi.totalStok =
+            jsonResponse['data_rekomendasi'][i]['total_stok'];
 
         setState(() {
           list_rekomendasi.add(itemRekomendasi);
@@ -297,90 +290,75 @@ class _FormPenjualanState extends State<FormPenjualan> {
   }
 
   void cetakNota(String jumlah_bayar, String tgl_transaksi) async {
-    setState(() {
-      list_belanja.clear();
-      hitungTotalBelanja();
-      list_rekomendasi.clear();
-      inputJumlahBayar.text = '';
-    });
-    // BlueThermalPrinter printer = BlueThermalPrinter.instance;
-    // if ((await printer.isConnected)!) {
-    //   printer.printNewLine();
-    //   printer.printCustom('TOKO BAHAN KUE', 1, 1);
-    //   printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
-    //   printer.printNewLine();
-    //   printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
-    //   printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
-    //   // printer.printNewLine();
-    //   printer.printCustom('-----------------------------', 1, 1);
-    //   printer.printNewLine();
-    //   for (var i = 0; i < list_belanja.length; i++) {
-    //     String diskon_label = list_belanja[i].getLabelDiskon();
-    //     String qty_label = list_belanja[i].getQtyLabel();
-    //     int subtotal = list_belanja[i].hitungSubtotal();
+    BlueThermalPrinter printer = BlueThermalPrinter.instance;
+    if ((await printer.isConnected)!) {
+      printer.printNewLine();
+      printer.printCustom('TOKO BAHAN KUE', 1, 1);
+      printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
+      printer.printNewLine();
+      printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
+      printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
+      // printer.printNewLine();
+      printer.printCustom('-----------------------------', 1, 1);
+      printer.printNewLine();
+      for (var i = 0; i < list_belanja.length; i++) {
+        String diskon_label = list_belanja[i].getLabelDiskon();
+        String qty_label = list_belanja[i].getQtyLabel();
+        int subtotal = list_belanja[i].hitungSubtotal();
 
-    //     String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
-    //     String _netto = CurrencyFormat.convertToIdr(
-    //         int.parse(list_belanja[i].netto.toString()), 0);
-    //     // String netto_label = _netto + ' ' + _satuan_terkecil;
-    //     String netto_label = list_belanja[i].getNetto();
-    //     String nama_produk_label =
-    //         list_belanja[i].namaProduk.toString() + ' ' + netto_label;
+        String _satuan_terkecil = list_belanja[i].satuanTerkecil.toString();
+        String _netto = CurrencyFormat.convertToIdr(
+            int.parse(list_belanja[i].netto.toString()), 0);
+        // String netto_label = _netto + ' ' + _satuan_terkecil;
+        String netto_label = list_belanja[i].getNetto();
+        String nama_produk_label =
+            list_belanja[i].namaProduk.toString() + ' ' + netto_label;
 
-    //     printer.printCustom(nama_produk_label, 1, 0);
-    //     printer.printCustom(qty_label, 1, 0);
+        printer.printCustom(nama_produk_label, 1, 0);
+        printer.printCustom(qty_label, 1, 0);
 
-    //     if (diskon_label == '') {
-    //       printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
-    //     } else {
-    //       printer.printCustom(diskon_label, 1, 0);
-    //       printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
-    //     }
-    //   }
-    //   if (int.parse(jumlah_bayar) <= total_belanja) {
-    //     jumlah_bayar = total_belanja.toString();
-    //   }
+        if (diskon_label == '') {
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        } else {
+          printer.printCustom(diskon_label, 1, 0);
+          printer.printCustom(CurrencyFormat.convertToIdr(subtotal, 0), 1, 2);
+        }
+      }
+      if (int.parse(jumlah_bayar) <= total_belanja) {
+        jumlah_bayar = total_belanja.toString();
+      }
 
-    //   int uang_kembali = int.parse(jumlah_bayar.toString()) -
-    //       int.parse(total_belanja.toString());
+      int uang_kembali = int.parse(jumlah_bayar.toString()) -
+          int.parse(total_belanja.toString());
 
-    //   String total_label =
-    //       'Total ' + CurrencyFormat.convertToIdr(total_belanja, 0);
-    //   String jumlah_bayar_label =
-    //       'Bayar ' + CurrencyFormat.convertToIdr(int.parse(jumlah_bayar), 0);
-    //   String uang_kembali_label =
-    //       'Kembali ' + CurrencyFormat.convertToIdr(uang_kembali, 0);
+      String total_label =
+          'Total ' + CurrencyFormat.convertToIdr(total_belanja, 0);
+      String jumlah_bayar_label =
+          'Bayar ' + CurrencyFormat.convertToIdr(int.parse(jumlah_bayar), 0);
+      String uang_kembali_label =
+          'Kembali ' + CurrencyFormat.convertToIdr(uang_kembali, 0);
 
-    //   printer.printNewLine();
-    //   printer.printCustom(total_label, 1, 2);
-    //   printer.printCustom(jumlah_bayar_label, 1, 2);
-    //   printer.printCustom(uang_kembali_label, 1, 2);
-    //   printer.printNewLine();
-    //   printer.printNewLine();
-    //   printer.printCustom("TERIMA KASIH", 1, 1);
-    //   printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+      printer.printNewLine();
+      printer.printCustom(total_label, 1, 2);
+      printer.printCustom(jumlah_bayar_label, 1, 2);
+      printer.printCustom(uang_kembali_label, 1, 2);
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printCustom("TERIMA KASIH", 1, 1);
+      printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
 
-    //   printer.printNewLine();
-    //   printer.printNewLine();
-    //   printer.printNewLine();
-    //   printer.printNewLine();
-    //   setState(() {
-    //     list_belanja.clear();
-    //     hitungTotalBelanja();
-    //     list_rekomendasi.clear();
-    //     inputJumlahBayar.text = '';
-    //   });
-    // }
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+      printer.printNewLine();
+      setState(() {
+        list_belanja.clear();
+        hitungTotalBelanja();
+        list_rekomendasi.clear();
+        inputJumlahBayar.text = '';
+      });
+    }
   }
-
-  // Future<List<DataHarga>> _getProdukHargaFromSession(String produk_id) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String local_produk_harga =
-  //       await prefs.getString('local_produk_harga') ?? '';
-  //   final result = jsonDecode(local_produk_harga).cast<Map<String, dynamic>>();
-
-  //   return result.map<DataHarga>((json) => DataHarga.fromJson(json)).toList();
-  // }
 
   Future<List<DataHarga>> _getProdukHarga(String produk_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -413,8 +391,13 @@ class _FormPenjualanState extends State<FormPenjualan> {
     return result.map<DataDiskon>((json) => DataDiskon.fromJson(json)).toList();
   }
 
-  Future<void> _showMyDialog(String nama_produk, String produk_id,
-      String produk_harga_id, String qty, String satuan_terkecil) async {
+  Future<void> _showMyDialog(
+      String nama_produk,
+      String produk_id,
+      String produk_harga_id,
+      String qty,
+      String satuan_terkecil,
+      String total_stok) async {
     list_qty_produk.clear();
     _qty_controllers.clear();
     int indexInputQty = 0;
@@ -427,7 +410,15 @@ class _FormPenjualanState extends State<FormPenjualan> {
                 width: MediaQuery.of(context).size.width - 50,
                 child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        'Stok : ' + total_stok,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
                       FutureBuilder<List<DataHarga>>(
                           future: _getProdukHarga(produk_id),
                           // future: data_produk_harga,
@@ -471,7 +462,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                         produk_info.isNew = "1";
                                         produk_info.diskon = "0";
                                         produk_info.tipe_diskon = 'nominal';
-
+                                        produk_info.total_stok = total_stok;
                                         if (produk_harga_id ==
                                             produk_info.produkHargaId) {
                                           produk_info.qty = qty;
@@ -672,6 +663,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                             }
                           }),
                       FutureBuilder<List<DataDiskon>>(
+                          // untuk menampilkan diskon pada pop up
                           future: _getProdukDiskon(produk_id),
                           builder: (BuildContext context, snapshot) {
                             if (snapshot.hasData) {
@@ -731,7 +723,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                           }
                           list_belanja[indexTarget].qty = newQty.toString();
                         } else {
-                          // untuk add produ
+                          // untuk add produk
                           list_belanja.add(list_qty_produk[i]);
                         }
                       }
@@ -752,7 +744,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = (height - padding.top - padding.bottom) * 0.6;
+    double newheight = (height - padding.top - padding.bottom) * 0.5;
     // double newheight = height * 0.5;
     return SafeArea(
       child: Container(
@@ -760,15 +752,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container(
-            //   decoration: BoxDecoration(
-            //       border: Border(bottom: BorderSide(color: Colors.grey))),
-            //   padding: EdgeInsets.only(top: 5, bottom: 15),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [Text('FormPenjualan: Stephanie'), Text('07 Oct 2023 12:27')],
-            //   ),
-            // ),
             Container(
               child: Autocomplete<Data>(
                 optionsBuilder: (TextEditingValue value) {
@@ -813,7 +796,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                       value.produkId.toString(),
                       "0",
                       "0",
-                      value.satuanTerkecil.toString());
+                      value.satuanTerkecil.toString(),
+                      value.totalStok.toString());
                 }),
                 displayStringForOption: (Data d) => '',
               ),
@@ -846,24 +830,17 @@ class _FormPenjualanState extends State<FormPenjualan> {
                       String diskon_label =
                           list_belanja[index].getLabelDiskon();
                       String qty_label = list_belanja[index].getQtyLabel();
+                      String total_stok =
+                          list_belanja[index].total_stok.toString();
 
                       // slidable item
                       return Slidable(
-                        // Specify a key if the Slidable is dismissible.
                         key: const ValueKey(0),
 
-                        // The start action pane is the one at the left or the top side.
                         startActionPane: ActionPane(
                           extentRatio: 0.2,
-                          // A motion is a widget used to control how the pane animates.
                           motion: const ScrollMotion(),
-
-                          // A pane can dismiss the Slidable.
-                          // dismissible: DismissiblePane(onDismissed: () {}),
-
-                          // All actions are defined in the children parameter.
                           children: [
-                            // A SlidableAction can have an icon and/or a label.
                             SlidableAction(
                               onPressed: (context) {
                                 setState(() {
@@ -887,11 +864,15 @@ class _FormPenjualanState extends State<FormPenjualan> {
                           motion: ScrollMotion(),
                           children: [
                             SlidableAction(
-                              // An action can be bigger than the others.
                               flex: 2,
                               onPressed: (context) {
-                                _showMyDialog(_namaProduk, _produkId,
-                                    _produkHargaId, _qty, _satuan_terkecil);
+                                _showMyDialog(
+                                    _namaProduk,
+                                    _produkId,
+                                    _produkHargaId,
+                                    _qty,
+                                    _satuan_terkecil,
+                                    total_stok);
                               },
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -901,8 +882,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
                           ],
                         ),
 
-                        // The child of the Slidable is what the user sees when the
-                        // component is not dragged.
                         child: Container(
                             width: MediaQuery.of(context).size.width,
                             // decoration: BoxDecoration(
@@ -1006,7 +985,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                   "0",
                                   list_rekomendasi[index]
                                       .satuanTerkecil
-                                      .toString());
+                                      .toString(),
+                                  list_rekomendasi[index].totalStok.toString());
                             },
                             child: Container(
                               width: 130,

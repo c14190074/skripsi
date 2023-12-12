@@ -74,7 +74,8 @@ class Pembelian extends BaseController
                     'supplier_id' => $_POST['supplier_id'],
                     'total_invoice' => $total_invoice,
                     'tgl_datang' => '',
-                    'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+                    // 'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+                    'tgl_jatuh_tempo' => '',
                     'status_pembayaran' => '0',
                     'tgl_bayar' => '',
                     'bukti_pembayaran' => '',
@@ -153,7 +154,8 @@ class Pembelian extends BaseController
                 'supplier_id' => $_POST['supplier_id'],
                 'total_invoice' => $total_invoice,
                 'tgl_datang' => '',
-                'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+                // 'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+                'tgl_jatuh_tempo' => '',
                 'status_pembayaran' => '0',
                 'tgl_bayar' => '',
                 'bukti_pembayaran' => '',
@@ -355,8 +357,19 @@ class Pembelian extends BaseController
             $pembelian_id = $_POST['pembelian_id'];
             $tgl_datang = $_POST['tgl_datang'];
 
+            
             $pembelian_model = new PembelianModel();
-            $hasil = $pembelian_model->update($pembelian_id, ['status' => 1, 'tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
+            $pembelian_data = $pembelian_model->find($pembelian_id);
+
+            $supplier_model = new SupplierModel();
+            $supplier_data = $supplier_model->find($pembelian_data['supplier_id']);
+            $tempo_pembayaran = $supplier_data['tempo_pembayaran'];
+
+            $tgl_datang = date('Y-m-d', strtotime($tgl_datang));
+            $tgl_jatuh_tempo = date('Y-m-d', strtotime($tgl_datang . ' +'.$tempo_pembayaran.' day'));
+
+
+            $hasil = $pembelian_model->update($pembelian_id, ['status' => 1, 'tgl_jatuh_tempo' => date('Y-m-d', strtotime($tgl_jatuh_tempo)), 'tgl_datang' => date('Y-m-d', strtotime($tgl_datang))]);
 
             if($hasil) {
                 session()->setFlashData('success', 'Tanggal pembelian berhasil diupdate');
