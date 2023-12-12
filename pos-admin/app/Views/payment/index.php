@@ -19,12 +19,12 @@
         <div class="row justify-content-center w-100">
           <div class="col-md-8 col-lg-6 col-xxl-3">
             <div class="card mb-0">
-              <div class="card-body">
-               	<h3>TERIMA KASIH</h3>
-               	<br />
-               	
-               	<p>Mohon periksa status pembayaran pada menu penjualan</p>
-               	
+              <div class="card-body text-center">
+                <i class="ti ti-circle-check fa-6x" style="color: #a5dc86;"></i>
+                <br /><br />
+                <h3>Terima Kasih!</h3>
+                <br />
+                <p>Silahkan periksa status pembayaran pada menu penjualan.</p>
               </div>
             </div>
           </div>
