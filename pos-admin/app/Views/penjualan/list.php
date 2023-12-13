@@ -26,10 +26,10 @@
                   		<thead>
                   			<tr>
                           <td>No</td>
+                          <td>Order ID</td>
                   				<td>Total Belanja</td>
                           <td>Metode Pembayaran</td>
                           <td>Status Pembayaran</td>
-                          <td>Midtrans ID</td>
                           <td>Midtrans Status</td>
                   				<td>Tanggal Transaksi</td>
                           <td>Kasir</td>
@@ -42,10 +42,10 @@
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
+                          <td><?php echo $d->midtrans_id; ?></td>
                   				<td style="text-align: right;"><?php echo number_format($d->total_bayar, 0); ?></td>
                           <td><?php echo ucwords($d->metode_pembayaran); ?></td>
                           <td><?php echo ucwords($d->status_pembayaran); ?></td>
-                          <td><?php echo $d->midtrans_id; ?></td>
                           <td><?php echo $d->midtrans_status; ?></td>
                   				<td><?php echo date('d M Y H:i:s', strtotime($d->tgl_dibuat)); ?></td>
                           <td><?php echo ucwords(strtolower($d->nama)) ?></td>

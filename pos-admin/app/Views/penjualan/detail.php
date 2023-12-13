@@ -18,6 +18,13 @@
                 <table class="table" id="table-informasi-produk">
                   <tbody>
                     <tr>
+                      <td>Order ID</td>
+                      <td>
+                        <?= $penjualan_data[0]->midtrans_id ?>
+                      </td>
+                    </tr>
+
+                    <tr>
                       <td class="col-md-2">Total Belanja</td>
                       <td>
                         <?= number_format($penjualan_data[0]->total_bayar, 0) ?>
@@ -39,13 +46,7 @@
                       </td>
                     </tr>
 
-                    <tr>
-                      <td>Midtrans ID</td>
-                      <td>
-                        <?= $penjualan_data[0]->midtrans_id ?>
-                      </td>
-                    </tr>
-
+                    
                     <tr>
                       <td>Midtrans Status</td>
                       <td>

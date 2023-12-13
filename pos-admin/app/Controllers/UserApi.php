@@ -5,7 +5,7 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\UserModel;
 use App\Models\UserApiLoginModel;
-
+use App\Models\SettingModel;
 
 class UserApi extends ResourceController
 {
@@ -34,12 +34,36 @@ class UserApi extends ResourceController
                     'data' => []
                 );
             } else {
+                $nama_toko = "Nama Default";
+                $alamat_toko = "Alamat Default";
+                $telp_toko = "No Telp Default";
+
+                $setting_model = new SettingModel();
+                $setting_data = $setting_model->findAll();
+
+                foreach($setting_data as $setting) {
+                    if($setting['setting_name'] == 'nama_toko') {
+                        $nama_toko = $setting['setting_value'];
+                    }
+
+                    if($setting['setting_name'] == 'alamat_toko') {
+                        $alamat_toko = $setting['setting_value'];
+                    }
+
+                    if($setting['setting_name'] == 'telp_toko') {
+                        $telp_toko = $setting['setting_value'];
+                    }
+                }
+
                 $data = [
                     'user_id' => $user['user_id'],
                     'no_telp' => $user['no_telp'],
                     'nama' => $user['nama'],
                     'jabatan' => $user['jabatan'],
                     'is_superadmin' => $user['is_superadmin'],
+                    'nama_toko' => strtoupper($nama_toko),
+                    'alamat_toko' => strtoupper($alamat_toko),
+                    'telp_toko' => strtoupper($telp_toko),
                     'logged_in' => true,
                 ];
 

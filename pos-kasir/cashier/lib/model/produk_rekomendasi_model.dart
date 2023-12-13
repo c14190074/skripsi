@@ -29,6 +29,7 @@ class DataRekomendasi {
   String? produkId;
   String? namaProduk;
   String? satuanTerkecil;
+  String? printedStok;
   String? totalStok;
 
   DataRekomendasi({this.produkId, this.namaProduk});
@@ -37,6 +38,7 @@ class DataRekomendasi {
     produkId = json['produk_id'];
     namaProduk = json['nama_produk'];
     satuanTerkecil = json['satuan_terkecil'];
+    printedStok = json['printed_stok'];
     totalStok = json['total_stok'];
   }
 
@@ -45,6 +47,7 @@ class DataRekomendasi {
     data['produk_id'] = this.produkId;
     data['nama_produk'] = this.namaProduk;
     data['satuan_terkecil'] = this.satuanTerkecil;
+    data['printed_stok'] = this.printedStok;
     data['total_stok'] = this.totalStok;
     return data;
   }

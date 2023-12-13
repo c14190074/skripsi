@@ -6,3 +6,6 @@ String baseURL = 'https://pos.jeniuskasir.online/api/';
 String namaKasir = "";
 String noTelp = "";
 String printerName = "";
+String namaToko = "";
+String alamatToko = "";
+String telpToko = "";

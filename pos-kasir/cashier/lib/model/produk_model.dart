@@ -32,6 +32,7 @@ class Data {
   String? satuanTerkecil;
   String? netto;
   String? stokMin;
+  String? printedStok;
   String? totalStok;
   String? tglDibuat;
   String? dibuatOleh;
@@ -47,6 +48,7 @@ class Data {
       this.satuanTerkecil,
       this.netto,
       this.stokMin,
+      this.printedStok,
       this.totalStok,
       this.tglDibuat,
       this.dibuatOleh,
@@ -62,6 +64,7 @@ class Data {
     satuanTerkecil = json['satuan_terkecil'];
     netto = json['netto'];
     stokMin = json['stok_min'];
+    printedStok = json['printed_stok'];
     totalStok = json['total_stok'];
     tglDibuat = json['tgl_dibuat'];
     dibuatOleh = json['dibuat_oleh'];
@@ -79,6 +82,7 @@ class Data {
     data['satuan_terkecil'] = this.satuanTerkecil;
     data['netto'] = this.netto;
     data['stok_min'] = this.stokMin;
+    data['printed_stok'] = this.printedStok;
     data['total_stok'] = this.totalStok;
     data['tgl_dibuat'] = this.tglDibuat;
     data['dibuat_oleh'] = this.dibuatOleh;

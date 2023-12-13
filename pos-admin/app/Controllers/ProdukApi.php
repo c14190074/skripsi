@@ -42,7 +42,8 @@ class ProdukApi extends ResourceController
                     'nama_produk' => $q->nama_produk,
                     'satuan_terkecil' => $q->satuan_terkecil,
                     'stok_min' => $q->stok_min,
-                    'total_stok' => $produk_model->getStok($q->produk_id)
+                    'printed_stok' => $produk_model->getStok($q->produk_id),
+                    'total_stok' => $produk_model->getStokInSatuanTerkecil($q->produk_id)
                 );
             }
 

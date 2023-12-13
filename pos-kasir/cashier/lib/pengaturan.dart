@@ -1,3 +1,4 @@
+import 'package:cashier/kasir.dart';
 import 'package:cashier/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
@@ -109,6 +110,9 @@ class _PengaturanState extends State<Pengaturan> {
                               printerName = selectedDevice?.name.toString();
                               globals.printerName = printerName!;
                             });
+
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Kasir()));
                           }
                         } else {
                           showDialog<String>(

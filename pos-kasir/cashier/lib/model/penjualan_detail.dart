@@ -13,6 +13,7 @@ class ItemPenjualan {
   String? isNew;
   String? diskon;
   String? tipe_diskon;
+  String? printed_stok;
   String? total_stok;
 
   ItemPenjualan(
@@ -27,6 +28,7 @@ class ItemPenjualan {
       this.isNew,
       this.diskon,
       this.tipe_diskon,
+      this.printed_stok,
       this.total_stok});
 
   ItemPenjualan.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class ItemPenjualan {
     isNew = json['isNew'];
     diskon = json['diskon'];
     tipe_diskon = json['tipe_diskon'];
+    printed_stok = json['printed_stok'];
     total_stok = json['total_stok'];
   }
 
@@ -57,6 +60,7 @@ class ItemPenjualan {
     data['isNew'] = this.isNew;
     data['diskon'] = this.diskon;
     data['tipe_diskon'] = this.tipe_diskon;
+    data['printed_stok'] = this.printed_stok;
     data['total_stok'] = this.total_stok;
 
     return data;

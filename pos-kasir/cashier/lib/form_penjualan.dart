@@ -39,12 +39,14 @@ class _FormPenjualanState extends State<FormPenjualan> {
 
   int total_belanja = 0;
   String jumlahBayarErrorMsg = '';
+  bool displayPrinterMessage = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getAllDataProduk();
+    checkPrinterStatus();
   }
 
   void _getAllDataProduk() async {
@@ -64,6 +66,19 @@ class _FormPenjualanState extends State<FormPenjualan> {
     }
   }
 
+  void checkPrinterStatus() async {
+    BlueThermalPrinter printer = BlueThermalPrinter.instance;
+    if ((await printer.isConnected)!) {
+      setState(() {
+        displayPrinterMessage = false;
+      });
+    } else {
+      setState(() {
+        displayPrinterMessage = true;
+      });
+    }
+  }
+
   void hitungTotalBelanja() async {
     resetDiskon();
     Map dataToSave = {
@@ -77,7 +92,6 @@ class _FormPenjualanState extends State<FormPenjualan> {
     var api_url = globals.baseURL + 'penjualan/hitungdiskon/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
-    // print(jsonResponse);
 
     int hasil = 0;
     if (jsonResponse['status'] == 200 && jsonResponse['data'].length > 0) {
@@ -121,7 +135,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
     var api_url = globals.baseURL + 'penjualan/getsuggestion/' + user_token;
     var response = await http.post(Uri.parse(api_url), body: dataToSave);
     jsonResponse = json.decode(response.body);
-    // print(jsonResponse);
+
     if (jsonResponse['status'] == 200) {
       for (var i = 0; i < jsonResponse['data_rekomendasi'].length; i++) {
         final itemRekomendasi = new DataRekomendasi();
@@ -131,6 +145,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
             jsonResponse['data_rekomendasi'][i]['nama_produk'];
         itemRekomendasi.satuanTerkecil =
             jsonResponse['data_rekomendasi'][i]['satuan_terkecil'];
+        itemRekomendasi.printedStok =
+            jsonResponse['data_rekomendasi'][i]['printed_stok'];
         itemRekomendasi.totalStok =
             jsonResponse['data_rekomendasi'][i]['total_stok'];
 
@@ -293,8 +309,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
     BlueThermalPrinter printer = BlueThermalPrinter.instance;
     if ((await printer.isConnected)!) {
       printer.printNewLine();
-      printer.printCustom('TOKO BAHAN KUE', 1, 1);
-      printer.printCustom('JL. LUKMAN HAKIM 64, TUBAN', 1, 1);
+      printer.printCustom(globals.namaToko, 1, 1);
+      printer.printCustom(globals.alamatToko, 1, 1);
       printer.printNewLine();
       printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
       printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
@@ -346,6 +362,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
       printer.printNewLine();
       printer.printCustom("TERIMA KASIH", 1, 1);
       printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+      printer.printCustom(globals.telpToko.toString(), 1, 1);
 
       printer.printNewLine();
       printer.printNewLine();
@@ -397,6 +414,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
       String produk_harga_id,
       String qty,
       String satuan_terkecil,
+      String printed_stok,
       String total_stok) async {
     list_qty_produk.clear();
     _qty_controllers.clear();
@@ -413,7 +431,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Stok : ' + total_stok,
+                        'Stok : ' + printed_stok,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
@@ -462,6 +480,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                         produk_info.isNew = "1";
                                         produk_info.diskon = "0";
                                         produk_info.tipe_diskon = 'nominal';
+                                        produk_info.printed_stok = printed_stok;
                                         produk_info.total_stok = total_stok;
                                         if (produk_harga_id ==
                                             produk_info.produkHargaId) {
@@ -706,34 +725,68 @@ class _FormPenjualanState extends State<FormPenjualan> {
                 ElevatedButton(
                   child: const Text('Tambahkan'),
                   onPressed: () {
+                    int total_netto = 0;
+                    String selectedProdukId = '';
                     for (var i = 0; i < list_qty_produk.length; i++) {
                       if (int.parse(list_qty_produk[i].qty.toString()) > 0) {
-                        final indexTarget = list_belanja.indexWhere((element) =>
-                            element.produkHargaId ==
-                            list_qty_produk[i].produkHargaId);
-                        if (indexTarget > -1) {
-                          // untuk update qty
-                          int newQty = int.parse(
-                                  list_belanja[indexTarget].qty.toString()) +
-                              int.parse(list_qty_produk[i].qty.toString());
-
-                          if (list_qty_produk[i].isNew == "0") {
-                            newQty =
-                                int.parse(list_qty_produk[i].qty.toString());
-                          }
-                          list_belanja[indexTarget].qty = newQty.toString();
-                        } else {
-                          // untuk add produk
-                          list_belanja.add(list_qty_produk[i]);
-                        }
+                        total_netto = total_netto +
+                            (int.parse(list_qty_produk[i].netto.toString()) *
+                                int.parse(list_qty_produk[i].qty.toString()));
+                        selectedProdukId =
+                            list_qty_produk[i].produkId.toString();
                       }
                     }
 
-                    list_qty_produk.clear();
-                    _qty_controllers.clear();
-                    hitungTotalBelanja();
-                    getRekomendasi();
-                    Navigator.of(context).pop();
+                    for (var i = 0; i < list_belanja.length; i++) {
+                      if (list_belanja[i].produkId.toString() ==
+                          selectedProdukId) {
+                        total_netto = total_netto +
+                            (int.parse(list_belanja[i].netto.toString()) *
+                                int.parse(list_belanja[i].qty.toString()));
+                      }
+                    }
+
+                    print(total_netto);
+                    print(total_stok);
+
+                    if (total_netto > int.parse(total_stok.toString())) {
+                      print('stok tidak cukup');
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: const Text('Stok tidak cukup'),
+                        duration: const Duration(seconds: 1),
+                      ));
+                    } else {
+                      for (var i = 0; i < list_qty_produk.length; i++) {
+                        if (int.parse(list_qty_produk[i].qty.toString()) > 0) {
+                          final indexTarget = list_belanja.indexWhere(
+                              (element) =>
+                                  element.produkHargaId ==
+                                  list_qty_produk[i].produkHargaId);
+                          if (indexTarget > -1) {
+                            // jika item sudah ada di keranjang
+                            // untuk update qty
+                            int newQty = int.parse(
+                                    list_belanja[indexTarget].qty.toString()) +
+                                int.parse(list_qty_produk[i].qty.toString());
+
+                            if (list_qty_produk[i].isNew == "0") {
+                              newQty =
+                                  int.parse(list_qty_produk[i].qty.toString());
+                            }
+                            list_belanja[indexTarget].qty = newQty.toString();
+                          } else {
+                            // untuk add produk
+                            list_belanja.add(list_qty_produk[i]);
+                          }
+                        }
+                      }
+
+                      list_qty_produk.clear();
+                      _qty_controllers.clear();
+                      hitungTotalBelanja();
+                      getRekomendasi();
+                      Navigator.of(context).pop();
+                    }
                   },
                 ),
               ],
@@ -744,7 +797,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = (height - padding.top - padding.bottom) * 0.5;
+    double newheight = (height - padding.top - padding.bottom) * 0.475;
     // double newheight = height * 0.5;
     return SafeArea(
       child: Container(
@@ -752,6 +805,14 @@ class _FormPenjualanState extends State<FormPenjualan> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Visibility(
+              visible: displayPrinterMessage,
+              child: Text(
+                'Printer is not connected',
+                style:
+                    TextStyle(fontStyle: FontStyle.italic, color: Colors.red),
+              ),
+            ),
             Container(
               child: Autocomplete<Data>(
                 optionsBuilder: (TextEditingValue value) {
@@ -797,6 +858,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                       "0",
                       "0",
                       value.satuanTerkecil.toString(),
+                      value.printedStok.toString(),
                       value.totalStok.toString());
                 }),
                 displayStringForOption: (Data d) => '',
@@ -830,6 +892,8 @@ class _FormPenjualanState extends State<FormPenjualan> {
                       String diskon_label =
                           list_belanja[index].getLabelDiskon();
                       String qty_label = list_belanja[index].getQtyLabel();
+                      String printed_stok =
+                          list_belanja[index].printed_stok.toString();
                       String total_stok =
                           list_belanja[index].total_stok.toString();
 
@@ -872,6 +936,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                     _produkHargaId,
                                     _qty,
                                     _satuan_terkecil,
+                                    printed_stok,
                                     total_stok);
                               },
                               backgroundColor: Colors.blue,
@@ -985,6 +1050,9 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                   "0",
                                   list_rekomendasi[index]
                                       .satuanTerkecil
+                                      .toString(),
+                                  list_rekomendasi[index]
+                                      .printedStok
                                       .toString(),
                                   list_rekomendasi[index].totalStok.toString());
                             },

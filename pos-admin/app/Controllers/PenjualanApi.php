@@ -586,7 +586,8 @@ class PenjualanApi extends ResourceController
                                         'produk_id' => $data_produk[$r],
                                         'nama_produk' => ucwords($r),
                                         'satuan_terkecil' => $produk_data['satuan_terkecil'],
-                                        'total_stok' => $produk_model->getStok($data_produk[$r])
+                                        'printed_stok' => $produk_model->getStok($data_produk[$r]),
+                                        'total_stok' => $produk_model->getStokInSatuanTerkecil($data_produk[$r])
                                     ];
 
                                     array_push($unique_rekomendasi, $r_info);

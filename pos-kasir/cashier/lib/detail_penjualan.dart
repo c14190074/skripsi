@@ -84,8 +84,8 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
 
     if ((await printer.isConnected)!) {
       printer.printNewLine();
-      printer.printCustom('TOKO XYZ', 1, 1);
-      printer.printCustom('JL. BASUKI RAHMAT 70, TUBAN', 1, 1);
+      printer.printCustom(globals.namaToko, 1, 1);
+      printer.printCustom(globals.alamatToko, 1, 1);
       printer.printNewLine();
       printer.printCustom('KASIR: ' + globals.namaKasir, 1, 0);
       printer.printCustom('WAKTU: ' + tgl_transaksi, 1, 0);
@@ -126,6 +126,7 @@ class _DetailPenjualanState extends State<DetailPenjualan> {
       printer.printNewLine();
       printer.printCustom("TERIMA KASIH", 1, 1);
       printer.printCustom("SELAMAT BELANJA KEMBALI", 1, 1);
+      printer.printCustom(globals.telpToko.toString(), 1, 1);
 
       printer.printNewLine();
       printer.printNewLine();

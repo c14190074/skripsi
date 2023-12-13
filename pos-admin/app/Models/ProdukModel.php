@@ -37,6 +37,30 @@ class ProdukModel extends Model
         return $rules;
     }
 
+
+
+    public function getStokInSatuanTerkecil($produk_id) {
+        $total_stok = 0;
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_produk_stok s');
+        $builder->selectSum('s.stok', 'total_stok');
+        $builder->where('s.is_deleted', 0);
+        $builder->where('s.produk_id', $produk_id);
+        $builder->groupBy('s.produk_id');
+        $query   = $builder->get();
+
+        $query_result = $query->getResult();
+        if($query_result) {
+            if(isset($query_result[0])) {
+                $total_stok = $query_result[0]->total_stok;
+            }
+        }
+
+        return $total_stok;
+        
+    }
+
     public function getStok($produk_id) {
         $db      = \Config\Database::connect();
         $builder = $db->table('tbl_produk_stok');

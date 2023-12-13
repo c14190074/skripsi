@@ -139,6 +139,12 @@ class _LoginState extends State<Login> {
                             if (jsonResponse['status'] == 200) {
                               globals.namaKasir = jsonResponse['data']['nama'];
                               globals.noTelp = jsonResponse['data']['no_telp'];
+                              globals.namaToko =
+                                  jsonResponse['data']['nama_toko'];
+                              globals.alamatToko =
+                                  jsonResponse['data']['alamat_toko'];
+                              globals.telpToko =
+                                  jsonResponse['data']['telp_toko'];
                               prefs.setString(
                                   "user_token", jsonResponse['user_token']);
                               prefs.setString(
@@ -149,17 +155,6 @@ class _LoginState extends State<Login> {
                                   "nama", jsonResponse['data']['nama']);
                               prefs.setString(
                                   "jabatan", jsonResponse['data']['jabatan']);
-
-                              // var getProdukHargaResponse = await http.get(
-                              //     Uri.parse(globals.baseURL +
-                              //         'produk/getprice/0/' +
-                              //         jsonResponse['user_token']));
-
-                              // var json_produk_harga = await json
-                              //     .decode(getProdukHargaResponse.body);
-
-                              // prefs.setString("local_produk_harga",
-                              //     jsonEncode(json_produk_harga['data']));
 
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => Kasir()));
