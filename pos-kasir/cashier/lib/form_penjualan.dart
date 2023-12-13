@@ -797,7 +797,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
-    double newheight = (height - padding.top - padding.bottom) * 0.475;
+    double newheight = (height - padding.top - padding.bottom) * 0.45;
     // double newheight = height * 0.5;
     return SafeArea(
       child: Container(

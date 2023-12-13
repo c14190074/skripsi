@@ -19,7 +19,7 @@ class User extends BaseController
             $user_model = new UserModel();
             $login_berhasil = $user_model->where('is_deleted', 0)
                                 ->where('no_telp', $no_telp)
-                                //->where('password', pos_encrypt($password))
+                                ->where('password', pos_encrypt($password))
                                 ->where('jabatan', 'admin')
                                 ->first();
 

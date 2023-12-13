@@ -17,7 +17,7 @@ class UserApi extends ResourceController
 
         $model = new UserModel();
         $user = $model->where('no_telp', $no_telp)
-                        // ->where('password', pos_encrypt($password))
+                        ->where('password', pos_encrypt($password))
                         ->where('is_deleted', 0)
                         ->where('jabatan', 'kasir')->first();
 

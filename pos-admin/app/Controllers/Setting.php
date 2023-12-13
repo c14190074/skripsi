@@ -22,6 +22,7 @@ class Setting extends BaseController
             for($i=0; $i<count($_POST['setting_id']); $i++) {
                 $setting_model->update($_POST['setting_id'][$i], ['setting_value' => $_POST['setting_value'][$i]]);
             }
+            session()->setFlashData('success', 'Setting Berhasil');
 
         }
 
