@@ -39,170 +39,150 @@ class PenjualanApi extends ResourceController
 
             $tgl_dibuat = date('Y-m-d H:i:s');
 
-            $min_jumlah_data = 7;
-            $max_jumlah_data = 20;
+                 if(count($data) > 0) {
+                $penjualan_model = new PenjualanModel();
+                $dataToSave = [
+                    'total_bayar' => 0,
+                    'metode_pembayaran' => $metode_pembayaran,
+                    'status_pembayaran' => $metode_pembayaran == 'tunai' ? 'lunas' : 'pending',
+                    'midtrans_id' => 0,
+                    'midtrans_status' => '',
+                    'tgl_dibuat' => $tgl_dibuat,
+                    'dibuat_oleh' => $user_id,
+                    'tgl_diupdate' => null,
+                    'diupdate_oleh' => 0,
+                    'is_deleted' => 0,
+                ];
 
-            $rand_jumlah_data = rand($min_jumlah_data, $max_jumlah_data);
+                $penjualan_model->insert($dataToSave);
 
-            if(count($data) > 0) {
-                for($a = 0; $a < $rand_jumlah_data; $a++) {
-                    $total_belanja = 0;
-                    $jumlahDataTersimpan = 0;
-                    $min_day = 1;
-                    $max_day = 30;
-                    $tmp_day = rand($min_day,$max_day);
+                if($penjualan_model) {
+                    $penjualan_id = $penjualan_model->insertID;
 
-                    $min_month = 8;
-                    $max_month = 11;
-                    $tmp_month = rand($min_month,$max_month);
+                    for($i = 0; $i < count($data); $i++) {
+                        $produk_id = $data[$i]->produk_id;
+                        $produk_harga_id = $data[$i]->produk_harga_id;
+                        $nama_produk = $data[$i]->nama_produk;
+                        $satuan_terkecil = $data[$i]->satuan_terkecil;
+                        $netto = $data[$i]->netto;
+                        $satuan = $data[$i]->satuan;
+                        $harga_jual = $data[$i]->harga_jual;
+                        $qty = $data[$i]->qty;
+                        $tipe_diskon = $data[$i]->tipe_diskon;
+                        $diskon = $data[$i]->diskon;
 
-                    $tmp_tgl = date('Y-m-d H:i:s', strtotime('2023-'.$tmp_month.'-'.$tmp_day));
+                        $produk_model = new ProdukModel();
+                        $produk_harga_model = new ProdukHargaModel();
 
-                    $penjualan_model = new PenjualanModel();
-                    $dataToSave = [
-                        'total_bayar' => 0,
-                        'metode_pembayaran' => $metode_pembayaran,
-                        'status_pembayaran' => $metode_pembayaran == 'tunai' ? 'lunas' : 'pending',
-                        'midtrans_id' => 0,
-                        'midtrans_status' => '',
-                        // 'tgl_dibuat' => $tgl_dibuat,
-                        'tgl_dibuat' => $tmp_tgl,
-                        'dibuat_oleh' => $user_id,
-                        'tgl_diupdate' => null,
-                        'diupdate_oleh' => 0,
-                        'is_deleted' => 0,
-                    ];
+                        $produk_data = $produk_model->find($produk_id);
+                        $produk_harga_data = $produk_harga_model->find($produk_harga_id);
 
-                    $penjualan_model->insert($dataToSave);
+                        $dataToSave = [
+                            'penjualan_id' => $penjualan_id,
+                            'produk_id' => $produk_id,
+                            'produk_harga_id' => $produk_harga_id,
+                            'harga_beli' => $produk_harga_data['harga_beli'],
+                            'harga_jual' => $produk_harga_data['harga_jual'],
+                            'qty' => $qty,
+                            'tipe_diskon' => $tipe_diskon,
+                            'diskon' => $diskon,
+                            'is_deleted' => 0,
+                        ];
 
-                    if($penjualan_model) {
-                        $penjualan_id = $penjualan_model->insertID;
+                        $penjualan_detail_model = new PenjualanDetailModel();
+                        if($penjualan_detail_model->insert($dataToSave)) {
+                            $qty_terjual = $produk_harga_data['netto'] * $qty;
 
-                        for($i = 0; $i < count($data); $i++) {
-                            $produk_id = $data[$i]->produk_id;
-                            $produk_harga_id = $data[$i]->produk_harga_id;
-                            $nama_produk = $data[$i]->nama_produk;
-                            $satuan_terkecil = $data[$i]->satuan_terkecil;
-                            $netto = $data[$i]->netto;
-                            $satuan = $data[$i]->satuan;
-                            $harga_jual = $data[$i]->harga_jual;
-                            $qty = $data[$i]->qty;
-                            $tipe_diskon = $data[$i]->tipe_diskon;
-                            $diskon = $data[$i]->diskon;
+                            $produk_stok_model = new ProdukStokModel();
+                            $produk_stok = $produk_stok_model->where('is_deleted', 0)
+                                                            ->where('produk_id', $produk_id)
+                                                            ->orderBy('tgl_kadaluarsa', 'asc')
+                                                            ->findAll();
 
-                            $produk_model = new ProdukModel();
-                            $produk_harga_model = new ProdukHargaModel();
-
-                            $produk_data = $produk_model->find($produk_id);
-                            $produk_harga_data = $produk_harga_model->find($produk_harga_id);
-
-                            $dataToSave = [
-                                'penjualan_id' => $penjualan_id,
-                                'produk_id' => $produk_id,
-                                'produk_harga_id' => $produk_harga_id,
-                                'harga_beli' => $produk_harga_data['harga_beli'],
-                                'harga_jual' => $produk_harga_data['harga_jual'],
-                                'qty' => $qty,
-                                'tipe_diskon' => $tipe_diskon,
-                                'diskon' => $diskon,
-                                'is_deleted' => 0,
-                            ];
-
-                            $penjualan_detail_model = new PenjualanDetailModel();
-                            if($penjualan_detail_model->insert($dataToSave)) {
-                                $qty_terjual = $produk_harga_data['netto'] * $qty;
-
-                                $produk_stok_model = new ProdukStokModel();
-                                $produk_stok = $produk_stok_model->where('is_deleted', 0)
-                                                                ->where('produk_id', $produk_id)
-                                                                ->orderBy('tgl_kadaluarsa', 'asc')
-                                                                ->findAll();
-
-                                $stop_pengurangan_stok = false;
-                                if($produk_stok) {
-                                    foreach($produk_stok as $p) {
-                                        if(!$stop_pengurangan_stok) {
-                                            $stok_skrg = $p['stok'] - $qty_terjual;
-                                            if($stok_skrg < 0) {
-                                                $produk_stok_model->update($p['stok_id'], ['stok' => 0]);
-                                                $qty_terjual = $qty_terjual - $p['stok'];
-                                            } else {
-                                                $produk_stok_model->update($p['stok_id'], ['stok' => $stok_skrg]);
-                                                $stop_pengurangan_stok = true;
-                                            }
-
+                            $stop_pengurangan_stok = false;
+                            if($produk_stok) {
+                                foreach($produk_stok as $p) {
+                                    if(!$stop_pengurangan_stok) {
+                                        $stok_skrg = $p['stok'] - $qty_terjual;
+                                        if($stok_skrg < 0) {
+                                            $produk_stok_model->update($p['stok_id'], ['stok' => 0]);
+                                            $qty_terjual = $qty_terjual - $p['stok'];
+                                        } else {
+                                            $produk_stok_model->update($p['stok_id'], ['stok' => $stok_skrg]);
+                                            $stop_pengurangan_stok = true;
                                         }
-                                        
+
                                     }
+                                    
                                 }
-
-
-                                $jumlahDataTersimpan++;
-                                $subtotal = $qty * $harga_jual;
-                                if($diskon > 0) {
-                                    if($tipe_diskon == 'persen') {
-                                        $jumlahDiskon = $subtotal * $diskon / 100;
-                                        $subtotal -= $jumlahDiskon;
-                                    } else {
-                                        $subtotal -= $diskon;
-                                    }
-                                }
-
-                                $total_belanja = $total_belanja + $subtotal;
-                            }     
-
-                        }
-
-                        if(count($data) == $jumlahDataTersimpan) {
-                            $midtrans_id = time().'#'.$penjualan_id;
-                            $penjualan_model->update($penjualan_id, ['total_bayar' => $total_belanja, 'midtrans_id' => $midtrans_id]);
-
-                            if($metode_pembayaran == 'tunai') {
-                                $response = array(
-                                    'status' => 200,
-                                    'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
-                                );
-                            } else {
-                                // Set your Merchant Server Key
-                                \Midtrans\Config::$serverKey = 'SB-Mid-server-3_qu33TmZWNNOLJ-Isb5Fafi';
-                                // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-                                \Midtrans\Config::$isProduction = false;
-                                // Set sanitization on (default)
-                                \Midtrans\Config::$isSanitized = true;
-                                // Set 3DS transaction for credit card to true
-                                \Midtrans\Config::$is3ds = true;
-
-                                
-                                $params = array(
-                                    'transaction_details' => array(
-                                        'order_id' => $midtrans_id,
-                                        'gross_amount' => $total_belanja,
-                                    ),
-                                    'customer_details' => array(
-                                        'first_name' => 'Pelanggan umum',
-                                        'phone' => $no_telp_pelanggan
-                                    ),
-                                );
-
-                                $snapToken = \Midtrans\Snap::getSnapToken($params);
-                                $penjualan_model->update($penjualan_id, ['midtrans_id' => $midtrans_id]);
-                                $response = array(
-                                    'status' => 200,
-                                    'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
-                                    'midtrans_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
-                                );
                             }
 
+
+                            $jumlahDataTersimpan++;
+                            $subtotal = $qty * $harga_jual;
+                            if($diskon > 0) {
+                                if($tipe_diskon == 'persen') {
+                                    $jumlahDiskon = $subtotal * $diskon / 100;
+                                    $subtotal -= $jumlahDiskon;
+                                } else {
+                                    $subtotal -= $diskon;
+                                }
+                            }
+
+                            $total_belanja = $total_belanja + $subtotal;
+                        }     
+
+                    }
+
+                    if(count($data) == $jumlahDataTersimpan) {
+                        $midtrans_id = time().'#'.$penjualan_id;
+                        $penjualan_model->update($penjualan_id, ['total_bayar' => $total_belanja, 'midtrans_id' => $midtrans_id]);
+
+                        if($metode_pembayaran == 'tunai') {
+                            $response = array(
+                                'status' => 200,
+                                'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
+                            );
+                        } else {
+                            // Set your Merchant Server Key
+                            \Midtrans\Config::$serverKey = 'SB-Mid-server-3_qu33TmZWNNOLJ-Isb5Fafi';
+                            // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+                            \Midtrans\Config::$isProduction = false;
+                            // Set sanitization on (default)
+                            \Midtrans\Config::$isSanitized = true;
+                            // Set 3DS transaction for credit card to true
+                            \Midtrans\Config::$is3ds = true;
+
+                            
+                            $params = array(
+                                'transaction_details' => array(
+                                    'order_id' => $midtrans_id,
+                                    'gross_amount' => $total_belanja,
+                                ),
+                                'customer_details' => array(
+                                    'first_name' => 'Pelanggan umum',
+                                    'phone' => $no_telp_pelanggan
+                                ),
+                            );
+
+                            $snapToken = \Midtrans\Snap::getSnapToken($params);
+                            $penjualan_model->update($penjualan_id, ['midtrans_id' => $midtrans_id]);
+                            $response = array(
+                                'status' => 200,
+                                'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
+                                'midtrans_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
+                            );
                         }
 
-                    } else {
-                        $response = array(
-                            'status' => 401,
-                            'msg' => 'Data penjualan header gagal tersimpan',
-                            'data' => []
-                        );
                     }
-                } // end if for
+
+                } else {
+                    $response = array(
+                        'status' => 401,
+                        'msg' => 'Data penjualan header gagal tersimpan',
+                        'data' => []
+                    );
+                }
 
             } else {
                 $response = array(
