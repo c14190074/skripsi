@@ -148,8 +148,8 @@ class User extends BaseController
                     'jabatan' => $_POST['jabatan'],
                     'tgl_dibuat' => date('Y-m-d H:i:s'),
                     'dibuat_oleh' => session()->user_id,
-                    'tgl_diupdate' => null,
-                    'diupdate_oleh' => 0
+                    'tgl_diupdate' => date('Y-m-d H:i:s'),
+                    'diupdate_oleh' => session()->user_id,
                 ];
 
                 $hasil = $user_model->insert($data);
@@ -178,7 +178,7 @@ class User extends BaseController
 
         $user_model = new UserModel();
         $user_data = $user_model->where('is_deleted', 0)
-                                ->orderBy('tgl_dibuat', 'desc')
+                                ->orderBy('tgl_diupdate', 'desc')
                                 ->findAll();
         return view('user/list', array(
             'data' => $user_data

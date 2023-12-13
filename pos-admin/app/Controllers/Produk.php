@@ -108,8 +108,8 @@ class Produk extends BaseController
                     'satuan_terbesar' => $_POST['satuan_terbesar'],
                     'tgl_dibuat' => date('Y-m-d H:i:s'),
                     'dibuat_oleh' => session()->user_id,
-                    'tgl_diupdate' => null,
-                    'diupdate_oleh' => 0
+                    'tgl_diupdate' => date('Y-m-d H:i:s'),
+                    'diupdate_oleh' => session()->user_id,
                 ];
 
                 $hasil = $produk_model->insert($data);
@@ -220,7 +220,7 @@ class Produk extends BaseController
         $builder->where('tbl_produk.is_deleted', 0);
         $builder->join('tbl_supplier', 'tbl_produk.supplier_id = tbl_supplier.supplier_id');
         $builder->join('tbl_kategori', 'tbl_produk.kategori_id = tbl_kategori.kategori_id');
-        $builder->orderBy('tbl_produk.tgl_dibuat', 'desc');
+        $builder->orderBy('tbl_produk.tgl_diupdate', 'desc');
         $query   = $builder->get();
 
         return view('produk/list', array(

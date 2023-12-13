@@ -25,8 +25,8 @@ class Kategori extends BaseController
                     'nama_kategori' => $_POST['nama_kategori'],
                     'tgl_dibuat' => date('Y-m-d H:i:s'),
                     'dibuat_oleh' => session()->user_id,
-                    'tgl_diupdate' => null,
-                    'diupdate_oleh' => 0
+                    'tgl_diupdate' => date('Y-m-d H:i:s'),
+                    'diupdate_oleh' => session()->user_id,
                 ];
 
                 $hasil = $kategori_model->insert($data);
@@ -123,7 +123,7 @@ class Kategori extends BaseController
         
         $kategori_model = new KategoriModel();
         $kategori_data = $kategori_model->where('is_deleted', 0)
-                                        ->orderBy('tgl_dibuat', 'desc')
+                                        ->orderBy('tgl_diupdate', 'desc')
                                         ->findAll();
 
         return view('kategori/list', array(

@@ -28,8 +28,8 @@ class Supplier extends BaseController
                     'tempo_pembayaran' => $_POST['tempo_pembayaran'],
                     'tgl_dibuat' => date('Y-m-d H:i:s'),
                     'dibuat_oleh' => session()->user_id,
-                    'tgl_diupdate' => null,
-                    'diupdate_oleh' => 0
+                    'tgl_diupdate' => date('Y-m-d H:i:s'),
+                    'diupdate_oleh' => session()->user_id
                 ];
 
                 $hasil = $supplier_model->insert($data);
@@ -104,7 +104,7 @@ class Supplier extends BaseController
 
         $supplier_model = new SupplierModel();
         $supplier_data = $supplier_model->where('is_deleted', 0)
-                                ->orderBy('tgl_dibuat', 'desc')
+                                ->orderBy('tgl_diupdate', 'desc')
                                 ->findAll();
 
         return view('supplier/list', array(
