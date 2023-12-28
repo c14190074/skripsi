@@ -19,7 +19,7 @@ class ProdukStokModel extends Model
 
         if($stok_ecer > 0) {
             if($stok_carton > 0) {
-                return $stok_carton.' dos '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
+                return $stok_carton.' '.$satuan_terbesar.' '.number_format($stok_ecer, 0).' '.$satuan_terkecil;
             } else  {
                 return number_format($stok_ecer, 0).' '.$satuan_terkecil;
             }
