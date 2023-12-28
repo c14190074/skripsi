@@ -50,7 +50,6 @@ function loadPembelianData() {
 $(document).ready(function() {
 	initProduKData();
 	
-
 	$('.input-date').datepicker({
 		format: 'dd-M-yy',
 		autoclose: true,
@@ -58,6 +57,33 @@ $(document).ready(function() {
 	});
 
 	let table = new DataTable('.active-table');
+
+	
+	if($('#multiple_search_table').length > 0) {
+		new DataTable('#multiple_search_table', {
+		    initComplete: function () {
+		        this.api()
+		            .columns()
+		            .every(function () {
+		                let column = this;
+		                let title = column.footer().textContent;
+		 
+		                // Create input element
+		                let input = document.createElement('input');
+		                input.placeholder = title;
+		                column.footer().replaceChildren(input);
+		 
+		                // Event listener for user input
+		                input.addEventListener('keyup', () => {
+		                    if (column.search() !== this.value) {
+		                        column.search(input.value).draw();
+		                    }
+		                });
+		            });
+		    }
+		});
+		
+	}
 
 	$('.acive-dropdown').select2({
 		placeholder: 'Silahkan pilih'
@@ -314,6 +340,63 @@ $(document).ready(function() {
 		} 
 
 
+		
+
+		if(readyToSubmit) {
+			// alert('Form is ready');
+			$('#form-produk').submit();
+		}
+		
+	});
+
+	$('#btn-save-pembelian').on('click', function() {
+		var numberRegex = /^\d+$/;
+		var readyToSubmit = true;
+
+		$('#table-pembelian tbody tr').each(function(index, tr){
+			$(tr).find('.produk-qty').parent().find('p.error-msg').remove();
+			$(tr).find('.produk-harga-beli').parent().find('p.error-msg').remove();
+
+			if($(tr).find('.produk-qty').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">QTY produk wajib diisi.</p>';
+				$(tr).find('.produk-qty').parent().append(errorMsg);
+				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.produk-qty').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">QTY produk harus angka.</p>';
+					$(tr).find('.produk-qty').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
+			}
+
+			if($(tr).find('.produk-harga-beli').val() == '') {
+				errorMsg = '<p class="error-msg fa-sm">Harga beli produk wajib diisi.</p>';
+				$(tr).find('.produk-harga-beli').parent().append(errorMsg);
+				readyToSubmit = false;
+			} else {
+				if(numberRegex.test($(tr).find('.produk-harga-beli').val()) == false) {
+					errorMsg = '<p class="error-msg fa-sm">Harga beli harus angka.</p>';
+					$(tr).find('.produk-harga-beli').parent().append(errorMsg);
+					readyToSubmit = false;
+				}
+			}
+		});
+
+		
+
+		if(readyToSubmit) {
+			// alert('Form is ready');
+			$('#form-pembelian').submit();
+		}
+		
+	});
+
+
+
+	$('#btn_stok_produk').on('click', function() {
+		var numberRegex = /^\d+$/;
+		var readyToSubmit = true;
+		
 		$('#table-produk-stok tbody tr').each(function(index, tr){
 			$(tr).find('.input-date').parent().find('p.error-msg').remove();
 			$(tr).find('.input-stok').parent().find('p.error-msg').remove();
@@ -337,6 +420,19 @@ $(document).ready(function() {
 			}
 		});
 
+		
+
+		if(readyToSubmit) {
+			// alert('Form is ready');
+			$('#form-stok-produk').submit();
+		}
+		
+	});
+
+	$('#btn_harga_produk').on('click', function() {
+		var numberRegex = /^\d+$/;
+		var readyToSubmit = true;
+		
 		$('#table-produk-penjualan tbody tr').each(function(index, tr){
 			$(tr).find('.input-satuan').parent().find('p.error-msg').remove();
 			$(tr).find('.input-qty').parent().find('p.error-msg').remove();
@@ -386,51 +482,10 @@ $(document).ready(function() {
 			}
 		});
 
+		
 		if(readyToSubmit) {
 			// alert('Form is ready');
-			$('#form-produk').submit();
-		}
-		
-	});
-
-	$('#btn-save-pembelian').on('click', function() {
-		var numberRegex = /^\d+$/;
-		var readyToSubmit = true;
-
-		$('#table-pembelian tbody tr').each(function(index, tr){
-			$(tr).find('.produk-qty').parent().find('p.error-msg').remove();
-			$(tr).find('.produk-harga-beli').parent().find('p.error-msg').remove();
-
-			if($(tr).find('.produk-qty').val() == '') {
-				errorMsg = '<p class="error-msg fa-sm">QTY produk wajib diisi.</p>';
-				$(tr).find('.produk-qty').parent().append(errorMsg);
-				readyToSubmit = false;
-			} else {
-				if(numberRegex.test($(tr).find('.produk-qty').val()) == false) {
-					errorMsg = '<p class="error-msg fa-sm">QTY produk harus angka.</p>';
-					$(tr).find('.produk-qty').parent().append(errorMsg);
-					readyToSubmit = false;
-				}
-			}
-
-			if($(tr).find('.produk-harga-beli').val() == '') {
-				errorMsg = '<p class="error-msg fa-sm">Harga beli produk wajib diisi.</p>';
-				$(tr).find('.produk-harga-beli').parent().append(errorMsg);
-				readyToSubmit = false;
-			} else {
-				if(numberRegex.test($(tr).find('.produk-harga-beli').val()) == false) {
-					errorMsg = '<p class="error-msg fa-sm">Harga beli harus angka.</p>';
-					$(tr).find('.produk-harga-beli').parent().append(errorMsg);
-					readyToSubmit = false;
-				}
-			}
-		});
-
-		
-
-		if(readyToSubmit) {
-			// alert('Form is ready');
-			$('#form-pembelian').submit();
+			$('#form-harga-produk').submit();
 		}
 		
 	});

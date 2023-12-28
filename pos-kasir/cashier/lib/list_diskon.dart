@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, unused_import
+
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:cashier/navbar.dart';
@@ -7,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import './widget/globals.dart' as globals;
 import './model/produk_diskon_model.dart' show DataDiskon, ProdukDiskonModel;
-import './widget/globals.dart' as globals;
 
 class ListDiskon extends StatefulWidget {
   const ListDiskon({Key? key}) : super(key: key);
@@ -88,7 +89,7 @@ class _ListDiskonState extends State<ListDiskon> {
                                                     .toString() +
                                                 ')',
                                             style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 13,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           SizedBox(
@@ -109,9 +110,18 @@ class _ListDiskonState extends State<ListDiskon> {
                                             height: 7,
                                           ),
                                           Text('Bundling Produk: '),
-                                          Text(daftar_diskon[index]
-                                              .produkBundled
-                                              .toString())
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.6,
+                                            child: Text(
+                                                style: TextStyle(fontSize: 12),
+                                                overflow: TextOverflow.ellipsis,
+                                                daftar_diskon[index]
+                                                    .produkBundled
+                                                    .toString()),
+                                          )
                                         ],
                                       ),
                                       Container(

@@ -70,7 +70,7 @@ class ProdukModel extends Model
         $query   = $builder->get();
 
         $total_stok = 0;
-        $nett_per_carton = 0;
+        $nett_per_carton = 1;
         $satuan_terkecil = 'pcs';
         $satuan_terbesar = 'dos';
 

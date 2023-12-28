@@ -93,7 +93,10 @@
 
                 <div class="row">
                   <div class="col-md-5">
-                    <h4 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium">Stok & Tanggal Kadaluarsa</h4>
+                    <h4 class="btn d-flex btn-light-warning w-100 d-block text-warning font-medium">
+                      Stok & Tanggal Kadaluarsa&nbsp;
+                      <a style="color: black;" href="<?= base_url() ?>produk/managestok/<?= pos_encrypt($produk_data->produk_id) ?>"><i role="button" class="ti ti-edit fa-2y"></i></a>
+                    </h4>
                     <table class="table dynamic-table" id="table-produk-stok">
                       <thead>
                         <tr>
@@ -109,7 +112,7 @@
 
                             <tr>
                               <td class="col-md-5"><?= date('d M Y', strtotime($d->tgl_kadaluarsa)) ?></td>
-                              <td><?= $produk_stok_model->convertStok($d->stok, $produk_data->netto, $produk_data->satuan_terkecil) ?></td>
+                              <td><?= $produk_stok_model->convertStok($d->stok, $produk_data->netto, $produk_data->satuan_terkecil, $produk_data->satuan_terbesar) ?></td>
                             </tr>
 
                           <?php } ?>
@@ -128,7 +131,10 @@
 
 
                   <div class="col-md-7">
-                    <h4 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium">Penjualan</h4>
+                    <h4 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium">
+                      Penjualan&nbsp;
+                      <a style="color: black;" href="<?= base_url() ?>produk/manageharga/<?= pos_encrypt($produk_data->produk_id) ?>"><i role="button" class="ti ti-edit fa-2y"></i></a>
+                    </h4>
                     <table class="table dynamic-table" id="table-produk-stok">
                       <thead>
                         <tr>

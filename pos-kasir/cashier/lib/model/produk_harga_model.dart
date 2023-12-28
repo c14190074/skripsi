@@ -45,7 +45,7 @@ class DataHarga {
   String? hargaJual;
   String? tglDibuat;
   String? dibuatOleh;
-  Null? tglDiupdate;
+  String? tglDiupdate;
   String? diupdateOleh;
   String? isDeleted;
   String? namaProduk;

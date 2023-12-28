@@ -53,3 +53,7 @@
 .btn-delete-table {
 	color: red;
 }
+
+.hidden {
+	display: none !important;
+}

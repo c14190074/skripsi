@@ -1,3 +1,5 @@
+// ignore_for_file: unused_shown_name
+
 import 'dart:convert';
 import 'package:cashier/detail_penjualan.dart';
 import 'package:intl/intl.dart';

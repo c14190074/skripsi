@@ -185,7 +185,7 @@
                       <div class="round-16 d-flex align-items-center justify-content-center">
                         <i class="ti ti-circle"></i>
                       </div>
-                      <span class="hide-menu">Analisa Penjualan</span>
+                      <span class="hide-menu">Basket Analysis</span>
                     </a>
                   </li>
 

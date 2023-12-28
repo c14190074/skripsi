@@ -231,7 +231,7 @@ class Penjualan extends BaseController
         ));
     }
 
-    public function analisa()
+    public function analisaTEMPORARYUNSED()
     {
         if(!session()->logged_in) {
             return redirect()->to(base_url('user/login')); 
@@ -370,6 +370,152 @@ class Penjualan extends BaseController
             'target_prediksi' => $target_prediksi,
             'produk_sebanding' => $produk_sebanding,
             'rules_by_kategori' => []
+        ));
+    }
+
+    public function analisa()
+    {
+        if(!session()->logged_in) {
+            return redirect()->to(base_url('user/login')); 
+        }
+        
+        //mengambil semua nama produk
+        $produk_model = new ProdukModel();
+        $produk_data = $produk_model->where('is_deleted', 0)
+                                    ->orderBy('nama_produk', 'asc')
+                                    ->findAll();
+
+        $produk_data_nama = [];
+        foreach($produk_data as $d) {
+            $produk_data_nama[$d['produk_id']] = $d['nama_produk'];
+        }                     
+        
+
+        //parameter kosongan
+        $rules = [];
+        $prediksi = [];
+        $target_prediksi = [];
+        $produk_sebanding = [];
+        $support = 0;
+        $confidence = 0;
+
+
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tbl_penjualan_detail');
+        $builder->select('tbl_penjualan_detail.*, tbl_produk.nama_produk');
+        $builder->where('tbl_penjualan_detail.is_deleted', 0);
+        $builder->join('tbl_produk', 'tbl_penjualan_detail.produk_id = tbl_produk.produk_id');
+        $builder->orderBy('tbl_penjualan_detail.penjualan_id', 'asc');
+        $penjualan_detail   = $builder->get();
+
+        //menampung semua detail penjualan
+        if($penjualan_detail) {
+            $data = [];
+            $current_penjualan_id = 0;
+            $result = $penjualan_detail->getResult();    
+
+            //pengecekan agar tidak ada data redundant
+            if($result) {
+                $current_penjualan_id = $result[0]->penjualan_id;
+                $tmp_data = [];
+                foreach($result as $d) {
+                    if($current_penjualan_id == $d->penjualan_id) {
+                        if(!in_array(ucwords(strtolower($d->produk_id)), $tmp_data)) {
+                            array_push($tmp_data, ucwords(strtolower($d->produk_id)));
+                            
+                        }
+                        
+                    } else {
+                        array_push($data, $tmp_data);
+                        $tmp_data = [];
+                        $current_penjualan_id = $d->penjualan_id;
+
+                        if(!in_array(ucwords(strtolower($d->produk_id)), $tmp_data)) {
+                            array_push($tmp_data, ucwords(strtolower($d->produk_id)));
+                        }
+                    }                         
+                }
+
+                if(count($tmp_data) > 0) {
+                    array_push($data, $tmp_data);
+                }
+            }
+
+            
+            if(count($data) > 0) {
+                $labels  = [];
+                $associator = new Apriori(0.1, 0.1);
+                $associator->train($data, $labels);
+
+                //mendapatkan rules
+                $rules = $associator->getRules();
+            }
+        }
+        
+
+        if ($this->request->is('post')) {
+            $support = $_POST['support']; // menampung input user ke variabel support
+            $confidence = $_POST['confidence']; // menampung input user ke variabel support
+            $produk_ids = isset($_POST['produk_ids']) ? $_POST['produk_ids'] : []; // mengecek apakah ada prediksi produk
+            
+
+            //pengecekan jika ada produk yang akan diprediksi
+            if(count($produk_ids) > 0) {
+                foreach($produk_ids as $produk_id) {
+                    $produk = $produk_model->find($produk_id);
+                    array_push($target_prediksi, ucwords(strtolower($produk_id)));
+                }
+
+                //dari rules kita dapat memprediksi produk dan jika tidak ada ditemukan data maka akan dilempar ke produk sebanding
+                if(count($target_prediksi) > 0) {
+                    $labels_predict  = [];
+                    $associator_predict = new Apriori($support, $confidence);
+                    $associator_predict->train($data, $labels_predict);
+
+                    $prediksi = $associator_predict->predict($target_prediksi);
+                   
+
+                    if(count($prediksi) < 1) {
+                        $related_produk_model = new RelatedProdukModel();
+                        foreach ($produk_ids as $produk_id) {
+                            $produk_parent = $produk_model->find($produk_id); 
+
+                            $builder = $db->table('tbl_related_produk');
+                            $builder->select('tbl_related_produk.*, tbl_produk.nama_produk');
+                            $builder->where('tbl_related_produk.is_deleted', 0);
+                            $builder->where('tbl_related_produk.produk_parent_id', $produk_id);
+                            $builder->join('tbl_produk', 'tbl_related_produk.produk_child_id = tbl_produk.produk_id');
+                            $related_produk_data   = $builder->get();                                           
+
+                            $tmp_data = [];
+                            if($related_produk_data) {
+                                foreach($related_produk_data->getResult() as $d) {
+                                    array_push($tmp_data, $d->nama_produk);
+                                }
+
+                                $produk_sebanding[ucwords(strtolower($produk_parent['nama_produk']))] = $tmp_data;
+                            }                                         
+                        }
+                    }
+                }
+            } else {
+                session()->setFlashData('danger', 'Silahkan pilih produk yang akan dianalisa terlebih dahulu.');
+            }
+
+
+        }
+        
+
+        return view('penjualan/analisa_penjualan', array(
+            'produk_data' => $produk_data,
+            'rules' => $rules,
+            'support' => $support,
+            'confidence' => $confidence,
+            'prediksi' => $prediksi,
+            'target_prediksi' => $target_prediksi,
+            'produk_sebanding' => $produk_sebanding,
+            'rules_by_kategori' => [],
+            'produk_data_nama' => $produk_data_nama,
         ));
     }
 

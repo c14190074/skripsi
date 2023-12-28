@@ -35,7 +35,7 @@
                   		<thead>
                   			<tr>
                           <td>No</td>
-                  				<td>Nama Produk</td>
+                          <td>Nama Produk</td>
                   				<td>Kategori</td>
                   				<td>Supplier</td>
                           <td>Stok Minimal</td>
@@ -51,7 +51,7 @@
                   			<?php $ctr++; ?>
                   			<tr>
                   				<td><?php echo $ctr; ?></td>
-                  				<td><?php echo strtoupper(strtolower($produk->nama_produk)); ?></td>
+                          <td><?php echo strtoupper(strtolower($produk->nama_produk)); ?></td>
                   				<td><?php echo strtoupper(strtolower($produk->nama_kategori)); ?></td>
                   				<td><?php echo strtoupper(strtolower($produk->nama_supplier)); ?></td>
                           <td><?php echo $produk_stok_model->convertStok($produk->stok_min, $produk->netto, $produk->satuan_terkecil, $produk->satuan_terbesar); ?></td>
@@ -71,6 +71,10 @@
                   				</td>
                           <td>
                             <a href="detail/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-info-circle fa-2y"></i></a>
+
+                            <a href="managestok/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-database fa-2y"></i></a>
+                            <a href="manageharga/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-report-money fa-2y"></i></a>
+
                             <a href="update/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-edit btn-edit-table fa-2y"></i></a>
                             <a href="diskon/<?= pos_encrypt($produk->produk_id) ?>"><i role="button" class="ti ti-discount-2 fa-2y"></i></a> 
                             <i role="button" class="ti ti-trash btn-delete-table fa-2y" data-modul="produk" data-id="<?= pos_encrypt($produk->produk_id) ?>" data-label="<?= $produk->nama_produk ?>"></i>

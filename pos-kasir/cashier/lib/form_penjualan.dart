@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, unused_shown_name, unused_local_variable
+
 import 'dart:convert';
 import 'dart:ffi';
 
@@ -584,8 +586,7 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                                             decimal: false,
                                                             signed: true,
                                                           ),
-                                                          inputFormatters: <
-                                                              TextInputFormatter>[
+                                                          inputFormatters: <TextInputFormatter>[
                                                             FilteringTextInputFormatter
                                                                 .digitsOnly
                                                           ],
@@ -697,9 +698,12 @@ class _FormPenjualanState extends State<FormPenjualan> {
                                         (BuildContext context, int index) {
                                       return Container(
                                         margin: EdgeInsets.only(bottom: 8),
-                                        child: Text(daftar_diskon[index]
-                                            .listDiskon
-                                            .toString()),
+                                        child: Text(
+                                          daftar_diskon[index]
+                                              .listDiskon
+                                              .toString(),
+                                          style: TextStyle(fontSize: 13),
+                                        ),
                                       );
                                     });
                               } else {

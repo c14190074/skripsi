@@ -1,3 +1,5 @@
+// ignore_for_file: unused_shown_name, unused_import, unused_local_variable
+
 import 'dart:ffi';
 
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';

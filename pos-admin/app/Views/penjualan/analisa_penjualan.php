@@ -30,7 +30,7 @@
 
 
               <div class="mb-3">
-                <label for="nama_kategori" class="form-label">Produk</label>
+                <label for="nama_kategori" class="form-label">Pilih Produk</label>
                 <select name="produk_ids[]" class="form-control acive-dropdown" multiple="multiple">
                   <?php foreach($produk_data as $produk) : ?>
                     <option value="<?= $produk['produk_id'] ?>"><?= ucwords(strtolower($produk['nama_produk'])) ?></option>
@@ -51,7 +51,13 @@
 
                 <div class="table-responsive">
                   <div class="mb-3">
-                    <label for="target_prediksi" class="form-label">Target Prediksi: <?= implode(', ', $target_prediksi) ?></label>
+                    <?php
+                      $tmp = [];
+                      foreach($target_prediksi as $produk_id) {
+                        array_push($tmp, $produk_data_nama[$produk_id]);
+                      }
+                    ?>
+                    <label for="target_prediksi" class="form-label">Target Prediksi: <?= implode(', ', $tmp) ?></label>
                   </div>
                   
                   <div class="mb-3">
@@ -61,10 +67,43 @@
                         if(count($prediksi) > 0) :
                         
                           $index = 0;
-                          foreach($prediksi as $hasil) { 
+                          $bundling_produk_id = [];
+                          $rule_found = false;
+                          foreach($rules as $rule) {
+                            $rule_found = true;
+                            foreach($target_prediksi as $produk_target) {
+                              if(!in_array($produk_target, $rule['antecedent'])) {
+                                $rule_found = false;
+                              }
+                            }
+
+                            if($rule_found && count($rule['antecedent']) == count($target_prediksi)) {
                               $index++;
-                              echo "<p>Kemungkinan ".$index.": ".implode(', ', $hasil)."</p>";
-                           } 
+                              $tmp = [];
+                              foreach($rule['consequent'] as $produk_id) {
+                                array_push($tmp, $produk_data_nama[$produk_id]);
+
+                                if(!in_array($produk_id, $bundling_produk_id)) {
+                                  array_push($bundling_produk_id, $produk_id);
+                                }
+                                
+                              }
+
+                              echo "<p>Kemungkinan ".$index.": ".implode(', ', $tmp)."</p>";
+
+                              echo "<p><span><b>Support: ".number_format($rule['support'], 2)."</b></span> | <span><b>Confidence: ".number_format($rule['confidence'], 2)."</b></span></p>";
+                              echo "<hr />";
+                            }
+
+                          }
+
+                          foreach($target_prediksi as $produk_id) {
+                            if(!in_array($produk_id, $bundling_produk_id)) {
+                              array_push($bundling_produk_id, $produk_id);
+                            }
+                          }
+
+                          echo "<a class='btn btn-danger' href='".base_url()."produk/bundling/".pos_encrypt(implode(',', $bundling_produk_id))."'>Generate Bundling Produk</a>";
 
                         else:
                           echo "<p>Tidak ditemukan</p>";
@@ -96,14 +135,15 @@
 
             <?php endif; ?>
            
-            <hr />
+            
+
             <br />
             <h5 class="btn d-flex btn-light-secondary w-100 d-block text-secondary font-medium mb-3">Asosiasi Produk</h5>
             <p class="md-4"><i>Asosiasi produk berdasarkan analisa data penjualan</i></p>
              <?php if(count($rules) > 0) : ?>
 
                 <div class="table-responsive">
-                  <table class="table table-striped active-table">
+                  <table class="table table-striped" id="multiple_search_table">
                     <thead>
                       <tr>
                         <td>No</td>
@@ -119,8 +159,25 @@
                       <?php $ctr++; ?>
                       <tr>
                         <td><?php echo $ctr; ?></td>
-                        <td><?= implode(', ', $rule['antecedent']) ?></td>
-                        <td><?= implode(', ', $rule['consequent']) ?></td>
+                        <td>
+                          <?php
+                            $tmp = [];
+                            foreach ($rule['antecedent'] as $produk_id) {
+                              array_push($tmp, $produk_data_nama[$produk_id]);
+                            }
+                          ?>
+                          <?= implode(', ', $tmp) ?>
+                            
+                        </td>
+                        <td>
+                          <?php
+                            $tmp = [];
+                            foreach ($rule['consequent'] as $produk_id) {
+                              array_push($tmp, $produk_data_nama[$produk_id]);
+                            }
+                          ?>
+                          <?= implode(', ', $tmp) ?>
+                        </td>
                         <td><?= $rule['support'] ?></td>
                         <td><?= $rule['confidence'] ?></td>
                       </tr>
@@ -133,7 +190,7 @@
                         foreach($rule['antecedent'] as $a) {
                           $builder = $db->table('tbl_kategori k');
                           $builder->select('k.*');
-                          $builder->like('p.nama_produk', $a);
+                          $builder->where('p.produk_id', $a);
                           $builder->where('k.is_deleted', 0);
                           $builder->join('tbl_produk p', 'p.kategori_id = k.kategori_id');
                           $kategori_data   = $builder->get();
@@ -150,7 +207,7 @@
                         foreach($rule['consequent'] as $c) {
                           $builder = $db->table('tbl_kategori k');
                           $builder->select('k.*');
-                          $builder->like('p.nama_produk', $c);
+                          $builder->where('p.produk_id', $c);
                           $builder->where('k.is_deleted', 0);
                           $builder->join('tbl_produk p', 'p.kategori_id = k.kategori_id');
                           $kategori_data   = $builder->get();
@@ -175,9 +232,18 @@
                       <?php } ?>
                       
                     </tbody>
+
+                    <tfoot>
+                      <tr>
+                        <td>No</td>
+                        <td>Antecedent</td>
+                        <td>Consequent</td>
+                        <td>Support</td>
+                        <td>Confidence</td>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
-
 
             <?php else: ?>
                 
@@ -191,7 +257,7 @@
 
             <hr />
             <br />
-            <h5 class="btn d-flex btn-light-danger w-100 d-block text-danger font-medium mb-3">Asosiasi Kategori Produk</h5>
+            <h5 class="btn d-flex btn-light-danger w-100 d-block text-danger font-medium mb-3">Rekomendasi Penataan Produk</h5>
             <p class="md-4"><i>Rekomendasi penataan barang pada rak berdasarkan kategori produk</i></p>
              <?php if(count($rules_by_kategori) > 0) : ?>
 
@@ -231,12 +297,42 @@
                   <p>Tidak ada data</p>
                 </div>
 
-
             <?php endif; ?>
 
-            
 
-            
+            <hr />
+            <br >
+            <p class="md-4"><i>Rekomendasi penataan barang pada rak</i></p>
+
+            <div class="table-responsive">
+              <table class="table table-striped active-table">
+                <thead>
+                  <tr>
+                    <th>Rekomendasi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                    foreach($rules as $r) {
+                      $tmp_antecedent = [];
+                      foreach ($r['antecedent'] as $produk_id) {
+                        array_push($tmp_antecedent, $produk_data_nama[$produk_id]);
+                      }
+
+                      $tmp_consequent = [];
+                      foreach ($r['consequent'] as $produk_id) {
+                        array_push($tmp_consequent, $produk_data_nama[$produk_id]);
+                      }
+                      
+                      echo '<tr><td><span><b>'.implode(', ', $tmp_antecedent).'</b></span> berdekatan dengan <span><b>'.implode(', ', $tmp_consequent).'</b></span></td></tr>';
+                    }
+
+                  ?>
+                  
+                </tbody>
+              </table>
+            </div>
+
 
           </div>
       </div> <!-- end of card -->

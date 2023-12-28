@@ -89,6 +89,15 @@ $routes->group("produk", function ($routes) {
     $routes->get('updatediskon/(:any)', 'Produk::updatediskon/$1');
     $routes->post('updatediskon/(:any)', 'Produk::updatediskon/$1');
     $routes->get('deletediskon/(:any)', 'Produk::deleteDiskon/$1');
+
+    $routes->get('managestok/(:any)', 'Produk::manageStok/$1');
+    $routes->post('managestok/(:any)', 'Produk::manageStok/$1');
+    
+    $routes->get('manageharga/(:any)', 'Produk::manageHarga/$1');
+    $routes->post('manageharga/(:any)', 'Produk::manageHarga/$1');
+
+    $routes->get('bundling/(:any)', 'Produk::bundling/$1');
+    $routes->post('createbundling', 'Produk::createBundling');
 });
 $routes->group("penjualan", function ($routes) {
     $routes->get('list', 'Penjualan::list');
@@ -144,6 +153,7 @@ $routes->group("api/penjualan", function ($routes) {
     $routes->post('getsuggestion/(:any)', 'PenjualanApi::getProdukRekomendasi/$1');
     // $routes->get('getsuggestion/(:any)', 'PenjualanApi::getProdukRekomendasi/$1');
     $routes->get('getsnaptoken', 'PenjualanApi::doMidtrans');
+    $routes->post('updatestatuspenjualan/(:any)', 'PenjualanApi::updateStatusPenjualan/$1');
 
     // $routes->post('logout', 'User::logout');
     // $routes->post('test-post/(:any)/(:any)', 'Employee::testpost/$1/$2');

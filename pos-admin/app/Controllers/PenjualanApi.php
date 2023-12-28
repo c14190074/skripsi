@@ -141,6 +141,7 @@ class PenjualanApi extends ResourceController
                         if($metode_pembayaran == 'tunai') {
                             $response = array(
                                 'status' => 200,
+                                'penjualan_id' => $penjualan_id.'',
                                 'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
                             );
                         } else {
@@ -169,6 +170,7 @@ class PenjualanApi extends ResourceController
                             $penjualan_model->update($penjualan_id, ['midtrans_id' => $midtrans_id]);
                             $response = array(
                                 'status' => 200,
+                                'penjualan_id' => $penjualan_id.'',
                                 'tgl_transaksi' => date('d M Y H:i', strtotime($tgl_dibuat)),
                                 'midtrans_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
                             );
@@ -460,7 +462,39 @@ class PenjualanApi extends ResourceController
         return $this->respond($response);
     }
 
+    public function updateStatusPenjualan($user_token)
+    {
+        $response = array(
+            'status' => 404,
+            'data' => []
+        );
 
+        $penjualan_id = $this->request->getVar('penjualan_id');
+
+        $api_model = new UserApiLoginModel();
+        if($api_model->isTokenValid($user_token)) {
+            $penjualan_model = new PenjualanModel();
+            $penjualan = $penjualan_model->find($penjualan_id);
+            if($penjualan) {
+                if($penjualan_model->update($penjualan_id, ['status_pembayaran' => 'lunas'])) {
+                    $response = array(
+                        'status' => 200,
+                    );
+                }
+
+            }
+            
+        } else {
+            $response = array(
+                'status' => 403,
+                'msg' => 'Token tidak valid',
+                'data' => []
+            );
+        }  
+        
+        return $this->respond($response);
+    }
+    
     public function getProdukRekomendasi($user_token) {
         $data = $this->request->getVar('dataBelanja');
         $data = json_decode($data);

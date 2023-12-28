@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:cashier/form_penjualan.dart';
 import 'package:cashier/login.dart';
 import 'package:cashier/navbar.dart';

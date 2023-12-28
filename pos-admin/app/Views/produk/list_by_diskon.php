@@ -29,9 +29,9 @@
               <div class="card">
                 <div class="card-body">
                   <div class="table-responsive">
-                  	<table class="table table-striped active-table">
-                  		<thead>
-                  			<tr>
+                    <table class="table table-striped active-table">
+                      <thead>
+                        <tr>
                           <th>Produk</th>
                           <th>Tipe Diskon</th>
                           <th>Diskon</th>
@@ -41,9 +41,9 @@
                           <th>Status</th>
                           <th>Action</th>
                         </tr>
-                  		</thead>
-                  		<tbody>
-                  			<?php if($produk_diskon) { ?>
+                      </thead>
+                      <tbody>
+                        <?php if($produk_diskon) { ?>
 
                           <?php foreach($produk_diskon as $d) { ?>
                             <?php
@@ -99,8 +99,8 @@
                             <td colspan=2>Tidak ada data</td>
                           </tr>
                         <?php } ?>
-                  		</tbody>
-                  	</table>
+                      </tbody>
+                    </table>
                   </div>
 
                 </div>

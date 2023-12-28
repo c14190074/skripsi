@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'dart:io';
 import 'dart:convert';
 import 'package:cashier/kasir.dart';
